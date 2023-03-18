@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "655429434868",
+    "project_id": "itec404deliveryapp",
+    "storage_bucket": "itec404deliveryapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655429434868:android:e994b0a3f99ccfbe3bcda1",
+        "android_client_info": {
+          "package_name": "com.example.itec404_delivery_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "655429434868-hk0t9fii91smutt4soca8jbv0pmvnu7j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC1WkdzulAQvZtlBTSQMCZlMmiWgrP4A0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "655429434868-hk0t9fii91smutt4soca8jbv0pmvnu7j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
