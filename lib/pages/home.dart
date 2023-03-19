@@ -73,7 +73,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(0, 100, 0, 0),
+            padding: EdgeInsets.fromLTRB(0, 140, 0, 0),
             child: MaterialButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/login');
