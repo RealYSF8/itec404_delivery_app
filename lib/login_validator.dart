@@ -1,10 +1,17 @@
-bool validateLogin(String email, String password) {
-  // Perform validation checks on email and password
-  if (email == "example@example.com" && password == "12345678") {
-    // Return true if email and password match
+import 'package:firebase_auth/firebase_auth.dart';
+
+Future<bool> validateLogin(String email, String password) async {
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
     return true;
-  } else {
-    // Return false if email and password do not match
-    return false;
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+      return false;
+    } else {
+      throw e;
+    }
   }
 }
