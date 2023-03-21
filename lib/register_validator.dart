@@ -55,15 +55,21 @@ String? validatePhoneNumber(String? value) {
   return null;
 }
 
-void register(String email, String password, String name, String address, String phoneNumber) {
+void register(String email, String password, String name, String address,
+    String phoneNumber) {
   // Here you would implement the code to send the registration data to Firebase
   // For example:
-  FirebaseAuth.instance.createUserWithEmailAndPassword(
+  FirebaseAuth.instance
+      .createUserWithEmailAndPassword(
     email: email,
     password: password,
-  ).then((userCredential) {
+  )
+      .then((userCredential) {
     // save additional user data to Firestore
-    FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userCredential.user!.uid)
+        .set({
       'name': name,
       'address': address,
       'phone_number': phoneNumber,

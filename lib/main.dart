@@ -11,9 +11,9 @@ void main() async {
     debugShowCheckedModeBanner: false,
     initialRoute: '/',
     routes: {
-      '/':(context)=>HomeScreen(),
-      '/register':(context)=>RegisterPage(),
-      '/login':(context)=>LoginPage(),
+      '/': (context) => HomeScreen(),
+      '/register': (context) => RegisterPage(),
+      '/login': (context) => LoginPage(),
     },
   ));
 }
