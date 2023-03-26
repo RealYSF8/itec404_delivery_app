@@ -40,10 +40,10 @@ class _RegisterPageState extends State<RegisterPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.network(
-                "https://cdn1.iconfinder.com/data/icons/borrow-book-flat/340/device_tablet_register_login_member_user-256.png",
-                height: 100,
-                width: 100,
+              Image.asset(
+                "assets/tablet.png",
+                height: 120,
+                width: 80,
                 fit: BoxFit.cover,
               ),
               SizedBox(height: 8),

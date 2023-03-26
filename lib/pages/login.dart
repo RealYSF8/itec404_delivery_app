@@ -24,10 +24,10 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Image.network(
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoSL4WHG5Ypv4e4W58d5Gt4PnBEM_kZQDDhAKjZAOYLBy6V1karPn2SMil6DFkjUUeX7M&usqp=CAU",
-                  height: 100,
-                  width: 100,
+                Image.asset(
+                  "assets/login.png",
+                  height: 500,
+                  width: 10,
                   fit: BoxFit.cover,
                 ),
                 const SizedBox(height: 30),
