@@ -43,15 +43,6 @@ class _Account extends State<Account> {
         ),
         backgroundColor: Colors.blue,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          setState(() {
-            ninjaLevel+=1;
-          });
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.grey[800],
-      ),
       body: Padding(
         padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 0.0),
         child: Column(
@@ -128,6 +119,24 @@ class _Account extends State<Account> {
                 SizedBox(width: 10.0),
                 Text(
                   '05391142425',
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 18.0,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 30.0),
+            Row(
+              children: <Widget>[
+                Icon(
+                  Icons.home,
+                  color: Colors.grey[400],
+                ),
+                SizedBox(width: 10.0),
+                Text(
+                  'Magusa/emu',
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 18.0,

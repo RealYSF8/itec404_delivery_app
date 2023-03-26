@@ -112,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                             email: email,
                             password: password,
                           );
-                          Navigator.pushReplacementNamed(context, '/');
+                          Navigator.pushReplacementNamed(context, '/mainPage');
                         } on FirebaseAuthException catch (e) {
                           setState(() {
                             errorMessage = e.message!;
