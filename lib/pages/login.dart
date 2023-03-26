@@ -16,7 +16,20 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffe6e6e6),
+      //backgroundColor: Color(0xff000000),
+      appBar: AppBar(
+        //backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: false,
+        automaticallyImplyLeading: false,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+        ),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: Colors.black, size: 24),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
