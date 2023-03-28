@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:itec404_delivery_app/login_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -113,6 +113,9 @@ class _LoginPageState extends State<LoginPage> {
                             password: password,
                           );
                           Navigator.pushReplacementNamed(context, '/mainPage');
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          prefs.setBool('isLoggedIn', true);
+
                         } on FirebaseAuthException catch (e) {
                           setState(() {
                             errorMessage = e.message!;

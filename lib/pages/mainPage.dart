@@ -35,34 +35,34 @@ class _MainPage extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          centerTitle: false,
-          title: Row(
-              children: <Widget>[
-                Text(
-                  "Delivery",
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.clip,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                    fontSize: 22,
-                    color: Color(0xffffffff),
+        centerTitle: false,
+        title: Row(
+            children: <Widget>[
+              Text(
+                "Delivery",
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontStyle: FontStyle.normal,
+                  fontSize: 22,
+                  color: Color(0xffffffff),
                 ),
-          ),
-                Text("App",
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.clip,
+              ),
+              Text("App",
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.clip,
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontStyle: FontStyle.normal,
                   fontSize: 22,
                   color: Color(0xfffba808),
                 ),
-                ),
-              ]
-          ),
-          backgroundColor: Colors.blue,
-    ),
+              ),
+            ]
+        ),
+        backgroundColor: Colors.blue,
+      ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
