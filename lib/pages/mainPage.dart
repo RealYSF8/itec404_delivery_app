@@ -29,6 +29,17 @@ class _MainPage extends State<MainPage> {
     setState(() {
       _selectedIndex = index;
     });
+    switch(index) {
+      // case 0:
+      //   Navigator.pushNamed(context, '/mainPage');
+      //   break;
+      // case 1:
+      //   Navigator.pushNamed(context, '/order');
+      //   break;
+      case 2:
+          Navigator.pushNamed(context, '/account');
+        break;
+    }
   }
 
   @override
