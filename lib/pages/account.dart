@@ -8,7 +8,12 @@ class Account extends StatefulWidget {
 
 class _Account extends State<Account> {
 
-  int ninjaLevel=0;
+  String name="Foad";
+  String lname="Farahbod";
+  String email="foad@yahoo.com";
+  String phone = "05391142425";
+  String address="Famagusta/Emu";
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +51,7 @@ class _Account extends State<Account> {
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           setState(() {
-            ninjaLevel+=1;
+
           });
         },
         child: Icon(Icons.edit),
@@ -76,7 +81,7 @@ class _Account extends State<Account> {
             ),
             SizedBox(height: 10.0),//puts an invisible box between two texts
             Text(
-              'Foad',
+              '$name',
               style: TextStyle(
                 color: Color(0xfffba808),
                 letterSpacing: 2.0,
@@ -93,7 +98,7 @@ class _Account extends State<Account> {
             ),
             SizedBox(height: 10.0),
             Text(
-              'Farahbod',
+              '$lname',
               style: TextStyle(
                 color: Color(0xfffba808),
                 letterSpacing: 2.0,
@@ -109,7 +114,7 @@ class _Account extends State<Account> {
                 ),
                 SizedBox(width: 10.0),
                 Text(
-                  'Foad@yahoo.com',
+                  '$email',
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 18.0,
@@ -127,7 +132,7 @@ class _Account extends State<Account> {
                 ),
                 SizedBox(width: 10.0),
                 Text(
-                  '05391142425',
+                  '$phone',
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 18.0,
@@ -145,7 +150,7 @@ class _Account extends State<Account> {
                 ),
                 SizedBox(width: 10.0),
                 Text(
-                  'Magusa/emu',
+                  '$address',
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 18.0,
