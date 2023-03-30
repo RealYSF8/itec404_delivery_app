@@ -46,6 +46,7 @@ class _Order extends State<Order> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: false,
         title: Row(
             children: <Widget>[
