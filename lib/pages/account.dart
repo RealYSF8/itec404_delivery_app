@@ -69,7 +69,7 @@ class _Account extends State<Account> {
               ),
             ),
             Divider(
-              height: 10.0,
+              height: 40.0,
               color: Colors.grey[700],
             ),
             Container(
