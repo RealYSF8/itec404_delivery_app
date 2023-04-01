@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:itec404_delivery_app/login_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -12,13 +14,62 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   String errorMessage = '';
   bool emailValid = true;
+  String name = '';
+  String phone_number = '';
+  String address = '';
+
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userData = await FirebaseFirestore.instance.collection('users').doc(
+          user.uid).get();
+      setState(() {
+        name = userData['name'];
+        phone_number = userData['phone_number'];
+        address = userData['address'];
+      });
+      print('User name: $name');
+      print('phone_number: $phone_number');
+      print('address: $address');
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('name', name);
+      await prefs.setString('phone_number', phone_number);
+      await prefs.setString('address', address);
+
+      final savedName = prefs.getString('name');
+      if (savedName != null) {
+        print('Saved name: $savedName');
+      } else {
+        print('Name not found in SharedPreferences');
+      }
+      final savedPhone = prefs.getString('phone_number');
+      if (savedPhone != null) {
+        print('Saved phone: $savedPhone');
+      } else {
+        print('phone not found in SharedPreferences');
+      }
+      final savedAddress = prefs.getString('address');
+      if (savedAddress != null) {
+        print('Saved address: $savedAddress');
+      } else {
+        print('address not found in SharedPreferences');
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Color(0xff000000),
       appBar: AppBar(
-        //backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
         automaticallyImplyLeading: false,
@@ -43,7 +94,6 @@ class _LoginPageState extends State<LoginPage> {
                     "assets/login.png",
                     height: 200,
                     width: 10,
-                    //fit: BoxFit.cover,
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -100,7 +150,6 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () async {
                     String email = emailController.text;
                     String password = passwordController.text;
-
                     if (emailValid) {
                       bool isValid = await validateLogin(email, password);
 
@@ -112,24 +161,34 @@ class _LoginPageState extends State<LoginPage> {
                             email: email,
                             password: password,
                           );
+                          _loadUserData(); // Load user data after successful login
                           Navigator.pushReplacementNamed(context, '/mainPage');
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          SharedPreferences prefs = await SharedPreferences
+                              .getInstance();
                           prefs.setBool('isLoggedIn', true);
-
                         } on FirebaseAuthException catch (e) {
-                          setState(() {
-                            errorMessage = e.message!;
-                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(e.message!),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
                         }
                       } else {
-                        setState(() {
-                          errorMessage = 'Invalid email or password';
-                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Invalid email or password'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
                       }
                     } else {
-                      setState(() {
-                        errorMessage = 'Please enter a valid email';
-                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Please enter a valid email'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
                     }
                   },
                   child: Text(
@@ -140,6 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 16),
                 if (errorMessage.isNotEmpty)
                   Text(
@@ -148,6 +208,7 @@ class _LoginPageState extends State<LoginPage> {
                       color: Colors.red,
                     ),
                   ),
+
               ],
             ),
           ),
