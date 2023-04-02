@@ -17,7 +17,7 @@ void main() async {
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    initialRoute: isLoggedIn ? '/more' : '/',
+    initialRoute: isLoggedIn ? '/mainPage' : '/',
     routes: {
       '/': (context) => HomeScreen(),
       '/register': (context) => RegisterPage(),
