@@ -37,7 +37,7 @@ class _MainPage extends State<MainPage> {
       //   Navigator.pushNamed(context, '/order');
       //   break;
       case 2:
-          Navigator.pushNamed(context, '/account');
+          Navigator.pushNamed(context, '/more');
         break;
     }
   }
