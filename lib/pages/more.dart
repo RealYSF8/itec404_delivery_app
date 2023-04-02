@@ -36,7 +36,7 @@ class _More extends State<More> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                   child: ElevatedButton.icon(
                     onPressed: () {  },
                     icon: Icon(
@@ -49,7 +49,7 @@ class _More extends State<More> {
 
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                   child: ElevatedButton.icon(
                     onPressed: () {  },
                     icon: Icon(
@@ -62,7 +62,7 @@ class _More extends State<More> {
 
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                   child: ElevatedButton.icon(
                     onPressed: () {  },
                     icon: Icon(
@@ -76,7 +76,7 @@ class _More extends State<More> {
 
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                   child: ElevatedButton.icon(
 
                     onPressed: () {  },
