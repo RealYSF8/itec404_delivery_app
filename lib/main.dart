@@ -6,7 +6,9 @@ import 'package:itec404_delivery_app/pages/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:itec404_delivery_app/pages/order.dart';
 import 'package:itec404_delivery_app/pages/account.dart';
+import 'package:itec404_delivery_app/pages/more.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +17,7 @@ void main() async {
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    initialRoute: isLoggedIn ? '/mainPage' : '/',
+    initialRoute: isLoggedIn ? '/mainPage' : '/more',
     routes: {
       '/': (context) => HomeScreen(),
       '/register': (context) => RegisterPage(),
@@ -23,6 +25,7 @@ void main() async {
       '/mainPage': (context) => MainPage(),
       '/order': (context) => Order(),
       '/account': (context) => Account(),
+      '/more':(context) => More(),
     },
   ));
 }
