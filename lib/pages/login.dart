@@ -165,6 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.pushReplacementNamed(context, '/mainPage');
                           SharedPreferences prefs = await SharedPreferences
                               .getInstance();
+                          prefs.setString('email', email);
                           prefs.setBool('isLoggedIn', true);
                         } on FirebaseAuthException catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
