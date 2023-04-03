@@ -9,6 +9,11 @@ import 'package:itec404_delivery_app/pages/account.dart';
 import 'package:itec404_delivery_app/pages/more.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Pages/about.dart';
+import 'Pages/contact.dart';
+import 'Pages/courrier.dart';
+import 'Pages/changepass.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +31,11 @@ void main() async {
       '/order': (context) => Order(),
       '/account': (context) => Account(),
       '/more':(context) => More(),
+      '/about':(context) => About(),
+      '/contact':(context) => Contact(),
+      '/courrier':(context) => Courrier(),
+      '/changepass':(context) => Changepass(),
+
     },
   ));
 }
