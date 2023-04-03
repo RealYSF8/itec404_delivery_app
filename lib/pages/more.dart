@@ -8,7 +8,40 @@ class More extends StatefulWidget {
 
 class _MoreState extends State<More> {
   String name = "";
+  int _selectedIndex = 2;
+  static const TextStyle optionStyle =
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text(
+      'Home Page',
+      style: optionStyle,
+    ),
+    Text(
+      'Order Page',
+      style: optionStyle,
+    ),
+    Text(
+      'Account',
+      style: optionStyle,
+    ),
+  ];
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch(index) {
+      case 0:
+       Navigator.pushNamed(context, '/mainPage');
+       break;
+      case 1:
+        Navigator.pushNamed(context, '/order');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/more');
+        break;
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -27,23 +60,34 @@ class _MoreState extends State<More> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        title: Text(
-          "More",
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-            color: Colors.black,
-          ),
+        centerTitle: false,
+        title: Row(
+            children: <Widget>[
+              Text(
+                "My",
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontStyle: FontStyle.normal,
+                  fontSize: 22,
+                  color: Color(0xffffffff),
+                ),
+              ),
+              Text("Options",
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontStyle: FontStyle.normal,
+                  fontSize: 22,
+                  color: Color(0xfffba808),
+                ),
+              ),
+            ]
         ),
-        leading: Icon(
-          Icons.arrow_back,
-          color: Colors.grey[800],
-          size: 24,
-        ),
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
@@ -93,13 +137,14 @@ class _MoreState extends State<More> {
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 15),
             buildRowWithIconAndText(
               icon: Icons.wb_sunny_outlined,
               iconColor: Colors.white,
               iconBackgroundColor: Colors.grey[700]!,
               text: "Dark Mode",
             ),
+            SizedBox(height:15),
             GestureDetector(
               onTap: () {
                 Navigator.pushNamed(context, '/');
@@ -112,7 +157,7 @@ class _MoreState extends State<More> {
                 showTrailingIcon: true,
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 15),
             buildRowWithIconAndText(
               icon: Icons.build,
               iconColor: Colors.white,
@@ -120,7 +165,7 @@ class _MoreState extends State<More> {
               text: "Change password",
               showTrailingIcon: true,
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 15),
             buildRowWithIconAndText(
               icon: Icons.info_outline,
               iconColor: Colors.white,
@@ -128,7 +173,7 @@ class _MoreState extends State<More> {
               text: "About us",
               showTrailingIcon: true,
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 15),
             buildRowWithIconAndText(
               icon: Icons.call,
               iconColor: Colors.white,
@@ -136,6 +181,7 @@ class _MoreState extends State<More> {
               text: "Contact Us",
               showTrailingIcon: true,
             ),
+            SizedBox(height: 15),
             GestureDetector(
               onTap: () async {
                 Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
@@ -152,7 +198,7 @@ class _MoreState extends State<More> {
                 showTrailingIcon: true,
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 15),
             buildRowWithIconAndText(
               icon: Icons.build,
               iconColor: Colors.white,
@@ -162,6 +208,25 @@ class _MoreState extends State<More> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Order',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'More',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -198,5 +263,6 @@ class _MoreState extends State<More> {
           Icon(Icons.arrow_forward_ios, color: Colors.grey[600], size: 18),
       ],
     );
+
   }
 }

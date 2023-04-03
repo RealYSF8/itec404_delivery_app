@@ -7,20 +7,20 @@ class Order extends StatefulWidget {
 }
 
 class _Order extends State<Order> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     Text(
-      'Index 0: Home',
+      'Home Page',
       style: optionStyle,
     ),
     Text(
-      'Index 1: Order',
+      'Order Page',
       style: optionStyle,
     ),
     Text(
-      'Index 2: Account',
+      'Account',
       style: optionStyle,
     ),
   ];
@@ -30,14 +30,14 @@ class _Order extends State<Order> {
       _selectedIndex = index;
     });
     switch(index) {
-      // case 0:
-      //   Navigator.pushNamed(context, '/mainPage');
-      //   break;
-      // case 1:
-      //   Navigator.pushNamed(context, '/order');
-      //   break;
+      case 0:
+        Navigator.pushNamed(context, '/mainPage');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/order');
+        break;
       case 2:
-        Navigator.pushNamed(context, '/account');
+        Navigator.pushNamed(context, '/more');
         break;
     }
   }
@@ -90,7 +90,7 @@ class _Order extends State<Order> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
-            label: 'Account',
+            label: 'More',
           ),
         ],
         currentIndex: _selectedIndex,
