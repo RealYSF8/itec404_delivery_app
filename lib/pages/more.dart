@@ -147,7 +147,7 @@ class _MoreState extends State<More> {
             SizedBox(height:15),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, '/');
+                Navigator.pushNamed(context, '/courrier');
               },
               child: buildRowWithIconAndText(
                 icon: Icons.article,
@@ -158,29 +158,41 @@ class _MoreState extends State<More> {
               ),
             ),
             SizedBox(height: 15),
-            buildRowWithIconAndText(
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/changepass');
+          },
+            child :buildRowWithIconAndText(
               icon: Icons.build,
               iconColor: Colors.white,
               iconBackgroundColor: Colors.lightBlue[800]!,
               text: "Change password",
               showTrailingIcon: true,
-            ),
+            ),),
             SizedBox(height: 15),
-            buildRowWithIconAndText(
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/about');
+          },
+            child: buildRowWithIconAndText(
               icon: Icons.info_outline,
               iconColor: Colors.white,
               iconBackgroundColor: Colors.lightGreen,
               text: "About us",
               showTrailingIcon: true,
-            ),
+            ),),
             SizedBox(height: 15),
-            buildRowWithIconAndText(
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, '/contact');
+          },
+            child:buildRowWithIconAndText(
               icon: Icons.call,
               iconColor: Colors.white,
               iconBackgroundColor: Colors.purple,
               text: "Contact Us",
               showTrailingIcon: true,
-            ),
+            ),),
             SizedBox(height: 15),
             GestureDetector(
               onTap: () async {
@@ -197,14 +209,6 @@ class _MoreState extends State<More> {
                 text: "Logout",
                 showTrailingIcon: true,
               ),
-            ),
-            SizedBox(height: 15),
-            buildRowWithIconAndText(
-              icon: Icons.build,
-              iconColor: Colors.white,
-              iconBackgroundColor: Colors.lightBlue[800]!,
-              text: "Change password",
-              showTrailingIcon: true,
             ),
           ],
         ),
