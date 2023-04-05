@@ -31,7 +31,7 @@ class _MainPage extends State<MainPage> {
     });
     switch(index) {
       case 0:
-        Navigator.pushNamed(context, '/mainPage');
+        Navigator.pushNamed(context, '/mainPage',);
         break;
       case 1:
         Navigator.pushNamed(context, '/order');

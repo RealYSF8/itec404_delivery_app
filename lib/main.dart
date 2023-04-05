@@ -15,7 +15,10 @@ import 'Pages/courrier.dart';
 import 'Pages/changepass.dart';
 
 
+
+
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -36,6 +39,19 @@ void main() async {
       '/courrier':(context) => Courrier(),
       '/changepass':(context) => Changepass(),
 
+      // '/': (context) => HomeScreen(),
+      // '/register': (context) =>customPageBuilder(context, RegisterPage()),
+      // '/login': (context) => customPageBuilder(context, LoginPage()),
+      // '/mainPage': (context) => MainPage(),
+      // // '/mainPage': (context) => customPageBuilder(context, MainPage()),
+      // '/order': (context) =>customPageBuilder(context, Order()),
+      // '/account': (context) => customPageBuilder(context, Account()),
+      // '/more':(context) => customPageBuilder(context, More()),
+      // '/about':(context) => customPageBuilder(context, About()),
+      // '/contact':(context) =>customPageBuilder(context, Contact()),
+      // '/courrier':(context) => customPageBuilder(context, Courrier()),
+      // '/changepass':(context) =>customPageBuilder(context, Changepass()),
+
     },
-  ));
+  ),);
 }

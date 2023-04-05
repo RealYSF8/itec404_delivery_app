@@ -57,6 +57,17 @@ class _MoreState extends State<More> {
 
   @override
   Widget build(BuildContext context) {
+   showCustomAlert() => showDialog(context: context, builder: (context)=>AlertDialog(
+      title: Text("Are you sure?"),
+      content: Text("Log out?"),
+      actions: [
+        TextButton(onPressed: (){ return Navigator.pop(context, false);}, child: Text("Cancel")),
+        TextButton(onPressed: (){ return Navigator.pop(context, true);}, child: Text("Yes")),
+      ],
+    )
+
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -169,7 +180,7 @@ class _MoreState extends State<More> {
               text: "Change password",
               showTrailingIcon: true,
             ),),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
         GestureDetector(
           onTap: () {
             Navigator.pushNamed(context, '/about');
@@ -181,7 +192,7 @@ class _MoreState extends State<More> {
               text: "About us",
               showTrailingIcon: true,
             ),),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
         GestureDetector(
           onTap: () {
             Navigator.pushNamed(context, '/contact');
@@ -193,14 +204,19 @@ class _MoreState extends State<More> {
               text: "Contact Us",
               showTrailingIcon: true,
             ),),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             GestureDetector(
               onTap: () async {
-                Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
-                SharedPreferences prefs = await SharedPreferences.getInstance();
 
-                // Set the isLoggedIn value to false
-                await prefs.setBool("isLoggedIn", false);
+                var stat = await showCustomAlert();
+                if(stat){
+                  Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+                  // Set the isLoggedIn value to false
+                  await prefs.setBool("isLoggedIn", false);
+                }
+
               },
               child: buildRowWithIconAndText(
                 icon: Icons.logout,
@@ -270,3 +286,5 @@ class _MoreState extends State<More> {
 
   }
 }
+
+
