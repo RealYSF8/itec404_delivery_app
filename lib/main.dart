@@ -25,6 +25,12 @@ void main() async {
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+        pageTransitionsTheme: const PageTransitionsTheme(builders: {
+          TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        },
+        ),),
     initialRoute: isLoggedIn ? '/mainPage' : '/',
     routes: {
       '/': (context) => HomeScreen(),
@@ -38,20 +44,6 @@ void main() async {
       '/contact':(context) => Contact(),
       '/courrier':(context) => Courrier(),
       '/changepass':(context) => Changepass(),
-
-      // '/': (context) => HomeScreen(),
-      // '/register': (context) =>customPageBuilder(context, RegisterPage()),
-      // '/login': (context) => customPageBuilder(context, LoginPage()),
-      // '/mainPage': (context) => MainPage(),
-      // // '/mainPage': (context) => customPageBuilder(context, MainPage()),
-      // '/order': (context) =>customPageBuilder(context, Order()),
-      // '/account': (context) => customPageBuilder(context, Account()),
-      // '/more':(context) => customPageBuilder(context, More()),
-      // '/about':(context) => customPageBuilder(context, About()),
-      // '/contact':(context) =>customPageBuilder(context, Contact()),
-      // '/courrier':(context) => customPageBuilder(context, Courrier()),
-      // '/changepass':(context) =>customPageBuilder(context, Changepass()),
-
     },
   ),);
 }
