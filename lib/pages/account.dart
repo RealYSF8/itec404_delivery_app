@@ -51,66 +51,68 @@ class _Account extends State<Account> {
         child: const Icon(Icons.edit),
         backgroundColor: Colors.grey[800],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: FutureBuilder<String?>(
-          future: _getEmail(),
-          builder: (context, emailSnapshot) {
-            return FutureBuilder<String?>(
-              future: _getName(),
-              builder: (context, nameSnapshot) {
-                return FutureBuilder<String?>(
-                  future: _getAddress(),
-                  builder: (context, addressSnapshot) {
-                    return FutureBuilder<String?>(
-                      future: _getPhoneNumber(),
-                      builder: (context, phoneSnapshot) {
-                        if (nameSnapshot.hasData &&
-                            addressSnapshot.hasData &&
-                            phoneSnapshot.hasData &&
-                            emailSnapshot.hasData) {
-                          final name = nameSnapshot.data;
-                          final address = addressSnapshot.data;
-                          final phone = phoneSnapshot.data;
-                          final email = emailSnapshot.data;
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: FutureBuilder<String?>(
+            future: _getEmail(),
+            builder: (context, emailSnapshot) {
+              return FutureBuilder<String?>(
+                future: _getName(),
+                builder: (context, nameSnapshot) {
+                  return FutureBuilder<String?>(
+                    future: _getAddress(),
+                    builder: (context, addressSnapshot) {
+                      return FutureBuilder<String?>(
+                        future: _getPhoneNumber(),
+                        builder: (context, phoneSnapshot) {
+                          if (nameSnapshot.hasData &&
+                              addressSnapshot.hasData &&
+                              phoneSnapshot.hasData &&
+                              emailSnapshot.hasData) {
+                            final name = nameSnapshot.data;
+                            final address = addressSnapshot.data;
+                            final phone = phoneSnapshot.data;
+                            final email = emailSnapshot.data;
 
-                          return Column(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage:
-                                    const AssetImage('assets/ninja.png'),
-                                radius: 40.0,
-                              ),
-                              const SizedBox(height: 40),
-                              buildTextField(
+                            return Column(
+                              children: [
+                                CircleAvatar(
+                                  backgroundImage:
+                                  const AssetImage('assets/ninja.png'),
+                                  radius: 40.0,
+                                ),
+                                const SizedBox(height: 40),
+                                buildTextField(
                                   Icons.email, 'Email/Username', email ?? '', enabled: false,),
-                              buildTextField(Icons.person_outline_rounded,
-                                  'Name', name ?? ''),
-                              buildTextField(
-                                  Icons.phone, 'Phone number', phone ?? ''),
-                              buildTextField(
-                                  Icons.location_on, 'Address', address ?? ''),
-                            ],
-                          );
-                        } else if (nameSnapshot.hasError ||
-                            addressSnapshot.hasError ||
-                            phoneSnapshot.hasError ||
-                            emailSnapshot.hasError) {
-                          return const Center(
-                              child: Text('Error loading data'));
-                        } else {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                      },
-                    );
-                  },
-                );
-              },
-            );
-          },
+                                buildTextField(Icons.person_outline_rounded,
+                                    'Name', name ?? ''),
+                                buildTextField(
+                                    Icons.phone, 'Phone number', phone ?? ''),
+                                buildTextField(
+                                    Icons.location_on, 'Address', address ?? ''),
+                              ],
+                            );
+                          } else if (nameSnapshot.hasError ||
+                              addressSnapshot.hasError ||
+                              phoneSnapshot.hasError ||
+                              emailSnapshot.hasError) {
+                            return const Center(
+                                child: Text('Error loading data'));
+                          } else {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
         ),
-      ),
+      )
     );
   }
 
