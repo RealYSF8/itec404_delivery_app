@@ -13,9 +13,7 @@ import 'Pages/about.dart';
 import 'Pages/contact.dart';
 import 'Pages/courrier.dart';
 import 'Pages/changepass.dart';
-
-
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
 
@@ -23,22 +21,25 @@ void main() async {
   await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
-        pageTransitionsTheme: const PageTransitionsTheme(builders: {
-          TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-        },
-        ),),
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+      },
+      ),),
     initialRoute: isLoggedIn ? '/mainPage' : '/',
     routes: {
       '/': (context) => HomeScreen(),
       '/register': (context) => RegisterPage(),
       '/login': (context) => LoginPage(),
       '/mainPage': (context) => MainPage(),
-      '/order': (context) => Order(),
-      '/account': (context) => Account(),
+      '/order': (context) => OrderPage(),
+      '/account': (context) => Account(firestore: firestore),
       '/more':(context) => More(),
       '/about':(context) => About(),
       '/contact':(context) => Contact(),

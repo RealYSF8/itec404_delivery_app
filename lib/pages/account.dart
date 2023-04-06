@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Account extends StatefulWidget {
-  const Account({Key? key}) : super(key: key);
+  final FirebaseFirestore firestore;
+
+  const Account({Key? key, required this.firestore}) : super(key: key);
 
   @override
-  State<Account> createState() => _Account();
+  State<Account> createState() => _AccountState();
 }
 
-class _Account extends State<Account> {
+class _AccountState extends State<Account> {
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _addressController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+
   Future<String?> _getName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('name');
@@ -30,109 +39,129 @@ class _Account extends State<Account> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _getName().then((value) => _nameController.text = value ?? '');
+    _getPhoneNumber().then((value) => _phoneController.text = value ?? '');
+    _getAddress().then((value) => _addressController.text = value ?? '');
+    _getEmail().then((value) => _emailController.text = value ?? '');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        centerTitle: false,
-        title: Text(
-          'My Account',
-          style: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontStyle: FontStyle.normal,
-            fontSize: 22,
-            color: Colors.white,
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          centerTitle: false,
+          title: Text(
+            'My Account',
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Colors.white,
+            ),
           ),
+          backgroundColor: Colors.blue,
         ),
-        backgroundColor: Colors.blue,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => setState(() {}),
-        child: const Icon(Icons.edit),
-        backgroundColor: Colors.grey[800],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: FutureBuilder<String?>(
-            future: _getEmail(),
-            builder: (context, emailSnapshot) {
-              return FutureBuilder<String?>(
-                future: _getName(),
-                builder: (context, nameSnapshot) {
-                  return FutureBuilder<String?>(
-                    future: _getAddress(),
-                    builder: (context, addressSnapshot) {
-                      return FutureBuilder<String?>(
-                        future: _getPhoneNumber(),
-                        builder: (context, phoneSnapshot) {
-                          if (nameSnapshot.hasData &&
-                              addressSnapshot.hasData &&
-                              phoneSnapshot.hasData &&
-                              emailSnapshot.hasData) {
-                            final name = nameSnapshot.data;
-                            final address = addressSnapshot.data;
-                            final phone = phoneSnapshot.data;
-                            final email = emailSnapshot.data;
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString('name', _nameController.text);
+            await prefs.setString('phone_number', _phoneController.text);
+            await prefs.setString('address', _addressController.text);
+            await prefs.setString('email', _emailController.text);
 
-                            return Column(
-                              children: [
-                                CircleAvatar(
-                                  backgroundImage:
-                                  const AssetImage('assets/ninja.png'),
-                                  radius: 40.0,
-                                ),
-                                const SizedBox(height: 40),
-                                buildTextField(
-                                  Icons.email, 'Email/Username', email ?? '', enabled: false,),
-                                buildTextField(Icons.person_outline_rounded,
-                                    'Name', name ?? ''),
-                                buildTextField(
-                                    Icons.phone, 'Phone number', phone ?? ''),
-                                buildTextField(
-                                    Icons.location_on, 'Address', address ?? ''),
-                              ],
-                            );
-                          } else if (nameSnapshot.hasError ||
-                              addressSnapshot.hasError ||
-                              phoneSnapshot.hasError ||
-                              emailSnapshot.hasError) {
-                            return const Center(
-                                child: Text('Error loading data'));
-                          } else {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                        },
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          ),
+            final user = FirebaseAuth.instance.currentUser;
+            final userId = user?.uid;
+            if (userId != null) {
+              await widget.firestore.collection('users').doc(userId).set({
+                'name': _nameController.text,
+                'phone_number': _phoneController.text,
+                'address': _addressController.text,
+                'email': _emailController.text,
+              });
+            }
+            setState(() {});
+          },
+          child: const Icon(Icons.edit),
+          backgroundColor: Colors.grey[800],
         ),
-      )
+        body: SingleChildScrollView(
+        child: Padding(
+        padding: const EdgeInsets.all(10),
+    child: FutureBuilder<String?>(
+    future: _getEmail(),
+    builder: (context, emailSnapshot) {
+    if (emailSnapshot.hasData) {
+    final email = emailSnapshot.data;
+
+    return Column(
+    children: [
+    CircleAvatar(
+    backgroundImage: const AssetImage('assets/ninja.png'),
+    radius: 40.0,
+    ),
+    const SizedBox(height: 40),
+    buildTextField(
+    Icons.email,
+    'Email/Username',
+    _emailController.text,
+    controller: _emailController,
+    enabled: false,
+    ),
+    buildTextField(
+    Icons.person_outline_rounded,
+      'Name',
+      _nameController.text,
+      controller: _nameController,
+    ),
+      buildTextField(
+        Icons.phone,
+        'Phone number',
+        _phoneController.text,
+        controller: _phoneController,
+      ),
+      buildTextField(
+        Icons.location_on,
+        'Address',
+        _addressController.text,
+        controller: _addressController,
+      ),
+    ],
+    );
+    } else if (emailSnapshot.hasError) {
+      return const Center(child: Text('Error loading data'));
+    } else {
+      return const Center(child: CircularProgressIndicator());
+    }
+    },
+    ),
+        ),
+        ),
     );
   }
 
-  Widget buildTextField(IconData icon, String labelText, String initialValue,
-      {bool enabled = true}) {
+  Widget buildTextField(
+      IconData icon,
+      String labelText,
+      String initialValue, {
+        bool enabled = true,
+        TextEditingController? controller,
+      }) {
     return Container(
       margin: const EdgeInsets.all(7),
       child: TextFormField(
-        initialValue: initialValue,
+        controller: controller,
         style: const TextStyle(
           fontSize: 20,
           color: Colors.black,
           fontWeight: FontWeight.w600,
         ),
         onChanged: (value) {
-          setState(() {
-            // userInput.text = value.toString();
-          });
+          setState(() {});
         },
-        enabled: enabled, // add enabled property
+        enabled: enabled,
         decoration: InputDecoration(
           prefixIcon: Icon(
             icon,

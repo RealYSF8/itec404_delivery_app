@@ -18,7 +18,6 @@ class _LoginPageState extends State<LoginPage> {
   String phone_number = '';
   String address = '';
 
-
   @override
   void initState() {
     super.initState();
@@ -28,8 +27,10 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      final userData = await FirebaseFirestore.instance.collection('users').doc(
-          user.uid).get();
+      final userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       setState(() {
         name = userData['name'];
         phone_number = userData['phone_number'];
@@ -64,7 +65,6 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -164,8 +164,8 @@ class _LoginPageState extends State<LoginPage> {
                           _loadUserData(); // Load user data after successful login
                           Navigator.pushReplacementNamed(context, '/mainPage');
                           // Navigator.pushNamedAndRemoveUntil(context, '/mainPage', ModalRoute.withName('/mainPage'));
-                          SharedPreferences prefs = await SharedPreferences
-                              .getInstance();
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
                           prefs.setString('email', email);
                           prefs.setBool('isLoggedIn', true);
                         } on FirebaseAuthException catch (e) {
@@ -201,7 +201,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
                 if (errorMessage.isNotEmpty)
                   Text(
@@ -210,7 +209,6 @@ class _LoginPageState extends State<LoginPage> {
                       color: Colors.red,
                     ),
                   ),
-
               ],
             ),
           ),

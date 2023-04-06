@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Order extends StatefulWidget {
+class OrderPage extends StatefulWidget {
 
   @override
-  State<Order> createState() => _Order();
+  State<OrderPage> createState() => _Order();
 }
 
-class _Order extends State<Order> {
+class _Order extends State<OrderPage> {
   int _selectedIndex = 1;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
