@@ -213,7 +213,6 @@ class _MoreState extends State<More> {
                   Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
                   SharedPreferences prefs = await SharedPreferences.getInstance();
 
-                  // Set the isLoggedIn value to false
                   await prefs.setBool("isLoggedIn", false);
                 }
 

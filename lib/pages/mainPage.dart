@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:itec404_delivery_app/pages/more.dart';
-import 'package:itec404_delivery_app/pages/order.dart';
+
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -36,14 +35,11 @@ class _MainPage extends State<MainPage> {
     switch(index) {
       case 0:
         Navigator.pushNamed(context, '/mainPage',);
-        // Navigator.of(context).push(_createRoute(MainPage()));
         break;
       case 1:
-        // Navigator.of(context).pushNamed(_createRoute('/order'));
         Navigator.pushNamed(context, '/order');
         break;
       case 2:
-        // Navigator.of(context).push(_createRoute(More()));
           Navigator.pushNamed(context, '/more');
         break;
     }

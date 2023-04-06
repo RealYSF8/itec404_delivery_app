@@ -49,23 +49,22 @@ String? validatePhoneNumber(String? value) {
   if (value == null || value.isEmpty) {
     return 'Phone number is required';
   }
-  if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+  if (!RegExp(r'^05\d{9}$').hasMatch(value)) {
     return 'Invalid phone number format';
   }
   return null;
 }
 
+
 void register(String email, String password, String name, String address,
     String phoneNumber) {
-  // Here you would implement the code to send the registration data to Firebase
-  // For example:
+
   FirebaseAuth.instance
       .createUserWithEmailAndPassword(
     email: email,
     password: password,
   )
       .then((userCredential) {
-    // save additional user data to Firestore
     FirebaseFirestore.instance
         .collection('users')
         .doc(userCredential.user!.uid)

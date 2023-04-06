@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:itec404_delivery_app/register_validator.dart'; // import register_validator file
+import 'package:itec404_delivery_app/register_validator.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -128,7 +128,6 @@ class _RegisterPageState extends State<RegisterPage> {
               MaterialButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-// call register function from register_validator file
                     register(
                       _emailController.text,
                       _passwordController.text,
@@ -136,7 +135,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       _addressController.text,
                       _phoneNumberController.text,
                     );
-// navigate to home screen
                     Navigator.pushReplacementNamed(context, '/');
                   }
                 },

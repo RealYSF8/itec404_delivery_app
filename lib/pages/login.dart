@@ -161,9 +161,8 @@ class _LoginPageState extends State<LoginPage> {
                             email: email,
                             password: password,
                           );
-                          _loadUserData(); // Load user data after successful login
+                          _loadUserData();
                           Navigator.pushReplacementNamed(context, '/mainPage');
-                          // Navigator.pushNamedAndRemoveUntil(context, '/mainPage', ModalRoute.withName('/mainPage'));
                           SharedPreferences prefs =
                               await SharedPreferences.getInstance();
                           prefs.setString('email', email);
