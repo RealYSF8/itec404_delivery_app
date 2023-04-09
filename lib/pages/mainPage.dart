@@ -143,50 +143,55 @@ class _MainPage extends State<MainPage> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      child: Stack(
-                        children: [
-                          PageView.builder(
-                            controller: pageController,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 3,
-                            itemBuilder: (context, position) {
-                              return Padding(
-                                padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  child: Image.network(
-                                    "https://image.freepik.com/free-photo/delicious-vietnamese-food-including-pho-ga-noodles-spring-rolls-white-table_181624-34062.jpg",
-                                    height: 300,
-                                    width: 200,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: SmoothPageIndicator(
-                              controller: pageController,
-                              count: 3,
-                              axisDirection: Axis.horizontal,
-                              effect: WormEffect(
-                                dotColor: Color(0xff9e9e9e),
-                                activeDotColor: Color(0xff3f51b5),
-                                dotHeight: 12,
-                                dotWidth: 12,
-                                radius: 16,
-                                spacing: 8,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+    SizedBox(
+    height: MediaQuery.of(context).size.height * 0.3,
+    child: Stack(
+    children: [
+    PageView.builder(
+    controller: pageController,
+    scrollDirection: Axis.horizontal,
+    itemCount: 3,
+    itemBuilder: (context, position) {
+    List<String> imagePaths = [
+    "assets/dev.png",
+    "assets/effe.png",
+    "assets/reliable.png",
+    ];
+    return Padding(
+    padding: EdgeInsets.fromLTRB(16, 8, 16, 24),
+    child: ClipRRect(
+    borderRadius: BorderRadius.circular(12.0),
+    child: Image.asset(
+    imagePaths[position],
+    height: 300,
+    width: 200,
+    fit: BoxFit.cover,
+    ),
+    ),
+    );
+    },
+    ),
+    Align(
+    alignment: Alignment.bottomCenter,
+    child: SmoothPageIndicator(
+    controller: pageController,
+    count: 3,
+    axisDirection: Axis.horizontal,
+    effect: WormEffect(
+    dotColor: Color(0xff9e9e9e),
+    activeDotColor: Color(0xff3f51b5),
+    dotHeight: 12,
+    dotWidth: 12,
+    radius: 16,
+    spacing: 8,
+    ),
+    ),
+    ),
+    ],
+    ),
+    ),
+]
+    ),
               ],
             ),
             Container(
@@ -262,8 +267,8 @@ class _MainPage extends State<MainPage> {
                         ),
                         child:
                         Image(
-                          image: NetworkImage(
-                              "https://cdn.pixabay.com/photo/2014/08/14/14/21/shish-kebab-417994_960_720.jpg"),
+                          image: AssetImage(
+                              "assets/elect.png"),
                           height: 40,
                           width: 40,
                           fit: BoxFit.cover,
@@ -315,10 +320,10 @@ class _MainPage extends State<MainPage> {
                         ),
                         child:
 
-                        ///***If you have exported images you must have to copy those images in assets/images directory.
+
                         Image(
-                          image: NetworkImage(
-                              "https://cdn.pixabay.com/photo/2017/01/20/15/06/oranges-1995056_960_720.jpg"),
+                          image: AssetImage(
+                              "assets/food.png"),
                           height: 40,
                           width: 40,
                           fit: BoxFit.cover,
@@ -370,10 +375,10 @@ class _MainPage extends State<MainPage> {
                         ),
                         child:
 
-                        ///***If you have exported images you must have to copy those images in assets/images directory.
+
                         Image(
-                          image: NetworkImage(
-                              "https://cdn.pixabay.com/photo/2016/07/21/11/17/drink-1532300_960_720.jpg"),
+                          image: AssetImage(
+                              "assets/clothing.png"),
                           height: 40,
                           width: 40,
                           fit: BoxFit.cover,
