@@ -4,20 +4,37 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 4,
-        centerTitle: true,
-        backgroundColor: Color(0xff436ddc),
-        title: Text(
-          "Delivery App",
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 14,
-            color: Colors.white,
-          ),
-        ),
+      automaticallyImplyLeading: false,
+      centerTitle: false,
+      title: Row(
+          children: <Widget>[
+            Text(
+              "Swift",
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.clip,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.normal,
+                fontSize: 22,
+                color: Color(0xffffffff),
+              ),
+            ),
+            Text("Delivery",
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.clip,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.normal,
+                fontSize: 22,
+                color: Color(0xfffba808),
+              ),
+            ),
+          ]
       ),
+      backgroundColor: Colors.blue,
+    ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -25,7 +42,7 @@ class HomeScreen extends StatelessWidget {
           Container(
             height: 250,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.grey[400],
               borderRadius: BorderRadius.zero,
               border: Border.all(
                 color: Colors.grey[400]!,
@@ -36,39 +53,39 @@ class HomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 50, 0),
                   child: Image.asset(
                     "assets/deliv-car.png",
-                    height: 150,
-                    width: 100,
+                    height: 130,
+                    width: 200,
                     fit: BoxFit.fill,
                   ),
                 ),
                 Text(
                   "WELCOME!",
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     fontSize: 20,
-                    color: Colors.black,
+                    color: Colors.white,
                   ),
                 ),
               ],
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 140),
+            padding: EdgeInsets.only(top: 120),
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/login');
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xff270ce0),
+                backgroundColor: Colors.blue,
                 elevation: 5,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                   side: BorderSide(
                     color: Color(0xff808080),
-                    width: 1,
+                    width: 3,
                   ),
                 ),
                 padding: EdgeInsets.all(16),
@@ -77,7 +94,7 @@ class HomeScreen extends StatelessWidget {
               child: Text(
                 "Log In",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -90,13 +107,13 @@ class HomeScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/register');
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xff270ce0),
+                backgroundColor: Colors.blue,
                 elevation: 5,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
                   side: BorderSide(
                     color: Color(0xff808080),
-                    width: 1,
+                    width: 3,
                   ),
                 ),
                 padding: EdgeInsets.all(16),
@@ -105,7 +122,7 @@ class HomeScreen extends StatelessWidget {
               child: Text(
                 "Sign Up",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.w400,
                 ),
               ),
