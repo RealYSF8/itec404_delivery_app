@@ -39,10 +39,10 @@ class Changepass extends StatelessWidget {
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-    Image.network(
-    'https://cdn4.iconfinder.com/data/icons/seo-and-marketing-icons-1-1/129/56-128.png',
-    height: 100,
-    width: 140,
+      Image.asset(
+      "assets/lock.png",
+      height: 100,
+      width: 140,
     fit: BoxFit.contain,
     ),
     const Padding(
