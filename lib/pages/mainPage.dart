@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -8,12 +8,76 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPage extends State<MainPage> {
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text(
+      'Home Page',
+      style: optionStyle,
+    ),
+    Text(
+      'Order Page',
+      style: optionStyle,
+    ),
+    Text(
+      'Account',
+      style: optionStyle,
+    ),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch(index) {
+      case 0:
+        Navigator.pushNamed(context, '/mainPage');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/order');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/more');
+        break;
+    }
+  }
   String name = "";
   @override
   Widget build(BuildContext context) {
     PageController pageController = PageController();
 
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        title: Row(
+            children: <Widget>[
+              Text(
+                "Swift",
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontStyle: FontStyle.normal,
+                  fontSize: 22,
+                  color: Color(0xffffffff),
+                ),
+              ),
+              Text("Delivery",
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontStyle: FontStyle.normal,
+                  fontSize: 22,
+                  color: Color(0xfffba808),
+                ),
+              ),
+            ]
+        ),
+        backgroundColor: Colors.blue,
+      ),
       backgroundColor: Color(0xffe2e5e7),
       body: SingleChildScrollView(
         child: Column(
@@ -30,7 +94,7 @@ class _MainPage extends State<MainPage> {
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.4,
                   decoration: BoxDecoration(
-                    color: Color(0xff3a57e8),
+                    color: Colors.orange[500],
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.zero,
                     border: Border.all(color: Color(0x4d9e9e9e), width: 1),
@@ -42,42 +106,11 @@ class _MainPage extends State<MainPage> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Padding(
-                      padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+                      padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Text(
-                                "SWIFT",
-                                textAlign: TextAlign.start,
-                                overflow: TextOverflow.clip,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.normal,
-                                  fontSize: 22,
-                                  color: Color(0xffffffff),
-                                ),
-                              ),
-                              Text(
-                                "Delivery",
-                                textAlign: TextAlign.start,
-                                overflow: TextOverflow.clip,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.normal,
-                                  fontSize: 22,
-                                  color: Color(0xfffba808),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
                       ),
                     ),
                     Padding(
@@ -96,12 +129,13 @@ class _MainPage extends State<MainPage> {
                             padding: EdgeInsets.fromLTRB(4, 0, 0, 0),
                             child: Text(
                               "Fix address medhat pls",
+
                               textAlign: TextAlign.start,
                               overflow: TextOverflow.clip,
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontStyle: FontStyle.normal,
-                                fontSize: 14,
+                                fontSize: 16,
                                 color: Color(0xffffffff),
                               ),
                             ),
@@ -158,7 +192,7 @@ class _MainPage extends State<MainPage> {
             Container(
               margin: EdgeInsets.all(0),
               padding: EdgeInsets.all(0),
-              height: 100,
+              height: 10,
               decoration: BoxDecoration(
                 color: Color(0x1fffffff),
                 shape: BoxShape.rectangle,
@@ -179,7 +213,7 @@ class _MainPage extends State<MainPage> {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
-                      fontSize: 16,
+                      fontSize: 20,
                       color: Color(0xff000000),
                     ),
                   ),
@@ -227,8 +261,6 @@ class _MainPage extends State<MainPage> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child:
-
-                        ///***If you have exported images you must have to copy those images in assets/images directory.
                         Image(
                           image: NetworkImage(
                               "https://cdn.pixabay.com/photo/2014/08/14/14/21/shish-kebab-417994_960_720.jpg"),
@@ -368,85 +400,29 @@ class _MainPage extends State<MainPage> {
               ],
             ),
           ],
+
         ),
+
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Order',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'More',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
     );
   }
 }
-
-
-//-------------------------------------------
-// import 'package:flutter/material.dart';
-//
-//
-// class MainPage extends StatefulWidget {
-//   const MainPage({super.key});
-//
-//
-//   @override
-//   State<MainPage> createState() => _MainPage();
-// }
-//
-// class _MainPage extends State<MainPage> {
-//   int _selectedIndex = 0;
-//   static const TextStyle optionStyle =
-//   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-//   static const List<Widget> _widgetOptions = <Widget>[
-//     Text(
-//       'Home Page',
-//       style: optionStyle,
-//     ),
-//     Text(
-//       'Order Page',
-//       style: optionStyle,
-//     ),
-//     Text(
-//       'Account',
-//       style: optionStyle,
-//     ),
-//   ];
-//
-//   void _onItemTapped(int index) {
-//     setState(() {
-//       _selectedIndex = index;
-//     });
-//     switch(index) {
-//       case 0:
-//         Navigator.pushNamed(context, '/mainPage',);
-//         break;
-//       case 1:
-//         Navigator.pushNamed(context, '/order');
-//         break;
-//       case 2:
-//           Navigator.pushNamed(context, '/more');
-//         break;
-//     }
-//   }
-//
-//
-//       body: Center(
-//         child: _widgetOptions.elementAt(_selectedIndex),
-//       ),
-//       bottomNavigationBar: BottomNavigationBar(
-//         items: const <BottomNavigationBarItem>[
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.home),
-//             label: 'Home',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.shopping_cart),
-//             label: 'Order',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.account_circle),
-//             label: 'More',
-//           ),
-//         ],
-//         currentIndex: _selectedIndex,
-//         selectedItemColor: Colors.amber[800],
-//         onTap: _onItemTapped,
-//       ),
-//     );
-//   }
-//
-// }
