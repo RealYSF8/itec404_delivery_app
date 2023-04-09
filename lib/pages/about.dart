@@ -64,11 +64,9 @@ class _AboutState extends State<About> {
                 color: Colors.black,
               ),
             ),
-            Image.network(
-              "https://media.istockphoto.com/id/496280806/photo/computer-keyboard-about-us.jpg?s=612x612&w=0&k=20&c=g8mfKNgYDzOzuekpoKwviAJ0bAt7LubJ2bRf7adu4Wc=",
-              height: 220,
-              width: MediaQuery.of(context).size.width,
-              fit: BoxFit.cover,
+            Image.asset(
+              "assets/about.png",
+
             ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
