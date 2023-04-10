@@ -24,12 +24,13 @@ class Changepass extends StatelessWidget {
     color: Colors.white,
     ),
     ),
-    leading: IconButton(
+    leading:  IconButton(
     icon: const Icon(Icons.arrow_back, color: Colors.white),
     onPressed: () => Navigator.of(context).pop(),
     ),
-    ),
-    body: Stack(
+    ),//SingleChildScrollView
+    body: SingleChildScrollView(
+    child: Stack(
     children: [
     Align(
     alignment: Alignment.center,
@@ -39,10 +40,10 @@ class Changepass extends StatelessWidget {
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      Image.asset(
-      "assets/lock.png",
-      height: 100,
-      width: 140,
+    Image.asset(
+    "assets/lock.png",
+    height: 100,
+    width: 140,
     fit: BoxFit.contain,
     ),
     const Padding(
@@ -75,20 +76,26 @@ class Changepass extends StatelessWidget {
     filled: true,
     fillColor: const Color(0xffe2e0e0),
     contentPadding: const EdgeInsets.symmetric(
-    vertical: 8, horizontal: 12),
+    vertical: 8,
+    horizontal: 12,
+    ),
     border: OutlineInputBorder(
     borderRadius: BorderRadius.circular(12),
     borderSide: const BorderSide(
-    color: Colors.transparent, width: 1),
+    color: Colors.transparent,
+    width: 1,
+    ),
     ),
     focusedBorder: OutlineInputBorder(
     borderRadius: BorderRadius.circular(12),
     borderSide: const BorderSide(
-    color: Colors.transparent, width: 1),
+    color: Colors.transparent,
+    width: 1,
     ),
     ),
     ),
-    const SizedBox(height: 10),
+    ),
+    const SizedBox(height: 15),
     TextField(
     controller: newPasswordController,
     obscureText: true,
@@ -97,21 +104,27 @@ class Changepass extends StatelessWidget {
     filled: true,
     fillColor: Colors.white,
     contentPadding: const EdgeInsets.symmetric(
-    vertical: 8, horizontal: 12),
+    vertical: 8,
+    horizontal: 12,
+    ),
     border: OutlineInputBorder(
     borderRadius: BorderRadius.circular(12),
     borderSide: const BorderSide(
-    color: Colors.transparent, width: 1),
+    color: Colors.transparent,
+    width: 1,
+    ),
     ),
     focusedBorder: OutlineInputBorder(
     borderRadius: BorderRadius.circular(12),
     borderSide: const BorderSide(
-    color: Colors.transparent, width: 1),
+    color: Colors.transparent,
+    width: 1,
     ),
     ),
     ),
-      ],
-
+    ),
+      const SizedBox(height: 15),
+    ],
     ),
     ),
     ),
@@ -194,6 +207,7 @@ class Changepass extends StatelessWidget {
         ),
       ),
     ],
+    ),
     ),
     );
   }
