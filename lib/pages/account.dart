@@ -64,30 +64,38 @@ class _AccountState extends State<Account> {
           ),
           backgroundColor: Colors.blue,
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setString('name', _nameController.text);
-            await prefs.setString('phone_number', _phoneController.text);
-            await prefs.setString('address', _addressController.text);
-            await prefs.setString('email', _emailController.text);
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('name', _nameController.text);
+          await prefs.setString('phone_number', _phoneController.text);
+          await prefs.setString('address', _addressController.text);
+          await prefs.setString('email', _emailController.text);
 
-            final user = FirebaseAuth.instance.currentUser;
-            final userId = user?.uid;
-            if (userId != null) {
-              await widget.firestore.collection('users').doc(userId).set({
-                'name': _nameController.text,
-                'phone_number': _phoneController.text,
-                'address': _addressController.text,
-                'email': _emailController.text,
-              });
-            }
-            setState(() {});
-          },
-          child: const Icon(Icons.edit),
-          backgroundColor: Colors.grey[800],
-        ),
-        body: SingleChildScrollView(
+          final user = FirebaseAuth.instance.currentUser;
+          final userId = user?.uid;
+          if (userId != null) {
+            await widget.firestore.collection('users').doc(userId).set({
+              'name': _nameController.text,
+              'phone_number': _phoneController.text,
+              'address': _addressController.text,
+              'email': _emailController.text,
+            });
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Edited successfully!'),
+            ),
+          );
+
+          Navigator.popAndPushNamed(context, '/more');
+        },
+        child: const Icon(Icons.edit),
+        backgroundColor: Colors.grey[800],
+      ),
+
+      body: SingleChildScrollView(
         child: Padding(
         padding: const EdgeInsets.all(10),
     child: FutureBuilder<String?>(
