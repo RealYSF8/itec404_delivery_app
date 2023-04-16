@@ -7,6 +7,10 @@ class MainPage extends StatefulWidget {
   @override
   _MainPage createState() => _MainPage();
 }
+void _setCategoryName(String categoryName) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString("category", categoryName);
+}
 
 class _MainPage extends State<MainPage> {
   String address = "";
@@ -236,51 +240,56 @@ class _MainPage extends State<MainPage> {
   }
 
   Widget buildCategory(String name, String imagePath) {
-    return Container(
-      alignment: Alignment.center,
-      width: 200,
-      height: 100,
-      decoration: BoxDecoration(
-        color: Color(0x00ffffff),
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.zero,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              color: Color(0xffffffff),
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Image(
-              image: AssetImage(imagePath),
-              height: 40,
-              width: 40,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-            child: Text(
-              name,
-              textAlign: TextAlign.start,
-              maxLines: 1,
-              overflow: TextOverflow.clip,
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontStyle: FontStyle.normal,
-                fontSize: 14,
-                color: Color(0xff000000),
+    return InkWell(
+      onTap: () {
+        _setCategoryName(name);
+      },
+      child: Container(
+        alignment: Alignment.center,
+        width: 200,
+        height: 100,
+        decoration: BoxDecoration(
+          color: Color(0x00ffffff),
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.zero,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              alignment: Alignment.center,
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                color: Color(0xffffffff),
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Image(
+                image: AssetImage(imagePath),
+                height: 40,
+                width: 40,
+                fit: BoxFit.cover,
               ),
             ),
-          ),
-        ],
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+              child: Text(
+                name,
+                textAlign: TextAlign.start,
+                maxLines: 1,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.normal,
+                  fontSize: 14,
+                  color: Color(0xff000000),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
