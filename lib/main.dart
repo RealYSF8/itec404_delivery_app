@@ -14,6 +14,8 @@ import 'Pages/contact.dart';
 import 'Pages/courrier.dart';
 import 'Pages/changepass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'Pages/admin.dart';
+
 
 void main() async {
 
@@ -45,6 +47,8 @@ void main() async {
       '/contact':(context) => Contact(),
       '/courrier':(context) => Courrier(),
       '/changepass':(context) => Changepass(),
+      '/admin': (context) => AdminPage(),
+
 
     },
   ),);

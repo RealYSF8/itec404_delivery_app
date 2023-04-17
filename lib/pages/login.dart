@@ -172,12 +172,6 @@ class _LoginPageState extends State<LoginPage> {
                           prefs.setString('email', email);
                           prefs.setBool('isLoggedIn', true);
 
-                          if (email == 'admin@admin.com') {
-                            prefs.setBool('isadmin', true);
-                          } else {
-                            prefs.setBool('isadmin', false);
-                          }
-
                           Navigator.pushReplacementNamed(context, '/mainPage');
                         } on FirebaseAuthException catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(

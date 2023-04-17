@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class More extends StatefulWidget {
   @override
   _MoreState createState() => _MoreState();
+
 }
 
 class _MoreState extends State<More> {
@@ -34,8 +35,8 @@ class _MoreState extends State<More> {
     });
     switch(index) {
       case 0:
-       Navigator.pushNamed(context, '/mainPage');
-       break;
+        Navigator.pushNamed(context, '/mainPage');
+        break;
       case 1:
         Navigator.pushNamed(context, '/order');
         break;
@@ -49,14 +50,17 @@ class _MoreState extends State<More> {
     super.initState();
     getNameFromSharedPreferences();
     _checkAdminStatus();
-
+    print(_isAdmin); // add this line to check the value of _isAdmin
   }
+
   void _checkAdminStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String role = prefs.getString('role') ?? '';
     setState(() {
-      _isAdmin = prefs.getBool('isadmin') ?? false;
+      _isAdmin = role == 'Admin';
     });
   }
+
   void getNameFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -66,7 +70,7 @@ class _MoreState extends State<More> {
 
   @override
   Widget build(BuildContext context) {
-   showCustomAlert() => showDialog(context: context, builder: (context)=>AlertDialog(
+    showCustomAlert() => showDialog(context: context, builder: (context)=>AlertDialog(
       title: Text("Are you sure?"),
       content: Text("Log out?"),
       actions: [
@@ -178,41 +182,41 @@ class _MoreState extends State<More> {
               ),
             ),
             SizedBox(height: 15),
-        GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/changepass');
-          },
-            child :buildRowWithIconAndText(
-              icon: Icons.build,
-              iconColor: Colors.white,
-              iconBackgroundColor: Colors.lightBlue[800]!,
-              text: "Change password",
-              showTrailingIcon: true,
-            ),),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/changepass');
+              },
+              child :buildRowWithIconAndText(
+                icon: Icons.build,
+                iconColor: Colors.white,
+                iconBackgroundColor: Colors.lightBlue[800]!,
+                text: "Change password",
+                showTrailingIcon: true,
+              ),),
             const SizedBox(height: 15),
-        GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/about');
-          },
-            child: buildRowWithIconAndText(
-              icon: Icons.info_outline,
-              iconColor: Colors.white,
-              iconBackgroundColor: Colors.lightGreen,
-              text: "About us",
-              showTrailingIcon: true,
-            ),),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/about');
+              },
+              child: buildRowWithIconAndText(
+                icon: Icons.info_outline,
+                iconColor: Colors.white,
+                iconBackgroundColor: Colors.lightGreen,
+                text: "About us",
+                showTrailingIcon: true,
+              ),),
             const SizedBox(height: 15),
-        GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, '/contact');
-          },
-            child:buildRowWithIconAndText(
-              icon: Icons.call,
-              iconColor: Colors.white,
-              iconBackgroundColor: Colors.purple,
-              text: "Contact Us",
-              showTrailingIcon: true,
-            ),),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/contact');
+              },
+              child:buildRowWithIconAndText(
+                icon: Icons.call,
+                iconColor: Colors.white,
+                iconBackgroundColor: Colors.purple,
+                text: "Contact Us",
+                showTrailingIcon: true,
+              ),),
             const SizedBox(height: 15),
             GestureDetector(
               onTap: () async {
@@ -314,5 +318,4 @@ class _MoreState extends State<More> {
 
   }
 }
-
 

@@ -72,6 +72,8 @@ void register(String email, String password, String name, String address,
       'name': name,
       'address': address,
       'phone_number': phoneNumber,
+      'email': email,
+
       'role': 'General',
     });
   }).catchError((error) {
