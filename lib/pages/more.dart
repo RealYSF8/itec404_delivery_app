@@ -26,6 +26,8 @@ class _MoreState extends State<More> {
     ),
   ];
 
+  bool _isAdmin = false;
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -46,8 +48,15 @@ class _MoreState extends State<More> {
   void initState() {
     super.initState();
     getNameFromSharedPreferences();
-  }
+    _checkAdminStatus();
 
+  }
+  void _checkAdminStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isAdmin = prefs.getBool('isadmin') ?? false;
+    });
+  }
   void getNameFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -214,6 +223,8 @@ class _MoreState extends State<More> {
                   SharedPreferences prefs = await SharedPreferences.getInstance();
 
                   await prefs.setBool("isLoggedIn", false);
+                  await prefs.setBool("isadmin", false);
+
                 }
 
               },
@@ -225,8 +236,26 @@ class _MoreState extends State<More> {
                 showTrailingIcon: true,
               ),
             ),
+            if (_isAdmin) Container(
+              margin: EdgeInsets.only(top: 15),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/admin');
+                },
+                child: buildRowWithIconAndText(
+                  icon: Icons.admin_panel_settings,
+                  iconColor: Colors.white,
+                  iconBackgroundColor: Colors.deepPurpleAccent,
+                  text: "Admin Panel",
+                  showTrailingIcon: true,
+                ),
+              ),
+            ),
           ],
+
+
         ),
+
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

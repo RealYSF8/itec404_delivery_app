@@ -162,11 +162,17 @@ class _LoginPageState extends State<LoginPage> {
                             password: password,
                           );
                           _loadUserData();
-                          Navigator.pushReplacementNamed(context, '/mainPage');
-                          SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
                           prefs.setString('email', email);
                           prefs.setBool('isLoggedIn', true);
+
+                          if (email == 'admin@admin.com') {
+                            prefs.setBool('isadmin', true);
+                          } else {
+                            prefs.setBool('isadmin', false);
+                          }
+
+                          Navigator.pushReplacementNamed(context, '/mainPage');
                         } on FirebaseAuthException catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -200,6 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 16),
                 if (errorMessage.isNotEmpty)
                   Text(
