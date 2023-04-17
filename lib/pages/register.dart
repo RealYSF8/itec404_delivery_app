@@ -14,7 +14,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final _confirmPasswordController = TextEditingController();
   final _addressController = TextEditingController();
   final _phoneNumberController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

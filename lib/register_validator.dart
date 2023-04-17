@@ -72,8 +72,10 @@ void register(String email, String password, String name, String address,
       'name': name,
       'address': address,
       'phone_number': phoneNumber,
+      'role': 'General',
     });
   }).catchError((error) {
     print('Registration failed: $error');
   });
 }
+

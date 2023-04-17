@@ -17,6 +17,8 @@ class _LoginPageState extends State<LoginPage> {
   String name = '';
   String phone_number = '';
   String address = '';
+  String role = '';
+
 
   @override
   void initState() {
@@ -35,15 +37,19 @@ class _LoginPageState extends State<LoginPage> {
         name = userData['name'];
         phone_number = userData['phone_number'];
         address = userData['address'];
+        role = userData['role'];
       });
       print('User name: $name');
       print('phone_number: $phone_number');
       print('address: $address');
+      print('role: $role');
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('name', name);
       await prefs.setString('phone_number', phone_number);
       await prefs.setString('address', address);
+      await prefs.setString('role', role);
+
 
       final savedName = prefs.getString('name');
       if (savedName != null) {
