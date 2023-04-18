@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AdminPage extends StatefulWidget {
   @override
@@ -11,18 +12,9 @@ class _AdminPageState extends State<AdminPage> {
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
-    Icon(
-      Icons.people,
-      size: 30,
-    ),
-    Icon(
-      Icons.shopping_cart,
-      size: 30,
-    ),
-    Icon(
-      Icons.article,
-      size: 30,
-    ),
+    Icon(Icons.people, size: 30,),
+    Icon(Icons.shopping_cart, size: 30,),
+    Icon(Icons.article, size: 30,),
   ];
 
   void _onItemTapped(int index) {
@@ -37,7 +29,9 @@ class _AdminPageState extends State<AdminPage> {
       appBar: AppBar(
         title: Text('Admin Panel'),
       ),
-      body: _selectedIndex == 0 ? _buildUsersTab() : _widgetOptions.elementAt(_selectedIndex),
+      body: _selectedIndex == 0
+          ? _buildUsersTab()
+          : _buildOrdersTab(), // use the updated method name here
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -95,14 +89,16 @@ class _AdminPageState extends State<AdminPage> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text("Confirm"),
-                        content: const Text("Are you sure you want to delete this user?"),
+                        content: const Text(
+                            "Are you sure you want to delete this user?"),
                         actions: <Widget>[
                           TextButton(
                               onPressed: () => Navigator.of(context).pop(false),
                               child: const Text("Cancel")),
                           TextButton(
                               onPressed: () async {
-                                await FirebaseFirestore.instance.collection('users').doc(user.id).delete();
+                                await FirebaseFirestore.instance.collection(
+                                    'users').doc(user.id).delete();
                                 Navigator.of(context).pop(true);
                               },
                               child: const Text("Delete"))
@@ -137,7 +133,48 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 
+  Widget _buildOrdersTab() {
+    // add this method to build the orders tab
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('orders').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
 
+        final List<DocumentSnapshot> orders = snapshot.data!.docs;
 
+        return ListView.builder(
+          itemCount: orders.length,
+          itemBuilder: (context, index) {
+            final DocumentSnapshot<Object?> order = orders[index];
 
+            try {
+              final String name = order['Name'];
+              final String date = DateFormat.yMd().add_jm().format(
+                  order['createdAt'].toDate());
+              final String status = order['status'];
+
+              return ListTile(
+                title: Text(name),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(date),
+                    Text(status),
+                  ],
+                ),
+              );
+            } catch (e, stackTrace) {
+              print('Error accessing order fields: $e\n$stackTrace');
+              return Text('Error accessing order fields');
+            }
+          },
+        );
+      },
+    );
+  }
 }

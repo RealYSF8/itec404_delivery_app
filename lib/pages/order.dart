@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrderPage extends StatefulWidget {
 
-
   @override
   State<OrderPage> createState() => _Order();
 }
@@ -18,6 +17,7 @@ Future<void> getLostData() async {
   }
   final List<XFile>? files = response.files;
 }
+
 class _Order extends State<OrderPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -54,7 +54,10 @@ class _Order extends State<OrderPage> {
     String? width = widthController.text;
     String? height = heightController.text;
 
-    // Create a new order document with the data
+    // Get the current date and time
+    Timestamp now = Timestamp.now();
+
+    // Create a new order document with the data and timestamp
     await _db.collection('orders').add({
       'userId': _userId,
       'Name': _Name,
@@ -63,6 +66,11 @@ class _Order extends State<OrderPage> {
       'length': length,
       'width': width,
       'height': height,
+      'status': 'pending',
+      'createdAt': now, // add the current date and time to the document
+    }).then((value) {
+      // Display the order status in the database
+      _db.collection('orders').doc(value.id).update({'status': 'pending'});
     });
 
     // Clear the input fields
@@ -72,6 +80,7 @@ class _Order extends State<OrderPage> {
     widthController.clear();
     heightController.clear();
   }
+
 
 
   int _selectedIndex = 1;
@@ -96,7 +105,7 @@ class _Order extends State<OrderPage> {
     setState(() {
       _selectedIndex = index;
     });
-    switch(index) {
+    switch (index) {
       case 0:
         Navigator.pushNamed(context, '/mainPage');
         break;
@@ -143,7 +152,7 @@ class _Order extends State<OrderPage> {
         backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
-        child:Padding(
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: Column(
             children: [
@@ -227,8 +236,5 @@ class _Order extends State<OrderPage> {
 
       ),
     );
-
   }
-
 }
-
