@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrderPage extends StatefulWidget {
 
@@ -18,6 +19,61 @@ Future<void> getLostData() async {
   final List<XFile>? files = response.files;
 }
 class _Order extends State<OrderPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final TextEditingController fromController = TextEditingController();
+  final TextEditingController toController = TextEditingController();
+  final TextEditingController lengthController = TextEditingController();
+  final TextEditingController widthController = TextEditingController();
+  final TextEditingController heightController = TextEditingController();
+
+  String? _userId;
+  String? _Name;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserData();
+  }
+
+  Future<void> _getUserData() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      setState(() {
+        _userId = user.uid;
+        _Name = user.displayName;
+      });
+    }
+  }
+
+  Future<void> _createOrder() async {
+    // Get the data from the input fields
+    String? from = fromController.text;
+    String? to = toController.text;
+    String? length = lengthController.text;
+    String? width = widthController.text;
+    String? height = heightController.text;
+
+    // Create a new order document with the data
+    await _db.collection('orders').add({
+      'userId': _userId,
+      'Name': _Name,
+      'from': from,
+      'to': to,
+      'length': length,
+      'width': width,
+      'height': height,
+    });
+
+    // Clear the input fields
+    fromController.clear();
+    toController.clear();
+    lengthController.clear();
+    widthController.clear();
+    heightController.clear();
+  }
+
+
   int _selectedIndex = 1;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -92,6 +148,7 @@ class _Order extends State<OrderPage> {
           child: Column(
             children: [
               TextFormField(
+                controller: fromController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'From',
@@ -100,6 +157,7 @@ class _Order extends State<OrderPage> {
                 ),
               ),
               TextFormField(
+                controller: toController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'To',
@@ -108,6 +166,7 @@ class _Order extends State<OrderPage> {
                 ),
               ),
               TextFormField(
+                controller: lengthController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'Length',
@@ -116,6 +175,7 @@ class _Order extends State<OrderPage> {
                 ),
               ),
               TextFormField(
+                controller: widthController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'Width',
@@ -124,6 +184,7 @@ class _Order extends State<OrderPage> {
                 ),
               ),
               TextFormField(
+                controller: heightController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'Height',
@@ -135,12 +196,15 @@ class _Order extends State<OrderPage> {
                 onPressed: () {
                   getLostData();
                 },
-                child: Text('GetImages'),
+                child: Text('Get Image'),
               ),
-
-    ],
+              ElevatedButton(
+                onPressed: _createOrder,
+                child: Text('Create Order'),
+              ),
+            ],
           ),
-      ),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -165,5 +229,6 @@ class _Order extends State<OrderPage> {
     );
 
   }
+
 }
 
