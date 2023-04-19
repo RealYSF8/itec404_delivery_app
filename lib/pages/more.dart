@@ -228,6 +228,14 @@ class _MoreState extends State<More> {
 
                   await prefs.setBool("isLoggedIn", false);
                   await prefs.setBool("isadmin", false);
+                  await prefs.setString('name', "");
+                  await prefs.setString('role', "");
+                  await prefs.setString('phone_number', "");
+                  await prefs.setString('category', "");
+                  await prefs.setString('email', "");
+                  await prefs.setString('address', "");
+
+
 
                 }
 
