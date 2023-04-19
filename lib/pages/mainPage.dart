@@ -1,7 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:itec404_delivery_app/pages/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
+import '../main.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -209,9 +214,27 @@ class _MainPage extends State<MainPage> {
               childAspectRatio: 0.7,
               physics: NeverScrollableScrollPhysics(),
               children: [
-                buildCategory("Electronics", "assets/elect.png"),
-                buildCategory("Food", "assets/food.png"),
-                buildCategory("Clothing", "assets/clothing.png"),
+                GestureDetector(
+                  onTap: () {
+                    // Navigate to orders page for Electronics
+                    Navigator.pushNamed(context, '/order');
+                  },
+                  child: buildCategory("Electronics", "assets/elect.png"),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    // Navigate to orders page for Food
+                    Navigator.pushNamed(context, '/order');
+                  },
+                  child: buildCategory("Food", "assets/food.png"),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    // Navigate to orders page for Clothing
+                    Navigator.pushNamed(context, '/order');
+                  },
+                  child: buildCategory("Clothing", "assets/clothing.png"),
+                ),
               ],
             ),
           ],

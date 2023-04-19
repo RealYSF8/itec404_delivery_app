@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderPage extends StatefulWidget {
 
@@ -33,7 +34,15 @@ class _Order extends State<OrderPage> {
   @override
   void initState() {
     super.initState();
+    getNameFromSharedPreferences();
     _getUserData();
+  }
+
+  void getNameFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _Name = prefs.getString("name") ?? "";
+    });
   }
 
   Future<void> _getUserData() async {
@@ -41,7 +50,6 @@ class _Order extends State<OrderPage> {
     if (user != null) {
       setState(() {
         _userId = user.uid;
-        _Name = user.displayName;
       });
     }
   }
