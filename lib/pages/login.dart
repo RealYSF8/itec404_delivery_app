@@ -167,12 +167,26 @@ class _LoginPageState extends State<LoginPage> {
                             email: email,
                             password: password,
                           );
-                          _loadUserData();
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          prefs.setString('email', email);
-                          prefs.setBool('isLoggedIn', true);
-
-                          Navigator.pushReplacementNamed(context, '/mainPage');
+                          final userData = await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(userCredential.user!.uid)
+                              .get();
+                          String userRole = userData['role'];
+                          if (userRole == 'deactivated') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Your account is deactivated. Please contact support.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            await FirebaseAuth.instance.signOut();
+                          } else {
+                            _loadUserData();
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            prefs.setString('email', email);
+                            prefs.setBool('isLoggedIn', true);
+                            Navigator.pushReplacementNamed(context, '/mainPage');
+                          }
                         } on FirebaseAuthException catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

@@ -10,11 +10,20 @@ class AdminPage extends StatefulWidget {
 class _AdminPageState extends State<AdminPage> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
-    Icon(Icons.people, size: 30,),
-    Icon(Icons.shopping_cart, size: 30,),
-    Icon(Icons.article, size: 30,),
+    Icon(
+      Icons.people,
+      size: 30,
+    ),
+    Icon(
+      Icons.shopping_cart,
+      size: 30,
+    ),
+    Icon(
+      Icons.article,
+      size: 30,
+    ),
   ];
 
   void _onItemTapped(int index) {
@@ -80,48 +89,270 @@ class _AdminPageState extends State<AdminPage> {
               final String address = user['address'];
               final String email = user['email'];
 
-              return Dismissible(
-                key: Key(user.id),
-                direction: DismissDirection.endToStart,
-                confirmDismiss: (direction) async {
-                  return await showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text("Confirm"),
-                        content: const Text(
-                            "Are you sure you want to delete this user?"),
-                        actions: <Widget>[
-                          TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text("Cancel")),
-                          TextButton(
+              return ListTile(
+                title: Text(name),
+                subtitle: Text('$role | $phoneNumber | $address | $email'),
+                onTap: () {
+                  if (role == 'deactivated') {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(name),
+                          content: Text('What would you like to do?'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('Activate'),
                               onPressed: () async {
-                                await FirebaseFirestore.instance.collection(
-                                    'users').doc(user.id).delete();
-                                Navigator.of(context).pop(true);
+                                bool confirm = await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Confirm Activation'),
+                                      content: Text(
+                                          'Are you sure you want to activate this user?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(false);
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('Confirm'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(true);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                if (confirm == true) {
+                                  await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(user.id)
+                                      .update({'role': 'General'});
+                                }
+                                Navigator.of(context).pop();
                               },
-                              child: const Text("Delete"))
-                        ],
-                      );
-                    },
-                  );
+                            ),
+                            TextButton(
+                              child: Text('Modify'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    String selectedRole = role;
+                                    return StatefulBuilder(builder:
+                                        (BuildContext context,
+                                        StateSetter setState) {
+                                      return AlertDialog(
+                                        title: Text('Modify User Role'),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            RadioListTile<String>(
+                                              title: Text('General'),
+                                              value: 'General',
+                                              groupValue: selectedRole,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  selectedRole = value!;
+                                                });
+                                              },
+                                            ),
+                                            RadioListTile<String>(
+                                              title: Text('Admin'),
+                                              value: 'Admin',
+                                              groupValue: selectedRole,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  selectedRole = value!;
+                                                });
+                                              },
+                                            ),
+                                            RadioListTile<String>(
+                                              title: Text('Courier'),
+                                              value: 'Courier',
+                                              groupValue: selectedRole,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  selectedRole = value!;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: Text('Cancel'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: Text('Save'),
+                                            onPressed: () async {
+                                              await FirebaseFirestore.instance
+                                                  .collection('users')
+                                                  .doc(user.id)
+                                                  .update(
+                                                  {'role': selectedRole});
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(name),
+                          content: Text('What would you like to do?'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('Deactivate'),
+                              onPressed: () async {
+                                bool confirm = await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Confirm Deactivation'),
+                                      content: Text(
+                                          'Are you sure you want to deactivate this user?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(false);
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('Confirm'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(true);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                if (confirm == true) {
+                                  await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(user.id)
+                                      .update({'role': 'deactivated'});
+                                }
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Modify'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    String selectedRole = role;
+                                    return StatefulBuilder(builder:
+                                        (BuildContext context,
+                                        StateSetter setState) {
+                                      return AlertDialog(
+                                        title: Text('Modify User Role'),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            RadioListTile<String>(
+                                              title: Text('General'),
+                                              value: 'General',
+                                              groupValue: selectedRole,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  selectedRole = value!;
+                                                });
+                                              },
+                                            ),
+                                            RadioListTile<String>(
+                                              title: Text('Admin'),
+                                              value: 'Admin',
+                                              groupValue: selectedRole,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  selectedRole = value!;
+                                                });
+                                              },
+                                            ),
+                                            RadioListTile<String>(
+                                              title: Text('Courier'),
+                                              value: 'Courier',
+                                              groupValue: selectedRole,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  selectedRole = value!;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: Text('Cancel'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: Text('Save'),
+                                            onPressed: () async {
+                                              await FirebaseFirestore.instance
+                                                  .collection('users')
+                                                  .doc(user.id)
+                                                  .update(
+                                                  {'role': selectedRole});
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
-                background: Container(
-                  alignment: AlignmentDirectional.centerEnd,
-                  color: Colors.red,
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
-                    child: Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                child: ListTile(
-                  title: Text(name),
-                  subtitle: Text('$role | $phoneNumber | $address | $email'),
-                ),
               );
             } catch (e, stackTrace) {
               print('Error accessing user fields: $e\n$stackTrace');
@@ -133,7 +364,8 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 
-  Widget _buildOrdersTab() {
+
+    Widget _buildOrdersTab() {
     // add this method to build the orders tab
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('orders').snapshots(),
@@ -154,10 +386,9 @@ class _AdminPageState extends State<AdminPage> {
 
             try {
               final String name = order['Name'];
-              final String date = DateFormat.yMd().add_jm().format(
-                  order['createdAt'].toDate());
+              final String date =
+                  DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
               final String status = order['status'];
-
               return ListTile(
                 title: Text(name),
                 subtitle: Column(
