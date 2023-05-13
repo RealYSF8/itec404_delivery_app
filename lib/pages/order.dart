@@ -4,15 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as Path;
 import 'dart:async';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 
 class OrderPage extends StatefulWidget {
