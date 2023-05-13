@@ -8,6 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as Path;
+import 'dart:async';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart';
+
 class OrderPage extends StatefulWidget {
 
   @override
@@ -16,6 +23,46 @@ class OrderPage extends StatefulWidget {
 }
 
 class _Order extends State<OrderPage>with TickerProviderStateMixin {
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  File? _selectedImage;
+
+  Future<String> _uploadImage() async {
+    try {
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference storageReference = storage.refFromURL('gs://itec404deliveryapp.appspot.com');
+      String fileName = Path.basename(_selectedImage!.path);
+      Reference imageReference = storageReference.child('images/$fileName');
+      UploadTask uploadTask = imageReference.putFile(_selectedImage!);
+
+      TaskSnapshot taskSnapshot = await uploadTask;
+
+      String imageUrl = await taskSnapshot.ref.getDownloadURL();
+      print("Image uploaded successfully. Download URL: $imageUrl");
+
+      return imageUrl;
+    } catch (e) {
+      print("Error uploading image: $e");
+      throw e; // Re-throw the error to be handled by the caller
+    }
+  }
+
+
+
+  Future<void> _pickImage() async {
+    try {
+      PickedFile? pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+        print("Selected image: $_selectedImage");
+      }
+    } on PlatformException catch (e) {
+      print('Error picking image: $e');
+    }
+  }
+
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final TextEditingController fromController = TextEditingController();
@@ -85,6 +132,9 @@ class _Order extends State<OrderPage>with TickerProviderStateMixin {
     String? width = widthController.text;
     String? height = heightController.text;
 
+    // Upload the image before creating the order
+    String? imageUrl = await _uploadImage();
+
     // Get the current date and time
     Timestamp now = Timestamp.now();
 
@@ -99,6 +149,7 @@ class _Order extends State<OrderPage>with TickerProviderStateMixin {
       'height': height,
       'status': 'pending',
       'createdAt': now, // add the current date and time to the document
+      'imageUrl': imageUrl, // use the image URL from Firebase Storage
     }).then((value) {
       // Display the order status in the database
       _db.collection('orders').doc(value.id).update({'status': 'pending'});
@@ -110,7 +161,15 @@ class _Order extends State<OrderPage>with TickerProviderStateMixin {
     lengthController.clear();
     widthController.clear();
     heightController.clear();
+
+    // Clear the selected image
+    setState(() {
+      _selectedImage = null;
+    });
   }
+
+
+
 
 
 
@@ -235,35 +294,39 @@ class _Order extends State<OrderPage>with TickerProviderStateMixin {
               //Image.network(_image, width: 300,),
               SizedBox(height: 10,),
               GestureDetector(
-                onTap: selectFile,
+                onTap: _pickImage,
                 child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-                    child: DottedBorder(
-                      borderType: BorderType.RRect,
-                      radius: Radius.circular(10),
-                      dashPattern: [10, 4],
-                      strokeCap: StrokeCap.round,
-                      color: Colors.blue.shade400,
-                      child: Container(
-                        width: double.infinity,
-                        height: 100,
-                        decoration: BoxDecoration(
-                            color: Colors.blue.shade50.withOpacity(.3),
-                            borderRadius: BorderRadius.circular(10)
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Iconsax.folder_open, color: Colors.blue, size: 35,),
-                            SizedBox(height: 5),
-                            Text('Select your file', style: TextStyle(fontSize: 15, color: Colors.grey.shade400),),
-                              Text('File should be jpg, png', style: TextStyle(fontSize: 10, color: Colors.grey.shade500),),
-                          ],
-                        ),
+                  padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  child: DottedBorder(
+                    borderType: BorderType.RRect,
+                    radius: Radius.circular(10),
+                    dashPattern: [10, 4],
+                    strokeCap: StrokeCap.round,
+                    color: Colors.blue.shade400,
+                    child: Container(
+                      width: double.infinity,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50.withOpacity(.3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Iconsax.folder_open, color: Colors.blue, size: 35,),
+                          SizedBox(height: 5),
+                          Text('Select your file', style: TextStyle(fontSize: 15, color: Colors.grey.shade400),),
+                          Text('File should be jpg, png', style: TextStyle(fontSize: 10, color: Colors.grey.shade500),),
+                        ],
                       ),
                     ),
+                  ),
                 ),
               ),
+              _selectedImage != null
+                  ? Image.file(_selectedImage!, width: 150, height: 150)
+                  : Container(),
+
               _platformFile != null
                   ? Container(
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
