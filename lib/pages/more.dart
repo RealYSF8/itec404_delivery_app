@@ -28,6 +28,8 @@ class _MoreState extends State<More> {
   ];
 
   bool _isAdmin = false;
+  bool _isCourier = false;
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -50,7 +52,10 @@ class _MoreState extends State<More> {
     super.initState();
     getNameFromSharedPreferences();
     _checkAdminStatus();
-    print(_isAdmin); // add this line to check the value of _isAdmin
+    _checkDeliveryStatus();
+    print(_isAdmin);
+    print(_isCourier); // add this line to check the value of _isAdmin
+// add this line to check the value of _isAdmin
   }
 
   void _checkAdminStatus() async {
@@ -58,6 +63,13 @@ class _MoreState extends State<More> {
     String role = prefs.getString('role') ?? '';
     setState(() {
       _isAdmin = role == 'Admin';
+    });
+  }
+  void _checkDeliveryStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String role = prefs.getString('role') ?? '';
+    setState(() {
+      _isCourier = role == 'Courier';
     });
   }
 
@@ -228,6 +240,8 @@ class _MoreState extends State<More> {
 
                   await prefs.setBool("isLoggedIn", false);
                   await prefs.setBool("isadmin", false);
+                  await prefs.setBool("isCourier", false);
+
                   await prefs.setString('name', "");
                   await prefs.setString('role', "");
                   await prefs.setString('phone_number', "");
@@ -259,6 +273,21 @@ class _MoreState extends State<More> {
                   iconColor: Colors.white,
                   iconBackgroundColor: Colors.deepPurpleAccent,
                   text: "Admin Panel",
+                  showTrailingIcon: true,
+                ),
+              ),
+            ),
+            if (_isCourier) Container(
+              margin: EdgeInsets.only(top: 15),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/courier');
+                },
+                child: buildRowWithIconAndText(
+                  icon: Icons.local_shipping,
+                  iconColor: Colors.white,
+                  iconBackgroundColor: Colors.deepPurpleAccent,
+                  text: "Courier Panel",
                   showTrailingIcon: true,
                 ),
               ),

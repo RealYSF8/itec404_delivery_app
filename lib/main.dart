@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:itec404_delivery_app/pages/courier.dart';
 import 'package:itec404_delivery_app/pages/home.dart';
 import 'package:itec404_delivery_app/pages/mainPage.dart';
 import 'package:itec404_delivery_app/pages/register.dart';
@@ -48,6 +49,7 @@ void main() async {
       '/courrier':(context) => Courrier(),
       '/changepass':(context) => Changepass(),
       '/admin': (context) => AdminPage(),
+      '/courier': (context) => CourierPage(),
 
 
     },
