@@ -291,7 +291,7 @@ class _Order extends State<OrderPage>with TickerProviderStateMixin {
               //Image.network(_image, width: 300,),
               SizedBox(height: 10,),
               GestureDetector(
-                onTap: _pickImage,
+                onTap: selectFile,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
@@ -304,8 +304,8 @@ class _Order extends State<OrderPage>with TickerProviderStateMixin {
                       width: double.infinity,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50.withOpacity(.3),
-                        borderRadius: BorderRadius.circular(10),
+                          color: Colors.blue.shade50.withOpacity(.3),
+                          borderRadius: BorderRadius.circular(10)
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -320,10 +320,6 @@ class _Order extends State<OrderPage>with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              _selectedImage != null
-                  ? Image.file(_selectedImage!, width: 150, height: 150)
-                  : Container(),
-
               _platformFile != null
                   ? Container(
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
