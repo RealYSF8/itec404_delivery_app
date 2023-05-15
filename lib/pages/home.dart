@@ -72,8 +72,8 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 120),
+        Padding(
+            padding: EdgeInsets.only(top: 55),
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/login');
@@ -128,6 +128,52 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: 20),
+          Text("Log in with following options:",
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontStyle: FontStyle.normal,
+              fontSize: 18,
+              // color: Color(0xffffffff),
+            ),),
+          Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ClipOval(
+                  child: Material( // Added "child:" before Material widget
+                    color: Colors.transparent, // Added transparent color to Material
+                    child: InkWell(
+                      //splashColor: Colors.orange, // Splash color
+                      onTap: () {},
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: Image.asset('assets/google.png'),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 25),
+                ClipOval(
+                  child: Material( // Added "child:" before Material widget
+                    color: Colors.transparent, // Added transparent color to Material
+                    child: InkWell(
+                      //splashColor: Colors.orange, // Splash color
+                      onTap: () {},
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: Image.asset('assets/facebook.png'),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
         ],
       ),
     );
