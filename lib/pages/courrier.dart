@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Courrier extends StatefulWidget {
   @override
@@ -7,6 +9,68 @@ class Courrier extends StatefulWidget {
 
 class _CourrierState extends State<Courrier> {
   String name = "";
+
+  void saveApplication() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('email');
+    String? name = prefs.getString('name');
+    String? phoneNumber = prefs.getString('phone_number');
+
+    // Check if an application with the same email already exists
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('applications')
+        .where('email', isEqualTo: email)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      // Show a duplicate application message
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Duplicate Application'),
+            content: Text('An application with this email already exists.'),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Save the application data to Firebase
+      FirebaseFirestore.instance.collection('applications').add({
+        'email': email,
+        'name': name,
+        'phone_number': phoneNumber,
+        'status': 'pending',
+      });
+
+      // Show a success message
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Application Submitted'),
+            content: Text('Your application has been submitted successfully.'),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +102,7 @@ class _CourrierState extends State<Courrier> {
               const Padding(
                 padding: const EdgeInsets.only(bottom: 30),
                 child: Text(
-                  "Become a Courrier",
+                  "Become a Courier",
                   textAlign: TextAlign.start,
                   overflow: TextOverflow.clip,
                   style: TextStyle(
@@ -73,7 +137,7 @@ class _CourrierState extends State<Courrier> {
               ),
               const SizedBox(height: 66),
               MaterialButton(
-                onPressed: () {},
+                onPressed: saveApplication, // Call saveApplication method
                 color: const Color(0xfff80707),
                 elevation: 0,
                 shape: RoundedRectangleBorder(

@@ -38,9 +38,7 @@ class _AdminPageState extends State<AdminPage> {
       appBar: AppBar(
         title: Text('Admin Panel'),
       ),
-      body: _selectedIndex == 0
-          ? _buildUsersTab()
-          : _buildOrdersTab(), // use the updated method name here
+      body: _selectedIndex == 0 ? _buildUsersTab() : _selectedIndex == 1 ? _buildOrdersTab() : _buildApplicationsTab(), // use the updated method name here
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -62,6 +60,90 @@ class _AdminPageState extends State<AdminPage> {
       ),
     );
   }
+  Widget _buildApplicationsTab() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('applications')
+          .orderBy('status')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+
+        List<DocumentSnapshot> applications = snapshot.data!.docs;
+
+        return ListView.builder(
+          itemCount: applications.length,
+          itemBuilder: (context, index) {
+            Map<String, dynamic> applicationData =
+            applications[index].data()! as Map<String, dynamic>;
+            String email = applicationData['email'];
+            String name = applicationData['name'];
+            String phoneNumber = applicationData['phone_number'];
+            String status = applicationData['status'];
+
+            return ListTile(
+              title: Text('Email: $email'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Name: $name'),
+                  Text('Phone Number: $phoneNumber'),
+                  Text('Status: $status'),
+                ],
+              ),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Application Status'),
+                      content: Text('Choose an action:'),
+                      actions: [
+                        if (status != 'rejected') ...[
+                          TextButton(
+                            child: Text('Approve'),
+                            onPressed: () {
+                              // Update status to "approved"
+                              FirebaseFirestore.instance
+                                  .collection('applications')
+                                  .doc(applications[index].id)
+                                  .update({'status': 'approved'});
+
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text('Reject'),
+                            onPressed: () {
+                              // Delete the document from the table
+                              FirebaseFirestore.instance
+                                  .collection('applications')
+                                  .doc(applications[index].id)
+                                  .delete();
+
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+
+                      ],
+                    );
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
 
   Widget _buildUsersTab() {
     return StreamBuilder<QuerySnapshot>(
