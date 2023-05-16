@@ -10,6 +10,7 @@ import 'package:itec404_delivery_app/pages/makeOrder.dart';
 import 'package:itec404_delivery_app/pages/account.dart';
 import 'package:itec404_delivery_app/pages/more.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:itec404_delivery_app/pages/passwordreset.dart';
 
 import 'Pages/about.dart';
 import 'Pages/contact.dart';
@@ -52,6 +53,7 @@ void main() async {
       '/changepass':(context) => Changepass(),
       '/admin': (context) => AdminPage(),
       '/courier': (context) => CourierPage(),
+      '/reset': (context) => PasswordResetForm(),
 
 
     },

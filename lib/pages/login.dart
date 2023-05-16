@@ -140,8 +140,10 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 16),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/reset');
+                    },
                     child: Text(
                       "Forgot Password?",
                       style: TextStyle(
@@ -152,6 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+
                 ElevatedButton(
                   onPressed: () async {
                     String email = emailController.text;
