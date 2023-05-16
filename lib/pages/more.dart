@@ -277,6 +277,21 @@ class _MoreState extends State<More> {
                 ),
               ),
             ),
+            Container(
+              margin: EdgeInsets.only(top: 15),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/courier');
+                },
+                child: buildRowWithIconAndText(
+                  icon: Icons.local_shipping,
+                  iconColor: Colors.white,
+                  iconBackgroundColor: Colors.deepPurpleAccent,
+                  text: "Courier Panel",
+                  showTrailingIcon: true,
+                ),
+              ),
+            ),
             if (_isCourier) Container(
               margin: EdgeInsets.only(top: 15),
               child: GestureDetector(

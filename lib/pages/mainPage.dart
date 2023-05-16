@@ -3,8 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:itec404_delivery_app/pages/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:itec404_delivery_app/pages/blank_page.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -24,12 +22,11 @@ class _MainPage extends State<MainPage> {
 
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Home Page', style: optionStyle),
     Text('Order Page', style: optionStyle),
     Text('Account', style: optionStyle),
-    Text('Blank Page', style: optionStyle),
   ];
   @override
   void initState() {
@@ -46,16 +43,8 @@ class _MainPage extends State<MainPage> {
     setState(() {
       _selectedIndex = index;
     });
-
-    if (index == 2) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => BlankPage()),
-      );
-    } else {
-      List<String> routes = ['/mainPage', '/order', '/more'];
-      Navigator.pushNamed(context, routes[index]);
-    }
+    List<String> routes = ['/mainPage', '/order', '/more'];
+    Navigator.pushNamed(context, routes[index]);
   }
 
   @override
@@ -274,55 +263,54 @@ class _MainPage extends State<MainPage> {
     );
   }
 
-
   Widget buildCategory(String name, String imagePath) {
     return Container(
-        alignment: Alignment.center,
-        width: 200,
-        height: 100,
-        decoration: BoxDecoration(
-          color: Color(0x00ffffff),
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.zero,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                color: Color(0xffffffff),
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Image(
-                image: AssetImage(imagePath),
-                height: 40,
-                width: 40,
-                fit: BoxFit.cover,
+      alignment: Alignment.center,
+      width: 200,
+      height: 100,
+      decoration: BoxDecoration(
+        color: Color(0x00ffffff),
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.zero,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: Color(0xffffffff),
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Image(
+              image: AssetImage(imagePath),
+              height: 40,
+              width: 40,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+            child: Text(
+              name,
+              textAlign: TextAlign.start,
+              maxLines: 1,
+              overflow: TextOverflow.clip,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontStyle: FontStyle.normal,
+                fontSize: 14,
+                color: Color(0xff000000),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-              child: Text(
-                name,
-                textAlign: TextAlign.start,
-                maxLines: 1,
-                overflow: TextOverflow.clip,
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.normal,
-                  fontSize: 14,
-                  color: Color(0xff000000),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
+      ),
 
     );
   }

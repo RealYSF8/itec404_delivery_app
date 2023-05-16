@@ -108,12 +108,23 @@ class _AdminPageState extends State<AdminPage> {
                         if (status != 'rejected') ...[
                           TextButton(
                             child: Text('Approve'),
-                            onPressed: () {
+                            onPressed: () async {
                               // Update status to "approved"
-                              FirebaseFirestore.instance
+                              await FirebaseFirestore.instance
                                   .collection('applications')
                                   .doc(applications[index].id)
                                   .update({'status': 'approved'});
+
+                              // Update user's role to "Courier" in the user's table
+                              await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .where('email', isEqualTo: email)
+                                  .get()
+                                  .then((QuerySnapshot querySnapshot) {
+                                querySnapshot.docs.forEach((doc) async {
+                                  await doc.reference.update({'role': 'Courier'});
+                                });
+                              });
 
                               Navigator.of(context).pop();
                             },
@@ -131,7 +142,6 @@ class _AdminPageState extends State<AdminPage> {
                             },
                           ),
                         ],
-
                       ],
                     );
                   },
@@ -142,7 +152,8 @@ class _AdminPageState extends State<AdminPage> {
         );
       },
     );
-  }//
+  }
+
 
 
   Widget _buildUsersTab() {
