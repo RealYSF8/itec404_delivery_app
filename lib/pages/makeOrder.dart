@@ -12,14 +12,14 @@ import 'package:path/path.dart' as Path;
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-class OrderPage extends StatefulWidget {
+class MakeOrderPage extends StatefulWidget {
 
   @override
-  State<OrderPage> createState() => _Order();
+  State<MakeOrderPage> createState() => _MakeOrder();
 
 }
 
-class _Order extends State<OrderPage>with TickerProviderStateMixin {
+class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   File? _selectedImage;
 
@@ -187,34 +187,16 @@ class _Order extends State<OrderPage>with TickerProviderStateMixin {
       style: optionStyle,
     ),
   ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/mainPage');
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/order');
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/more');
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        //automaticallyImplyLeading: false,
         centerTitle: false,
         title: Row(
             children: <Widget>[
               Text(
-                "My",
+                "Make",
                 textAlign: TextAlign.start,
                 overflow: TextOverflow.clip,
                 style: TextStyle(
@@ -243,6 +225,17 @@ class _Order extends State<OrderPage>with TickerProviderStateMixin {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: Column(
             children: [
+              Text(
+                "Catagory: get it dynamicaly",
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontStyle: FontStyle.normal,
+                  fontSize: 20,
+                  // color: Color(0xffffffff),
+                ),
+              ),
               TextFormField(
                 controller: fromController,
                 decoration: const InputDecoration(
@@ -392,26 +385,6 @@ class _Order extends State<OrderPage>with TickerProviderStateMixin {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Order',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'More',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
-
       ),
     );
   }

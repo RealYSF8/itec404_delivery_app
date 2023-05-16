@@ -1,5 +1,4 @@
 {
-
   "project_info": {
     "project_number": "655429434868",
     "project_id": "itec404deliveryapp",
@@ -15,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "655429434868-hk0t9fii91smutt4soca8jbv0pmvnu7j.apps.googleusercontent.com",
+          "client_id": "655429434868-ko3ijisnnije8qoq9lpb3dk9todr8di1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.itec404_delivery_app",
+            "certificate_hash": "60fc0934e35e691aac394698dd2949736632ae5e"
+          }
+        },
+        {
+          "client_id": "655429434868-tfo2ers88fver2tu6po4rsa1uv6j0blq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

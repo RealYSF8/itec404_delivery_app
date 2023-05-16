@@ -225,24 +225,25 @@ class _MainPage extends State<MainPage> {
               childAspectRatio: 0.7,
               physics: NeverScrollableScrollPhysics(),
               children: [
-                GestureDetector(
+                InkWell(
                   onTap: () {
                     // Navigate to orders page for Electronics
-                    Navigator.pushNamed(context, '/order');
+                    Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Electronics", "assets/elect.png"),
                 ),
-                GestureDetector(
+                InkWell(
                   onTap: () {
                     // Navigate to orders page for Food
-                    Navigator.pushNamed(context, '/order');
+                    Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Food", "assets/food.png"),
                 ),
-                GestureDetector(
+                InkWell(
                   onTap: () {
+
                     // Navigate to orders page for Clothing
-                    Navigator.pushNamed(context, '/order');
+                    Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Clothing", "assets/clothing.png"),
                 ),
@@ -275,11 +276,7 @@ class _MainPage extends State<MainPage> {
 
 
   Widget buildCategory(String name, String imagePath) {
-    return InkWell(
-      onTap: () {
-        _setCategoryName(name);
-      },
-      child: Container(
+    return Container(
         alignment: Alignment.center,
         width: 200,
         height: 100,
@@ -291,6 +288,7 @@ class _MainPage extends State<MainPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               alignment: Alignment.center,
@@ -325,7 +323,7 @@ class _MainPage extends State<MainPage> {
             ),
           ],
         ),
-      ),
+
     );
   }
 }

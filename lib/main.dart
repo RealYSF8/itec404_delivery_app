@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:itec404_delivery_app/pages/courier.dart';
 import 'package:itec404_delivery_app/pages/home.dart';
 import 'package:itec404_delivery_app/pages/mainPage.dart';
 import 'package:itec404_delivery_app/pages/register.dart';
 import 'package:itec404_delivery_app/pages/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:itec404_delivery_app/pages/order.dart';
+import 'package:itec404_delivery_app/pages/makeOrder.dart';
 import 'package:itec404_delivery_app/pages/account.dart';
 import 'package:itec404_delivery_app/pages/more.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,6 +43,7 @@ void main() async {
       '/login': (context) => LoginPage(),
       '/mainPage': (context) => MainPage(),
       '/order': (context) => OrderPage(),
+      '/makeorder': (context) => MakeOrderPage(),
       '/account': (context) => Account(firestore: firestore),
       '/more':(context) => More(),
       '/about':(context) => About(),
@@ -48,6 +51,7 @@ void main() async {
       '/courrier':(context) => Courrier(),
       '/changepass':(context) => Changepass(),
       '/admin': (context) => AdminPage(),
+      '/courier': (context) => CourierPage(),
 
 
     },

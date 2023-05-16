@@ -88,10 +88,26 @@ class _AdminPageState extends State<AdminPage> {
               final String role = user['role'];
               final String address = user['address'];
               final String email = user['email'];
-
+              // Column(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     Text(date),
+              //     Text(status),
+              //   ],
+              // ),
               return ListTile(
-                title: Text(name),
-                subtitle: Text('$role | $phoneNumber | $address | $email'),
+                subtitle: Card(
+                  child: ListTile(
+                    title: Text(name),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Account type:$role '),
+                        Text('$phoneNumber | $address | $email'),
+                      ],
+                    ),
+                  ),
+                ),
                 onTap: () {
                   if (role == 'deactivated') {
                     showDialog(
@@ -390,13 +406,18 @@ class _AdminPageState extends State<AdminPage> {
                   DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
               final String status = order['status'];
               return ListTile(
-                title: Text(name),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(date),
-                    Text(status),
-                  ],
+                subtitle:Card(
+                  child: ListTile(
+                    title: Text(name),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(date),
+                        Text(status),
+                      ],
+                    ),
+                    // isThreeLine: true,
+                  ),
                 ),
               );
             } catch (e, stackTrace) {
