@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:itec404_delivery_app/pages/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:itec404_delivery_app/pages/blank_page.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -27,6 +29,7 @@ class _MainPage extends State<MainPage> {
     Text('Home Page', style: optionStyle),
     Text('Order Page', style: optionStyle),
     Text('Account', style: optionStyle),
+    Text('Blank Page', style: optionStyle),
   ];
   @override
   void initState() {
@@ -43,8 +46,16 @@ class _MainPage extends State<MainPage> {
     setState(() {
       _selectedIndex = index;
     });
-    List<String> routes = ['/mainPage', '/order', '/more'];
-    Navigator.pushNamed(context, routes[index]);
+
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => BlankPage()),
+      );
+    } else {
+      List<String> routes = ['/mainPage', '/order', '/more'];
+      Navigator.pushNamed(context, routes[index]);
+    }
   }
 
   @override
@@ -261,6 +272,7 @@ class _MainPage extends State<MainPage> {
       ),
     );
   }
+
 
   Widget buildCategory(String name, String imagePath) {
     return InkWell(
