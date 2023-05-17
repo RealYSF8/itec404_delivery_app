@@ -4,62 +4,73 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as Path;
 import 'dart:async';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 
 class MakeOrderPage extends StatefulWidget {
-
   @override
-  State<MakeOrderPage> createState() => _MakeOrder();
-
+  State<MakeOrderPage> createState() => _Order();
 }
 
-class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
+class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
-  File? _selectedImage;
+  List<File?> _selectedImages = List.generate(3, (_) => null);
 
-
-  Future<String> _uploadImage() async {
+  Future<void> _uploadImages() async {
     try {
       FirebaseStorage storage = FirebaseStorage.instance;
-      Reference storageReference = storage.refFromURL('gs://itec404deliveryapp.appspot.com');
-      String fileName = Path.basename(_selectedImage!.path);
-      Reference imageReference = storageReference.child('images/$fileName');
-      UploadTask uploadTask = imageReference.putFile(_selectedImage!);
+      Reference storageReference =
+      storage.refFromURL('gs://itec404deliveryapp.appspot.com');
 
-      TaskSnapshot taskSnapshot = await uploadTask;
+      for (int i = 0; i < _selectedImages.length; i++) {
+        File? selectedImage = _selectedImages[i];
+        if (selectedImage != null) {
+          String fileName = Path.basename(selectedImage.path);
+          Reference imageReference =
+          storageReference.child('images/$fileName');
+          UploadTask uploadTask = imageReference.putFile(selectedImage);
 
-      String imageUrl = await taskSnapshot.ref.getDownloadURL();
-      print("Image uploaded successfully. Download URL: $imageUrl");
+          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+            double progress =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            print("Upload progress: $progress%");
+          }, onError: (Object e) {
+            print("Error during upload: $e");
+          });
 
-      return imageUrl;
+          TaskSnapshot taskSnapshot = await uploadTask;
+
+          String imageUrl = await taskSnapshot.ref.getDownloadURL();
+          print("Image uploaded successfully. Download URL: $imageUrl");
+        }
+      }
     } catch (e) {
-      print("Error uploading image: $e");
-      throw e; // Re-throw the error to be handled by the caller
+      print("Error uploading images: $e");
     }
   }
 
-
-
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(int index) async {
     try {
-      PickedFile? pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+      PickedFile? pickedFile =
+      await ImagePicker().getImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() {
-          _selectedImage = File(pickedFile.path);
+          _selectedImages[index] = File(pickedFile.path);
         });
-        print("Selected image: $_selectedImage");
+        print("Selected image $index: ${_selectedImages[index]}");
       }
     } on PlatformException catch (e) {
       print('Error picking image: $e');
     }
   }
-
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -72,53 +83,41 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
   String? _userId;
   String? _Name;
 
-  String _image = 'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
+  String _image =
+      'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
   late AnimationController loadingController;
 
-  List<File?> _file = [];
-  List<PlatformFile?> _platformFile = [];
+  File? _file;
+  PlatformFile? _platformFile;
 
-  // late final file;
   selectFile() async {
-    // file = null;
     final file = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['png', 'jpg', 'jpeg'],
-        allowMultiple: true
-    );
-    _platformFile = [];
-    _file = [];
-    if (file != null) {
+        type: FileType.custom, allowedExtensions: ['png', 'jpg', 'jpeg']);
 
-      for (int i = 0; i < file.files.length; i++) {
-        setState(() {
-          _file.add(File(file.files[i].path!));
-          _platformFile.add(file.files[i]);
-        });
-      }
+    if (file != null) {
+      setState(() {
+        _file = File(file.files.single.path!);
+        _platformFile = file.files.first;
+      });
     }
 
     loadingController.forward();
   }
-  String? _category;
+
   @override
   void initState() {
     loadingController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
-    )..addListener(() { setState(() {}); });
+    )..addListener(() {
+      setState(() {});
+    });
     super.initState();
     super.initState();
     getNameFromSharedPreferences();
     _getUserData();
-    getCategoryFromSharedPreferences();
   }
-  void getCategoryFromSharedPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _category = prefs.getString("category") ?? "";
-    });
-  }
+
   void getNameFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -143,8 +142,8 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
     String? width = widthController.text;
     String? height = heightController.text;
 
-    // Upload the image before creating the order
-    String? imageUrl = await _uploadImage();
+    // Upload the images before creating the order
+    await _uploadImages();
 
     // Get the current date and time
     Timestamp now = Timestamp.now();
@@ -159,10 +158,11 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
       'width': width,
       'height': height,
       'status': 'pending',
-      'createdAt': now, // add the current date and time to the document
-      'imageUrl': imageUrl, // use the image URL from Firebase Storage
+      'createdAt': now,
+      'imageUrls': _selectedImages
+          .map((image) => image != null ? image.path : '')
+          .toList(),
     }).then((value) {
-      // Display the order status in the database
       _db.collection('orders').doc(value.id).update({'status': 'pending'});
     });
 
@@ -173,16 +173,11 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
     widthController.clear();
     heightController.clear();
 
-    // Clear the selected image
+    // Clear the selected images
     setState(() {
-      _selectedImage = null;
+      _selectedImages = List.generate(3, (_) => null);
     });
   }
-
-
-
-
-
 
   int _selectedIndex = 1;
   static const TextStyle optionStyle =
@@ -201,37 +196,54 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
       style: optionStyle,
     ),
   ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch (index) {
+      case 0:
+        Navigator.pushNamed(context, '/mainPage');
+        break;
+      case 1:
+        Navigator.pushNamed(context, '/order');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/more');
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false,
         centerTitle: false,
-        title: Row(
-            children: const[
-              Text(
-                "Make",
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.clip,
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontStyle: FontStyle.normal,
-                  fontSize: 22,
-                  color: Color(0xffffffff),
-                ),
-              ),
-              Text("Orders",
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.clip,
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontStyle: FontStyle.normal,
-                  fontSize: 22,
-                  color: Color(0xfffba808),
-                ),
-              ),
-            ]
-        ),
+        title: Row(children: <Widget>[
+          Text(
+            "My",
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Color(0xffffffff),
+            ),
+          ),
+          Text(
+            "Orders",
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Color(0xfffba808),
+            ),
+          ),
+        ]),
         backgroundColor: Colors.blue,
       ),
       body: SingleChildScrollView(
@@ -239,17 +251,6 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: Column(
             children: [
-              Text(
-                "Category: $_category",
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.clip,
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontStyle: FontStyle.normal,
-                  fontSize: 20,
-                  // color: Color(0xffffffff),
-                ),
-              ),
               TextFormField(
                 controller: fromController,
                 decoration: const InputDecoration(
@@ -295,127 +296,81 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
                   suffix: Text('CM'),
                 ),
               ),
-              // Image.network(_image, width: 300,),
-              const SizedBox(height: 10,),
-              GestureDetector(
-                onTap: selectFile,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-                  child: DottedBorder(
-                    borderType: BorderType.RRect,
-                    radius: const Radius.circular(10),
-                    dashPattern: const [10, 4],
-                    strokeCap: StrokeCap.round,
-                    color: Colors.blue.shade400,
-                    child: Container(
-                      width: double.infinity,
-                      height: 100,
-                      decoration: BoxDecoration(
+              SizedBox(height: 10),
+              for (int i = 0; i < _selectedImages.length; i++)
+                GestureDetector(
+                  onTap: () => _pickImage(i),
+                  child: Padding(
+                    padding:
+                    EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                    child: DottedBorder(
+                      borderType: BorderType.RRect,
+                      radius: Radius.circular(10),
+                      dashPattern: [10, 4],
+                      strokeCap: StrokeCap.round,
+                      color: Colors.blue.shade400,
+                      child: Container(
+                        width: double.infinity,
+                        height: 100,
+                        decoration: BoxDecoration(
                           color: Colors.blue.shade50.withOpacity(.3),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Iconsax.folder_open, color: Colors.blue, size: 35,),
-                          const SizedBox(height: 5),
-                          Text('Select your file', style: TextStyle(fontSize: 15, color: Colors.grey.shade400),),
-                          Text('File should be jpg, png', style: TextStyle(fontSize: 10, color: Colors.grey.shade500),),
-                        ],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Iconsax.folder_open,
+                              color: Colors.blue,
+                              size: 35,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'Select your file ${i + 1}',
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.grey.shade400),
+                            ),
+                            Text(
+                              'File should be jpg, png',
+                              style: TextStyle(
+                                  fontSize: 10, color: Colors.grey.shade500),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              _platformFile.isNotEmpty
-                  ? Container(
-                // padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                  padding: const EdgeInsets.only(left:10, top:0, right:10, bottom:10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Selected File',
-                        style: TextStyle(color: Colors.grey.shade400, fontSize: 15, ),),
-                      const SizedBox(height: 10,),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.shade200,
-                                offset: const Offset(0, 1),
-                                blurRadius: 3,
-                                spreadRadius: 2,
-                              )
-                            ]
-                        ),
-                        child:_platformFile.isNotEmpty?
-                        ListView.builder(
-                            physics:const NeverScrollableScrollPhysics(),
-                            shrinkWrap:true,
-                            itemCount: _platformFile.length,
-                            itemBuilder: (context, index){
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.file(_file[index]!, width: 80, height: 60, fit: BoxFit.fill,)
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(_platformFile[index]!.name,
-                                            style: const TextStyle(fontSize: 13, color: Colors.black),),
-                                          const SizedBox(height: 5,),
-                                          Text('${(_platformFile[index]!.size / 1024).ceil()} KB',
-                                            style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
-                                          ),
-                                          const SizedBox(height: 5,),
-                                          Container(
-                                              height: 5,
-                                              clipBehavior: Clip.hardEdge,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(5),
-                                                color: Colors.blue.shade50,
-                                              ),
-                                              child: LinearProgressIndicator(
-                                                value: loadingController.value,
-                                              )
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10,),
-                                  ],
-                                ),
-                              );
-                            }
-                        )
-                            : Container(),
-
-
-                      ),
-                    ],
-                  ))
-                  : Container(),
-
-
-
+              for (int i = 0; i < _selectedImages.length; i++)
+                _selectedImages[i] != null
+                    ? Image.file(_selectedImages[i]!, width: 150, height: 150)
+                    : Container(),
               ElevatedButton(
                 onPressed: _createOrder,
-                child: const Text('Create Order'),
+                child: Text('Create Order'),
               ),
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Order',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'More',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
     );
   }
