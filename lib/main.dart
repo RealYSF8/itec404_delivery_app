@@ -11,6 +11,7 @@ import 'package:itec404_delivery_app/pages/account.dart';
 import 'package:itec404_delivery_app/pages/more.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:itec404_delivery_app/pages/passwordreset.dart';
+import 'package:itec404_delivery_app/pages/review.dart';
 
 import 'Pages/about.dart';
 import 'Pages/contact.dart';
@@ -54,6 +55,7 @@ void main() async {
       '/admin': (context) => AdminPage(),
       '/courier': (context) => CourierPage(),
       '/reset': (context) => PasswordResetForm(),
+      '/review': (context) => review(),
 
 
     },
