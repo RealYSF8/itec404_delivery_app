@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -124,8 +125,14 @@ class _MyCardClassState extends State<MyCardClass> {
   }
 
   Future<void> fetchOrders() async {
-    final QuerySnapshot snapshot =
-    await FirebaseFirestore.instance.collection('orders').get();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userEmail = prefs.getString('email') ?? '';
+
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('orders')
+        .where('Email', isEqualTo: userEmail)
+        .get();
+
     setState(() {
       orders = snapshot.docs;
     });
