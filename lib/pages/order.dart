@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
-import 'package:dotted_border/dotted_border.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart' as Path;
-import 'dart:async';
-import 'package:flutter/services.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'My App',
+      home: OrderPage(),
+    );
+  }
+}
 
 class OrderPage extends StatefulWidget {
   @override
@@ -95,12 +101,8 @@ class _OrderPageState extends State<OrderPage> {
       body: ListView(
         children: [
           MyCardClass(),
-          MyCardClass(),
-          MyCardClass(),
-          MyCardClass(),
-          MyCardClass(),
         ],
-      )
+      ),
     );
   }
 }
@@ -113,77 +115,111 @@ class MyCardClass extends StatefulWidget {
 }
 
 class _MyCardClassState extends State<MyCardClass> {
+  late List<DocumentSnapshot> orders = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchOrders();
+  }
+
+  Future<void> fetchOrders() async {
+    final QuerySnapshot snapshot =
+    await FirebaseFirestore.instance.collection('orders').get();
+    setState(() {
+      orders = snapshot.docs;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      color: Colors.white,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Image.network("https://expressdeliverymo.com/freight/wp-content/uploads/box.png", width: 50, height: 50),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: orders.length,
+      itemBuilder: (context, index) {
+        final order = orders[index];
+        final createdAt = (order['createdAt'] as Timestamp).toDate();
+
+        return Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          color: Colors.white,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Price: \$15345",
-                      style: TextStyle(fontSize:16),
+                    Image.network(order['imageUrl'], width: 50, height: 50),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Price: Placeholder", // Placeholder for the price
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Text(
-                "Delivered",
-                style: TextStyle(fontSize: 20),
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Divider(
-              thickness: 3,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Date ${DateTime.now().toString().substring(0, 10)}"),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.teal,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Review",
-                      style: TextStyle(color: Colors.white),
-                    ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Text(
+                    order['status'],
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Divider(
+                  thickness: 3,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Date: ${createdAt.toString().substring(0, 10)}",
+                    ),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Navigate to the "/review" page
+                            Navigator.pushNamed(context, '/review');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Review",
+                            style: TextStyle(color: Colors.teal),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
-
