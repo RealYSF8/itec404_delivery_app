@@ -165,8 +165,9 @@ class _CourierPageState extends State<CourierPage>
             try {
               final String name = order['Name'];
               final String date =
-                  DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
-              final String status = order['status'];
+              DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
+              String status = order['status'];
+
               return ListTile(
                 title: Text(name),
                 subtitle: Column(
@@ -176,6 +177,39 @@ class _CourierPageState extends State<CourierPage>
                     Text(status),
                   ],
                 ),
+                onTap: () async {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Change Status'),
+                        content: Text('Select the new status:'),
+                        actions: [
+                          TextButton(
+                            child: Text('Shipped'),
+                            onPressed: () {
+                              order.reference.update({'status': 'Shipped'});
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text('Delivered'),
+                            onPressed: () {
+                              order.reference.update({'status': 'Delivered'});
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
               );
             } catch (e, stackTrace) {
               print('Error accessing order fields: $e\n$stackTrace');
@@ -186,4 +220,5 @@ class _CourierPageState extends State<CourierPage>
       },
     );
   }
+
 }
