@@ -23,6 +23,7 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   File? _selectedImage;
 
+
   Future<String> _uploadImage() async {
     try {
       FirebaseStorage storage = FirebaseStorage.instance;
@@ -74,26 +75,32 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
   String _image = 'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
   late AnimationController loadingController;
 
-  File? _file;
-  PlatformFile? _platformFile;
+  List<File?> _file = [];
+  List<PlatformFile?> _platformFile = [];
 
+  // late final file;
   selectFile() async {
+    // file = null;
     final file = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['png', 'jpg', 'jpeg']
+        allowedExtensions: ['png', 'jpg', 'jpeg'],
+        allowMultiple: true
     );
-
+    _platformFile = [];
+    _file = [];
     if (file != null) {
-      setState(() {
-        _file = File(file.files.single.path!);
-        _platformFile = file.files.first;
-      });
+
+      for (int i = 0; i < file.files.length; i++) {
+        setState(() {
+          _file.add(File(file.files[i].path!));
+          _platformFile.add(file.files[i]);
+        });
+      }
     }
 
     loadingController.forward();
   }
   String? _category;
-
   @override
   void initState() {
     loadingController = AnimationController(
@@ -105,7 +112,6 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
     getNameFromSharedPreferences();
     _getUserData();
     getCategoryFromSharedPreferences();
-
   }
   void getCategoryFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -202,7 +208,7 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
         //automaticallyImplyLeading: false,
         centerTitle: false,
         title: Row(
-            children: <Widget>[
+            children: const[
               Text(
                 "Make",
                 textAlign: TextAlign.start,
@@ -289,16 +295,16 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
                   suffix: Text('CM'),
                 ),
               ),
-              //Image.network(_image, width: 300,),
-              SizedBox(height: 10,),
+              // Image.network(_image, width: 300,),
+              const SizedBox(height: 10,),
               GestureDetector(
                 onTap: selectFile,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
                     borderType: BorderType.RRect,
-                    radius: Radius.circular(10),
-                    dashPattern: [10, 4],
+                    radius: const Radius.circular(10),
+                    dashPattern: const [10, 4],
                     strokeCap: StrokeCap.round,
                     color: Colors.blue.shade400,
                     child: Container(
@@ -311,8 +317,8 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Iconsax.folder_open, color: Colors.blue, size: 35,),
-                          SizedBox(height: 5),
+                          const Icon(Iconsax.folder_open, color: Colors.blue, size: 35,),
+                          const SizedBox(height: 5),
                           Text('Select your file', style: TextStyle(fontSize: 15, color: Colors.grey.shade400),),
                           Text('File should be jpg, png', style: TextStyle(fontSize: 10, color: Colors.grey.shade500),),
                         ],
@@ -321,64 +327,81 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              _platformFile != null
+              _platformFile.isNotEmpty
                   ? Container(
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                // padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  padding: const EdgeInsets.only(left:10, top:0, right:10, bottom:10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Selected File',
                         style: TextStyle(color: Colors.grey.shade400, fontSize: 15, ),),
-                      SizedBox(height: 10,),
+                      const SizedBox(height: 10,),
                       Container(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.shade200,
-                                  offset: Offset(0, 1),
-                                  blurRadius: 3,
-                                  spreadRadius: 2,
-                                )
-                              ]
-                          ),
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.file(_file!, width: 70,)
-                              ),
-                              SizedBox(width: 10,),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.shade200,
+                                offset: const Offset(0, 1),
+                                blurRadius: 3,
+                                spreadRadius: 2,
+                              )
+                            ]
+                        ),
+                        child:_platformFile.isNotEmpty?
+                        ListView.builder(
+                            physics:const NeverScrollableScrollPhysics(),
+                            shrinkWrap:true,
+                            itemCount: _platformFile.length,
+                            itemBuilder: (context, index){
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(_platformFile!.name,
-                                      style: TextStyle(fontSize: 13, color: Colors.black),),
-                                    SizedBox(height: 5,),
-                                    Text('${(_platformFile!.size / 1024).ceil()} KB',
-                                      style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                                    ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.file(_file[index]!, width: 80, height: 60, fit: BoxFit.fill,)
                                     ),
-                                    SizedBox(height: 5,),
-                                    Container(
-                                        height: 5,
-                                        clipBehavior: Clip.hardEdge,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(5),
-                                          color: Colors.blue.shade50,
-                                        ),
-                                        child: LinearProgressIndicator(
-                                          value: loadingController.value,
-                                        )
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(_platformFile[index]!.name,
+                                            style: const TextStyle(fontSize: 13, color: Colors.black),),
+                                          const SizedBox(height: 5,),
+                                          Text('${(_platformFile[index]!.size / 1024).ceil()} KB',
+                                            style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                                          ),
+                                          const SizedBox(height: 5,),
+                                          Container(
+                                              height: 5,
+                                              clipBehavior: Clip.hardEdge,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(5),
+                                                color: Colors.blue.shade50,
+                                              ),
+                                              child: LinearProgressIndicator(
+                                                value: loadingController.value,
+                                              )
+                                          ),
+                                        ],
+                                      ),
                                     ),
+                                    const SizedBox(width: 10,),
                                   ],
                                 ),
-                              ),
-                              SizedBox(width: 10,),
-                            ],
-                          )
+                              );
+                            }
+                        )
+                            : Container(),
+
+
                       ),
                     ],
                   ))
@@ -388,7 +411,7 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
 
               ElevatedButton(
                 onPressed: _createOrder,
-                child: Text('Create Order'),
+                child: const Text('Create Order'),
               ),
             ],
           ),
