@@ -269,36 +269,42 @@ class _MoreState extends State<More> {
               ),
             ),
             if (_isAdmin)
-              Container(
-                margin: EdgeInsets.only(top: 15),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/admin');
-                  },
-                  child: buildRowWithIconAndText(
-                    icon: Icons.admin_panel_settings,
-                    iconColor: Colors.white,
-                    iconBackgroundColor: Colors.deepPurpleAccent,
-                    text: "Admin Panel",
-                    showTrailingIcon: true,
+              Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 15),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/admin');
+                      },
+                      child: buildRowWithIconAndText(
+                        icon: Icons.admin_panel_settings,
+                        iconColor: Colors.white,
+                        iconBackgroundColor: Colors.deepPurpleAccent,
+                        text: "Admin Panel",
+                        showTrailingIcon: true,
+                      ),
+                    ),
                   ),
-                ),
+                  Container(
+                    margin: EdgeInsets.only(top: 15),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/courier');
+                      },
+                      child: buildRowWithIconAndText(
+                        icon: Icons.local_shipping,
+                        iconColor: Colors.white,
+                        iconBackgroundColor: Colors.deepPurpleAccent,
+                        text: "Courier Panel",
+                        showTrailingIcon: true,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            Container(
-              margin: EdgeInsets.only(top: 15),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/courier');
-                },
-                child: buildRowWithIconAndText(
-                  icon: Icons.local_shipping,
-                  iconColor: Colors.white,
-                  iconBackgroundColor: Colors.deepPurpleAccent,
-                  text: "Courier Panel",
-                  showTrailingIcon: true,
-                ),
-              ),
-            ),
+
+
             if (_isCourier)
               Container(
                 margin: EdgeInsets.only(top: 15),

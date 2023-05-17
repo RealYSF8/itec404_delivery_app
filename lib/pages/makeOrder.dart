@@ -92,6 +92,7 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
 
     loadingController.forward();
   }
+  String? _category;
 
   @override
   void initState() {
@@ -103,8 +104,15 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
     super.initState();
     getNameFromSharedPreferences();
     _getUserData();
-  }
+    getCategoryFromSharedPreferences();
 
+  }
+  void getCategoryFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _category = prefs.getString("category") ?? "";
+    });
+  }
   void getNameFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -226,7 +234,7 @@ class _MakeOrder extends State<MakeOrderPage>with TickerProviderStateMixin {
           child: Column(
             children: [
               Text(
-                "Catagory: get it dynamicaly",
+                "Category: $_category",
                 textAlign: TextAlign.left,
                 overflow: TextOverflow.clip,
                 style: TextStyle(
