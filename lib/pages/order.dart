@@ -99,13 +99,10 @@ class _OrderPageState extends State<OrderPage> {
         selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped,
       ),
-      body: ListView(
-        children: [
-          MyCardClass(),
-        ],
-      ),
+      body: MyCardClass(),
     );
   }
+
 }
 
 class MyCardClass extends StatefulWidget {

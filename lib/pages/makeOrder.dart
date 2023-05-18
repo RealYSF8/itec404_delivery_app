@@ -210,12 +210,30 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     setState(() {
       _selectedImages = List.generate(3, (_) => null);
     });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Order Created'),
+          content: Text('Your order has been created.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<String> _uploadImageToFirebaseStorage(File imageFile, String fileName) async {
     try {
-      Reference storageReference = _storage.ref().child('images/$fileName');
-      UploadTask uploadTask = storageReference.putFile(imageFile);
+      String compressedPath = await convertImageToWebP(imageFile.path);
+      Reference storageReference = _storage.ref().child('images/$fileName.webp');
+      UploadTask uploadTask = storageReference.putFile(File(compressedPath));
       TaskSnapshot taskSnapshot = await uploadTask;
       String imageUrl = await taskSnapshot.ref.getDownloadURL();
       return imageUrl;
@@ -224,6 +242,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       throw e;
     }
   }
+
 
 
   int _selectedIndex = 1;
