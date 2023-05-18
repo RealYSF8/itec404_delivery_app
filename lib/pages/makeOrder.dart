@@ -82,6 +82,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
 
   String? _userId;
   String? _Name;
+  String? _Email;
+
 
   String _image =
       'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
@@ -122,6 +124,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _Name = prefs.getString("name") ?? "";
+      _Email = prefs.getString("email") ?? "";
+
     });
   }
 
@@ -149,7 +153,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     Timestamp now = Timestamp.now();
 
     // Create a new order document with the data and timestamp
-    await _db.collection('orders').add({
+    DocumentReference orderRef = await _db.collection('orders').add({
+      'createdBy': _Email,
       'userId': _userId,
       'Name': _Name,
       'from': from,
@@ -159,12 +164,17 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       'height': height,
       'status': 'pending',
       'createdAt': now,
-      'imageUrls': _selectedImages
-          .map((image) => image != null ? image.path : '')
-          .toList(),
-    }).then((value) {
-      _db.collection('orders').doc(value.id).update({'status': 'pending'});
     });
+
+    // Update the order document with the image URLs
+    for (int i = 0; i < _selectedImages.length; i++) {
+      File? selectedImage = _selectedImages[i];
+      if (selectedImage != null) {
+        String fileName = Path.basename(selectedImage.path);
+        String imageUrl = await _uploadImageToFirebaseStorage(selectedImage, fileName);
+        orderRef.update({'imageUrls.$i': imageUrl});
+      }
+    }
 
     // Clear the input fields
     fromController.clear();
@@ -178,6 +188,20 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       _selectedImages = List.generate(3, (_) => null);
     });
   }
+
+  Future<String> _uploadImageToFirebaseStorage(File imageFile, String fileName) async {
+    try {
+      Reference storageReference = _storage.ref().child('images/$fileName');
+      UploadTask uploadTask = storageReference.putFile(imageFile);
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String imageUrl = await taskSnapshot.ref.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      print("Error uploading image: $e");
+      throw e;
+    }
+  }
+
 
   int _selectedIndex = 1;
   static const TextStyle optionStyle =

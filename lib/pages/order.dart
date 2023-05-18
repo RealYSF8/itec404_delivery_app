@@ -130,13 +130,14 @@ class _MyCardClassState extends State<MyCardClass> {
 
     final QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('orders')
-        .where('Email', isEqualTo: userEmail)
+        .where('createdBy', isEqualTo: userEmail)
         .get();
 
     setState(() {
       orders = snapshot.docs;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +147,14 @@ class _MyCardClassState extends State<MyCardClass> {
       itemBuilder: (context, index) {
         final order = orders[index];
         final createdAt = (order['createdAt'] as Timestamp).toDate();
+        final imageUrls = order['imageUrls'];
 
+        String firstImageUrl = '';
+        if (imageUrls is List<dynamic> && imageUrls.isNotEmpty) {
+          firstImageUrl = imageUrls[0] as String;
+        } else if (imageUrls is Map<String, dynamic> && imageUrls.isNotEmpty) {
+          firstImageUrl = imageUrls.values.first as String;
+        }
         return Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -159,7 +167,7 @@ class _MyCardClassState extends State<MyCardClass> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Image.network(order['imageUrl'], width: 50, height: 50),
+                    Image.network(firstImageUrl, width: 50, height: 50),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
