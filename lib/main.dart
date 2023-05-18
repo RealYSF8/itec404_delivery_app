@@ -24,8 +24,16 @@ import 'Pages/admin.dart';
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyDC1WkdzulAQvZtlBTSQMCZlMmiWgrP4A0",
+        appId: "1:655429434868:android:e994b0a3f99ccfbe3bcda1",
+        messagingSenderId: "655429434868",
+        projectId: "itec404deliveryapp",
+      ),
+  );
   SharedPreferences prefs = await SharedPreferences.getInstance();
+
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
