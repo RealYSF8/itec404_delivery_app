@@ -14,6 +14,8 @@ import 'package:path/path.dart' as Path;
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 
 class MakeOrderPage extends StatefulWidget {
   @override
@@ -34,9 +36,15 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
         File? selectedImage = _selectedImages[i];
         if (selectedImage != null) {
           String fileName = Path.basename(selectedImage.path);
+
+          // Convert image to WebP format
+          String compressedPath = await convertImageToWebP(selectedImage.path);
+
           Reference imageReference =
-          storageReference.child('images/$fileName');
-          UploadTask uploadTask = imageReference.putFile(selectedImage);
+          storageReference.child('images/$fileName.webp');
+
+          // Upload the converted image
+          UploadTask uploadTask = imageReference.putFile(File(compressedPath));
 
           uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
             double progress =
@@ -48,14 +56,29 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
 
           TaskSnapshot taskSnapshot = await uploadTask;
 
-          String imageUrl = await taskSnapshot.ref.getDownloadURL();
-          print("Image uploaded successfully. Download URL: $imageUrl");
         }
       }
     } catch (e) {
       print("Error uploading images: $e");
     }
   }
+
+  Future<String> convertImageToWebP(String imagePath) async {
+    // Compressed image file path
+    final compressedPath =
+        (await getTemporaryDirectory()).path + '/compressed.webp';
+
+    // Compress the image to WebP format
+    await FlutterImageCompress.compressAndGetFile(
+      imagePath,
+      compressedPath,
+      quality: 90,
+      format: CompressFormat.webp,
+    );
+
+    return compressedPath;
+  }
+
 
   Future<void> _pickImage(int index) async {
     try {
