@@ -8,9 +8,10 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
+  String searchQuery = '';
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
     Icon(
       Icons.people,
@@ -26,9 +27,26 @@ class _AdminPageState extends State<AdminPage> {
     ),
   ];
 
+  Icon searchIcon = Icon(Icons.search);
+  bool isSearching = false;
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  void _toggleSearch() {
+    setState(() {
+      isSearching = !isSearching;
+      if (isSearching) {
+        searchIcon = Icon(Icons.close);
+        // Perform any necessary search-related actions
+      } else {
+        searchIcon = Icon(Icons.search);
+        searchQuery = ''; // Clear the search query
+        // Cancel or clear the search
+      }
     });
   }
 
@@ -36,9 +54,28 @@ class _AdminPageState extends State<AdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Panel'),
+        title: isSearching ? TextField(
+          onChanged: (value) {
+            setState(() {
+              searchQuery = value;
+            });
+          },
+          decoration: InputDecoration(
+            hintText: 'Search by name',
+          ),
+        ) : Text('Admin Panel'),
+        actions: [
+          IconButton(
+            icon: searchIcon,
+            onPressed: _toggleSearch,
+          ),
+        ],
       ),
-      body: _selectedIndex == 0 ? _buildUsersTab() : _selectedIndex == 1 ? _buildOrdersTab() : _buildApplicationsTab(), // use the updated method name here
+      body: _selectedIndex == 0
+          ? _buildUsersTab()
+          : _selectedIndex == 1
+          ? _buildOrdersTab()
+          : _buildApplicationsTab(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -170,10 +207,16 @@ class _AdminPageState extends State<AdminPage> {
 
         final List<DocumentSnapshot> users = snapshot.data!.docs;
 
+        // Filter users based on the search query
+        final filteredUsers = users.where((user) {
+          final String name = user['name'] ?? '';
+          return name.toLowerCase().contains(searchQuery.toLowerCase());
+        }).toList();
+
         return ListView.builder(
-          itemCount: users.length,
+          itemCount: filteredUsers.length,
           itemBuilder: (context, index) {
-            final DocumentSnapshot<Object?> user = users[index];
+            final DocumentSnapshot<Object?> user = filteredUsers[index];
 
             try {
               final String name = user['name'];
@@ -474,7 +517,7 @@ class _AdminPageState extends State<AdminPage> {
   }
 
 
-    Widget _buildOrdersTab() {
+  Widget _buildOrdersTab() {
     // add this method to build the orders tab
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('orders').snapshots(),
@@ -496,7 +539,7 @@ class _AdminPageState extends State<AdminPage> {
             try {
               final String name = order['Name'];
               final String date =
-                  DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
+              DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
               final String status = order['status'];
               return ListTile(
                 subtitle:Card(
