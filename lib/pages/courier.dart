@@ -37,7 +37,8 @@ class _CourierPageState extends State<CourierPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Courier App'),
+        centerTitle: false,
+        automaticallyImplyLeading: false,
         bottom: TabBar(
           controller: _tabController,
           tabs: [
@@ -45,7 +46,37 @@ class _CourierPageState extends State<CourierPage>
             Tab(text: 'My Orders'),
           ],
         ),
+        title: Row(children: <Widget>[
+          Text(
+            "Courier",
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Color(0xffffffff),
+            ),
+          ),
+          Text(
+            "Panel",
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Color(0xfffba808),
+            ),
+          ),
+        ]),
+        backgroundColor: Colors.blue,
+        leading:  IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
+
       body: TabBarView(
         controller: _tabController,
         children: [
@@ -83,14 +114,19 @@ class _CourierPageState extends State<CourierPage>
               DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
               final String status = order['status'];
               return ListTile(
-                title: Text(name),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(date),
-                    Text(status),
-                  ],
-                ),
+                  subtitle: Card(
+                    child: ListTile(
+                      title: Text(name),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(date),
+                          Text(status),
+                        ],
+                      ),
+                    ),
+                  ),
+
                 onTap: () async {
                   SharedPreferences prefs =
                   await SharedPreferences.getInstance();
@@ -167,16 +203,19 @@ class _CourierPageState extends State<CourierPage>
               final String date =
               DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
               String status = order['status'];
-
               return ListTile(
-                title: Text(name),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(date),
-                    Text(status),
-                  ],
-                ),
+                  subtitle: Card(
+                    child: ListTile(
+                      title: Text(name),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(date),
+                          Text(status),
+                        ],
+                      ),
+                    ),
+                  ),
                 onTap: () async {
                   showDialog(
                     context: context,
