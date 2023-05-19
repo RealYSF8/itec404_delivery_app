@@ -4,18 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as Path;
 import 'dart:async';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:math';
 
 class MakeOrderPage extends StatefulWidget {
   @override
@@ -162,6 +160,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   }
 
   Future<void> _createOrder() async {
+    Random random = Random();
+    int orderNumber = random.nextInt(90000) + 10000;
     // Get the data from the input fields
     String? from = fromController.text;
     String? to = toController.text;
@@ -177,6 +177,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
 
     // Create a new order document with the data and timestamp
     DocumentReference orderRef = await _db.collection('orders').add({
+      'orderNumber': orderNumber.toString(),
       'createdBy': _Email,
       'userId': _userId,
       'Name': _Name,
@@ -215,7 +216,15 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Order Created'),
-          content: Text('Your order has been created.'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Your order has been created.'),
+              SizedBox(height: 10),
+              Text('Order Number: $orderNumber'),  // Display the generated order number
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () {
