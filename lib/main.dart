@@ -32,40 +32,78 @@ void main() async {
         projectId: "itec404deliveryapp",
       ),
   );
+  bool _isAdmin = false;
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  String role = prefs.getString('role') ?? '';
+
+    _isAdmin = role == 'Admin';
+
+  bool _isCourier = false;
+
+  SharedPreferences prefs1 = await SharedPreferences.getInstance();
+  String role1 = prefs1.getString('role') ?? '';
+
+  _isCourier = role == 'Courier';
 
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
-        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          },
+        ),
+      ),
+      initialRoute: isLoggedIn ? '/mainPage' : '/',
+      routes: {
+        '/': (context) => HomeScreen(),
+        '/register': (context) => RegisterPage(),
+        '/login': (context) => LoginPage(),
+        '/mainPage': (context) => MainPage(),
+        '/order': (context) => OrderPage(),
+        '/makeorder': (context) => MakeOrderPage(),
+        '/account': (context) => Account(firestore: firestore),
+        '/more': (context) => More(),
+        '/about': (context) => About(),
+        '/contact': (context) => Contact(),
+        '/courrier': (context) => Courrier(),
+        '/changepass': (context) => Changepass(),
+        '/reset': (context) => PasswordResetForm(),
+        '/review': (context) => review(),
+        '/admin': (context) {
+          if (_isAdmin) {
+            return AdminPage();
+          } else {
+            // Redirect to a different page or show an error message
+            return Scaffold(
+              appBar: AppBar(),
+              body: Center(
+                child: Text('Access Denied'),
+              ),
+            );
+          }
+        },
+        '/courier': (context) {
+          if (_isCourier||_isAdmin) {
+            return CourierPage();
+          } else {
+            // Redirect to a different page or show an error message
+            return Scaffold(
+              appBar: AppBar(),
+              body: Center(
+                child: Text('Access Denied'),
+              ),
+            );
+          }
+        },
       },
-      ),),
-    initialRoute: isLoggedIn ? '/mainPage' : '/',
-    routes: {
-      '/': (context) => HomeScreen(),
-      '/register': (context) => RegisterPage(),
-      '/login': (context) => LoginPage(),
-      '/mainPage': (context) => MainPage(),
-      '/order': (context) => OrderPage(),
-      '/makeorder': (context) => MakeOrderPage(),
-      '/account': (context) => Account(firestore: firestore),
-      '/more':(context) => More(),
-      '/about':(context) => About(),
-      '/contact':(context) => Contact(),
-      '/courrier':(context) => Courrier(),
-      '/changepass':(context) => Changepass(),
-      '/admin': (context) => AdminPage(),
-      '/courier': (context) => CourierPage(),
-      '/reset': (context) => PasswordResetForm(),
-      '/review': (context) => review(),
-
-
-    },
-  ),);
+    ),
+  );
 }
