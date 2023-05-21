@@ -68,7 +68,7 @@ void main() async {
         '/login': (context) => LoginPage(),
         '/mainPage': (context) => MainPage(),
         '/order': (context) => OrderPage(),
-        '/makeorder': (context) => MakeOrderPage(),
+        '/makeorder': (context) => MakeOrderPage(controller: TextEditingController()),
         '/account': (context) => Account(firestore: firestore),
         '/more': (context) => More(),
         '/about': (context) => About(),
