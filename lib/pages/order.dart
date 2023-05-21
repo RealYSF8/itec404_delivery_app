@@ -164,7 +164,17 @@ class _MyCardClassState extends State<MyCardClass> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Image.network(firstImageUrl, width: 50, height: 50),
+                  Container(
+                  width: 60,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                        image: NetworkImage(firstImageUrl),
+                        fit: BoxFit.fill
+                    ),
+                  ),
+                ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -175,19 +185,6 @@ class _MyCardClassState extends State<MyCardClass> {
                       ],
                     ),
                   ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    order['status'],
-                    style: TextStyle(fontSize: 20),
-                  ),
                 ),
               ),
               Padding(
@@ -210,19 +207,47 @@ class _MyCardClassState extends State<MyCardClass> {
                         child: ElevatedButton(
                           onPressed: () {
                             // Navigate to the "/review" page
-                            Navigator.pushNamed(context, '/review');
+                            Navigator.pushNamed(context, '/orderdetail');
                           },
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.transparent,
+                            primary: Colors.grey[200],
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
                           ),
                           child: Text(
-                            "Review",
-                            style: TextStyle(color: Colors.teal),
+                            "Order Detail",
+                            style: TextStyle(color: Colors.black),
                           ),
                         ),
+                      ),
+                    ),
+                    // Container(
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.all(8.0),
+                    //     child: ElevatedButton(
+                    //       onPressed: () {
+                    //         // Navigate to the "/review" page
+                    //         Navigator.pushNamed(context, '/review');
+                    //       },
+                    //       style: ElevatedButton.styleFrom(
+                    //         primary: Colors.transparent,
+                    //         shape: RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(20),
+                    //         ),
+                    //       ),
+                    //       child: Text(
+                    //         "Review",
+                    //         style: TextStyle(color: Colors.teal),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        order['status'],
+                        style: TextStyle(fontSize: 20),
                       ),
                     ),
                   ],

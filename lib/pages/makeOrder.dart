@@ -136,6 +136,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     loadingController.forward();
   }
 
+  String? _category;
   @override
   void initState() {
     loadingController = AnimationController(
@@ -149,8 +150,14 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     super.initState();
     getNameFromSharedPreferences();
     _getUserData();
+    getCategoryFromSharedPreferences();
   }
-
+  void getCategoryFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _category = prefs.getString("category") ?? "";
+    });
+  }
   void getNameFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -297,6 +304,17 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: Column(
             children: [
+              Text(
+                "Category: $_category",
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontStyle: FontStyle.normal,
+                  fontSize: 20,
+                  // color: Color(0xffffffff),
+                ),
+              ),
               TextFormField(
                 controller: fromLocation,
                 decoration: const InputDecoration(
@@ -352,6 +370,15 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   labelText: 'Height',
                   suffixIcon: Icon(Icons.straighten),
                   suffix: Text('CM'),
+                ),
+              ),
+              TextFormField(
+                controller: heightController,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'Price',
+                  suffixIcon: Icon(Icons.price_check),
+                  suffix: Text('TL'),
                 ),
               ),
               SizedBox(height: 10),

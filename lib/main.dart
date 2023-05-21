@@ -14,6 +14,7 @@ import 'package:itec404_delivery_app/pages/more.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:itec404_delivery_app/pages/passwordreset.dart';
 import 'package:itec404_delivery_app/pages/review.dart';
+import 'package:itec404_delivery_app/pages/orderDetail.dart';
 import 'Pages/about.dart';
 import 'Pages/contact.dart';
 import 'Pages/courrier.dart';
@@ -82,6 +83,7 @@ void main() async {
         '/makeorder': (context) => MakeOrderPage(controller: TextEditingController()),
         '/account': (context) => Account(firestore: firestore),
         '/more': (context) => More(),
+        '/orderdetail': (context) => OrderDetail(),
         '/about': (context) => About(),
         '/contact': (context) => Contact(),
         '/courrier': (context) => Courrier(),
