@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:itec404_delivery_app/pages/courier.dart';
 import 'package:itec404_delivery_app/pages/home.dart';
@@ -12,20 +14,22 @@ import 'package:itec404_delivery_app/pages/more.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:itec404_delivery_app/pages/passwordreset.dart';
 import 'package:itec404_delivery_app/pages/review.dart';
-
 import 'Pages/about.dart';
 import 'Pages/contact.dart';
 import 'Pages/courrier.dart';
 import 'Pages/changepass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'Pages/admin.dart';
+import 'package:get/get.dart';
 
 
 void main() async {
+  bool isWeb = GetPlatform.isWeb;
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
+  if (isWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
         apiKey: "AIzaSyC-Bh9XwKf8WIN8yXBf85dhE1jZE0tExds",
         authDomain: "itec404deliveryapp.firebaseapp.com",
         projectId: "itec404deliveryapp",
@@ -34,7 +38,11 @@ void main() async {
         appId: "1:655429434868:web:b7f78f4334dd7f1e3bcda1",
         measurementId: "G-4JTX4BW6WX",
       ),
-  );
+    );
+  }
+  else{
+    await Firebase.initializeApp();
+  }
   bool _isAdmin = false;
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
