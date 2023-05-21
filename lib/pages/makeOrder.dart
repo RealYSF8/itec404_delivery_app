@@ -16,8 +16,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+
 
 class MakeOrderPage extends StatefulWidget {
+  final TextEditingController controller;
+  MakeOrderPage({required this.controller});
+
   @override
   State<MakeOrderPage> createState() => _Order();
 }
@@ -44,7 +52,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
           storageReference.child('images/$fileName.webp');
 
           // Upload the converted image
-          UploadTask uploadTask = imageReference.putFile(File(compressedPath));
+          UploadTask uploadTask =
+          imageReference.putFile(File(compressedPath));
 
           uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
             double progress =
@@ -55,7 +64,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
           });
 
           TaskSnapshot taskSnapshot = await uploadTask;
-
         }
       }
     } catch (e) {
@@ -79,7 +87,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     return compressedPath;
   }
 
-
   Future<void> _pickImage(int index) async {
     try {
       PickedFile? pickedFile =
@@ -97,8 +104,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final TextEditingController fromController = TextEditingController();
-  final TextEditingController toController = TextEditingController();
+  final TextEditingController fromLocation = TextEditingController();
+  final TextEditingController toLocation = TextEditingController();
   final TextEditingController lengthController = TextEditingController();
   final TextEditingController widthController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
@@ -134,9 +141,10 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     loadingController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
-    )..addListener(() {
-      setState(() {});
-    });
+    )
+      ..addListener(() {
+        setState(() {});
+      });
     super.initState();
     super.initState();
     getNameFromSharedPreferences();
@@ -148,7 +156,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     setState(() {
       _Name = prefs.getString("name") ?? "";
       _Email = prefs.getString("email") ?? "";
-
     });
   }
 
@@ -161,10 +168,11 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     }
   }
 
+
   Future<void> _createOrder() async {
     // Get the data from the input fields
-    String? from = fromController.text;
-    String? to = toController.text;
+    String? from = fromLocation.text;
+    String? to = toLocation.text;
     String? length = lengthController.text;
     String? width = widthController.text;
     String? height = heightController.text;
@@ -194,14 +202,15 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       File? selectedImage = _selectedImages[i];
       if (selectedImage != null) {
         String fileName = Path.basename(selectedImage.path);
-        String imageUrl = await _uploadImageToFirebaseStorage(selectedImage, fileName);
+        String imageUrl = await _uploadImageToFirebaseStorage(
+            selectedImage, fileName);
         orderRef.update({'imageUrls.$i': imageUrl});
       }
     }
 
     // Clear the input fields
-    fromController.clear();
-    toController.clear();
+    fromLocation.clear();
+    toLocation.clear();
     lengthController.clear();
     widthController.clear();
     heightController.clear();
@@ -229,10 +238,12 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     );
   }
 
-  Future<String> _uploadImageToFirebaseStorage(File imageFile, String fileName) async {
+  Future<String> _uploadImageToFirebaseStorage(File imageFile,
+      String fileName) async {
     try {
       String compressedPath = await convertImageToWebP(imageFile.path);
-      Reference storageReference = _storage.ref().child('images/$fileName.webp');
+      Reference storageReference = _storage.ref().child(
+          'images/$fileName.webp');
       UploadTask uploadTask = storageReference.putFile(File(compressedPath));
       TaskSnapshot taskSnapshot = await uploadTask;
       String imageUrl = await taskSnapshot.ref.getDownloadURL();
@@ -242,7 +253,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       throw e;
     }
   }
-
 
 
   int _selectedIndex = 1;
@@ -318,22 +328,34 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
           child: Column(
             children: [
               TextFormField(
-                controller: fromController,
+                controller: fromLocation,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'From',
                   suffixIcon: Icon(Icons.navigation_sharp),
                   suffix: Text('Source'),
                 ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => add(context, fromLocation),
+                  );
+                },
               ),
               TextFormField(
-                controller: toController,
+                controller: toLocation,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'To',
                   suffixIcon: Icon(Icons.assistant_navigation),
                   suffix: Text('Destination'),
                 ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => add(context, toLocation),
+                  );
+                },
               ),
               TextFormField(
                 controller: lengthController,
@@ -440,4 +462,105 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       ),
     );
   }
+
+  Widget add(BuildContext context, TextEditingController controller) {
+    GoogleMapController? mapController;
+    CameraPosition? currentCameraPosition;
+    Marker? fromMarker;
+    Marker? toMarker;
+
+    return AlertDialog(
+      title: Text('Select Location'),
+      content: Container(
+        width: double.maxFinite,
+        height: 300,
+        child: Stack(
+          children: [
+            GoogleMap(
+              initialCameraPosition: CameraPosition(target: LatLng(0, 0)),
+              onMapCreated: (controller) {
+                mapController = controller;
+              },
+              onCameraMove: (position) {
+                setState(() {
+                  currentCameraPosition = position;
+                });
+              },
+              markers: Set<Marker>.of([
+                if (fromMarker != null) fromMarker!,
+                if (toMarker != null) toMarker!,
+              ]),
+            ),
+            if (currentCameraPosition != null)
+              Positioned(
+                top: 10,
+                left: 10,
+                child: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    'Selected Location: ${currentCameraPosition!.target.latitude}, ${currentCameraPosition!.target.longitude}',
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('CANCEL'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text('SELECT'),
+          onPressed: () async {
+            if (currentCameraPosition != null) {
+              final LatLng selectedLocation = currentCameraPosition!.target;
+
+              // Call getAddressFromLatLng to retrieve the address
+              String address = await getAddressFromLatLng(
+                selectedLocation.latitude,
+                selectedLocation.longitude,
+              );
+
+              setState(() {
+                if (fromMarker == null) {
+                  fromMarker = Marker(
+                    markerId: MarkerId('from_location'),
+                    position: selectedLocation,
+                  );
+                } else {
+                  toMarker = Marker(
+                    markerId: MarkerId('to_location'),
+                    position: selectedLocation,
+                  );
+                }
+              });
+
+              mapController?.animateCamera(CameraUpdate.newLatLng(selectedLocation));
+              controller.text = address; // Update the text field with the selected location's address
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Future<String> getAddressFromLatLng(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks != null && placemarks.isNotEmpty) {
+        Placemark placemark = placemarks[0];
+        String address = '${placemark.street}, ${placemark.subLocality}, ${placemark.locality}, ${placemark.postalCode}';
+        return address;
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+    return '';
+  }
+
 }
