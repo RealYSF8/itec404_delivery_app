@@ -25,11 +25,14 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyDC1WkdzulAQvZtlBTSQMCZlMmiWgrP4A0",
-        appId: "1:655429434868:android:e994b0a3f99ccfbe3bcda1",
-        messagingSenderId: "655429434868",
+    options: const FirebaseOptions(
+        apiKey: "AIzaSyC-Bh9XwKf8WIN8yXBf85dhE1jZE0tExds",
+        authDomain: "itec404deliveryapp.firebaseapp.com",
         projectId: "itec404deliveryapp",
+        storageBucket: "itec404deliveryapp.appspot.com",
+        messagingSenderId: "655429434868",
+        appId: "1:655429434868:web:b7f78f4334dd7f1e3bcda1",
+        measurementId: "G-4JTX4BW6WX",
       ),
   );
   bool _isAdmin = false;

@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyC-Bh9XwKf8WIN8yXBf85dhE1jZE0tExds",
+    authDomain: "itec404deliveryapp.firebaseapp.com",
+    projectId: "itec404deliveryapp",
+    storageBucket: "itec404deliveryapp.appspot.com",
+    messagingSenderId: "655429434868",
+    appId: "1:655429434868:web:b7f78f4334dd7f1e3bcda1",
+    measurementId: "G-4JTX4BW6WX"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
