@@ -31,13 +31,13 @@ void main() async {
   if (isWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey: "AIzaSyC-Bh9XwKf8WIN8yXBf85dhE1jZE0tExds",
-        authDomain: "itec404deliveryapp.web.app",
-        projectId: "itec404deliveryapp",
-        storageBucket: "itec404deliveryapp.appspot.com",
-        messagingSenderId: "655429434868",
-        appId: "1:655429434868:web:b7f78f4334dd7f1e3bcda1",
-        measurementId: "G-4JTX4BW6WX",
+          apiKey: "AIzaSyC-Bh9XwKf8WIN8yXBf85dhE1jZE0tExds",
+          authDomain: "itec404deliveryapp.firebaseapp.com",
+          projectId: "itec404deliveryapp",
+          storageBucket: "itec404deliveryapp.appspot.com",
+          messagingSenderId: "655429434868",
+          appId: "1:655429434868:web:b7f78f4334dd7f1e3bcda1",
+          measurementId: "G-4JTX4BW6WX",
       ),
     );
   }
@@ -83,7 +83,7 @@ void main() async {
         '/makeorder': (context) => MakeOrderPage(controller: TextEditingController()),
         '/account': (context) => Account(firestore: firestore),
         '/more': (context) => More(),
-        '/orderdetail': (context) => OrderDetail(),
+        '/orderdetail': (context) => OrderDetail(documentId: '',),
         '/about': (context) => About(),
         '/contact': (context) => Contact(),
         '/courrier': (context) => Courrier(),
