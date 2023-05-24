@@ -24,7 +24,6 @@ import 'Pages/admin.dart';
 import 'package:get/get.dart';
 
 
-
 void main() async {
   bool isWeb = GetPlatform.isWeb;
 
@@ -32,16 +31,17 @@ void main() async {
   if (isWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey: "AIzaSyC-Bh9XwKf8WIN8yXBf85dhE1jZE0tExds",
-        authDomain: "itec404deliveryapp.firebaseapp.com",
-        projectId: "itec404deliveryapp",
-        storageBucket: "itec404deliveryapp.appspot.com",
-        messagingSenderId: "655429434868",
-        appId: "1:655429434868:web:b7f78f4334dd7f1e3bcda1",
-        measurementId: "G-4JTX4BW6WX",
+          apiKey: "AIzaSyC-Bh9XwKf8WIN8yXBf85dhE1jZE0tExds",
+          authDomain: "itec404deliveryapp.firebaseapp.com",
+          projectId: "itec404deliveryapp",
+          storageBucket: "itec404deliveryapp.appspot.com",
+          messagingSenderId: "655429434868",
+          appId: "1:655429434868:web:b7f78f4334dd7f1e3bcda1",
+          measurementId: "G-4JTX4BW6WX",
       ),
     );
-  } else {
+  }
+  else{
     await Firebase.initializeApp();
   }
   bool _isAdmin = false;
@@ -49,7 +49,7 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String role = prefs.getString('role') ?? '';
 
-  _isAdmin = role == 'Admin';
+    _isAdmin = role == 'Admin';
 
   bool _isCourier = false;
 
@@ -83,7 +83,7 @@ void main() async {
         '/makeorder': (context) => MakeOrderPage(controller: TextEditingController()),
         '/account': (context) => Account(firestore: firestore),
         '/more': (context) => More(),
-        '/orderdetail': (context) => OrderDetail(documentId: '',),
+        '/orderdetail': (context) => OrderDetail(),
         '/about': (context) => About(),
         '/contact': (context) => Contact(),
         '/courrier': (context) => Courrier(),
@@ -104,7 +104,7 @@ void main() async {
           }
         },
         '/courier': (context) {
-          if (_isCourier || _isAdmin) {
+          if (_isCourier||_isAdmin) {
             return CourierPage();
           } else {
             // Redirect to a different page or show an error message
