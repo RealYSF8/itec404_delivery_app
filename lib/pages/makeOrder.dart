@@ -33,6 +33,8 @@ class MakeOrderPage extends StatefulWidget {
 class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
+  double _uploadProgress = 0.0; // Added progress variable
+
   Future<String?> uploadImage() async {
     final ImagePicker picker = ImagePicker();
 
@@ -60,13 +62,22 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
           .ref('uploads/$fileName');  // use file name as unique identifier
 
       firebase_storage.UploadTask uploadTask = ref.putString(url, format: firebase_storage.PutStringFormat.dataUrl);
+
+      // Listen to the task's progress
+      uploadTask.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
+        setState(() {
+          _uploadProgress = snapshot.bytesTransferred / snapshot.totalBytes;
+        });
+      });
+
       firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
 
-      // Retrieve the download URL
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
       setState(() {
         _downloadUrl = downloadUrl; // Assign the downloadUrl to _downloadUrl variable
+        _uploadProgress = 0.0; // Reset the progress after upload is complete
       });
+
       return downloadUrl;
     } else {
       // Android file handling
@@ -80,11 +91,22 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
           .ref('uploads/${file.path.split('/').last}');
       firebase_storage.UploadTask uploadTask = ref.putFile(compressedFile); // Upload the compressed image
+
+      // Listen to the task's progress
+      uploadTask.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
+        double progress = snapshot.bytesTransferred / snapshot.totalBytes;
+        setState(() {
+          _uploadProgress = progress.clamp(0.0, 1.0); // Update the progress within the valid range of 0.0 to 1.0
+        });
+      });
+
       firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
       setState(() {
         _downloadUrl = downloadUrl; // Assign the downloadUrl to _downloadUrl variable
+        _uploadProgress = 0.0; // Reset the progress after upload is complete
       });
+
       return downloadUrl;
     }
   }
@@ -395,6 +417,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 onPressed: () => _createOrder(_downloadUrl),
                 child: Text('Create Order'),
               ),
+              if (_uploadProgress > 0.0) // Display progress bar if upload is in progress
+                LinearProgressIndicator(value: _uploadProgress),
             ],
           ),
         ),
