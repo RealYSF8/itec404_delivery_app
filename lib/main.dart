@@ -32,7 +32,7 @@ void main() async {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
         apiKey: "AIzaSyC-Bh9XwKf8WIN8yXBf85dhE1jZE0tExds",
-        authDomain: "itec404deliveryapp.firebaseapp.com",
+        authDomain: "itec404deliveryapp.web.app",
         projectId: "itec404deliveryapp",
         storageBucket: "itec404deliveryapp.appspot.com",
         messagingSenderId: "655429434868",

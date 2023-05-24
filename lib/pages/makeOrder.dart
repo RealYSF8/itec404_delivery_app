@@ -4,23 +4,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as Path;
 import 'dart:async';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class MakeOrderPage extends StatefulWidget {
   final TextEditingController controller;
@@ -32,74 +26,34 @@ class MakeOrderPage extends StatefulWidget {
 
 class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
-  List<File?> _selectedImages = List.generate(3, (_) => null);
+  String? _downloadUrl;
+  File? _imageFile; // Added variable to store the uploaded image
 
-  Future<void> _uploadImages() async {
-    try {
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference storageReference =
-      storage.refFromURL('gs://itec404deliveryapp.appspot.com');
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-      for (int i = 0; i < _selectedImages.length; i++) {
-        File? selectedImage = _selectedImages[i];
-        if (selectedImage != null) {
-          String fileName = Path.basename(selectedImage.path);
-
-          // Convert image to WebP format
-          String compressedPath = await convertImageToWebP(selectedImage.path);
-
-          Reference imageReference =
-          storageReference.child('images/$fileName.webp');
-
-          // Upload the converted image
-          UploadTask uploadTask =
-          imageReference.putFile(File(compressedPath));
-
-          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-            double progress =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            print("Upload progress: $progress%");
-          }, onError: (Object e) {
-            print("Error during upload: $e");
-          });
-
-          TaskSnapshot taskSnapshot = await uploadTask;
-        }
-      }
-    } catch (e) {
-      print("Error uploading images: $e");
-    }
-  }
-
-  Future<String> convertImageToWebP(String imagePath) async {
-    // Compressed image file path
-    final compressedPath =
-        (await getTemporaryDirectory()).path + '/compressed.webp';
-
-    // Compress the image to WebP format
-    await FlutterImageCompress.compressAndGetFile(
-      imagePath,
-      compressedPath,
-      quality: 90,
-      format: CompressFormat.webp,
-    );
-
-    return compressedPath;
-  }
-
-  Future<void> _pickImage(int index) async {
-    try {
-      PickedFile? pickedFile =
-      await ImagePicker().getImage(source: ImageSource.gallery);
+    setState(() {
       if (pickedFile != null) {
-        setState(() {
-          _selectedImages[index] = File(pickedFile.path);
-        });
-        print("Selected image $index: ${_selectedImages[index]}");
+        _imageFile = File(pickedFile.path);
       }
-    } on PlatformException catch (e) {
-      print('Error picking image: $e');
-    }
+    });
+  }
+
+  Future<String?> _uploadImage(File? imageFile) async {
+    if (imageFile == null) return null;
+
+    final String fileName = Path.basename(imageFile.path);
+    final firebase_storage.Reference ref =
+    firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+
+    firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
+    firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
+    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    setState(() {
+      _downloadUrl = downloadUrl;
+    });
+    return downloadUrl;
   }
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -114,7 +68,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   String? _Name;
   String? _Email;
 
-
   String _image =
       'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
   late AnimationController loadingController;
@@ -122,21 +75,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   File? _file;
   PlatformFile? _platformFile;
 
-  selectFile() async {
-    final file = await FilePicker.platform.pickFiles(
-        type: FileType.custom, allowedExtensions: ['png', 'jpg', 'jpeg']);
-
-    if (file != null) {
-      setState(() {
-        _file = File(file.files.single.path!);
-        _platformFile = file.files.first;
-      });
-    }
-
-    loadingController.forward();
-  }
-
   String? _category;
+
   @override
   void initState() {
     loadingController = AnimationController(
@@ -152,12 +92,14 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     _getUserData();
     getCategoryFromSharedPreferences();
   }
+
   void getCategoryFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _category = prefs.getString("category") ?? "";
     });
   }
+
   void getNameFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -175,8 +117,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     }
   }
 
-
-  Future<void> _createOrder() async {
+  Future<void> _createOrder(String? downloadUrl) async {
     // Get the data from the input fields
     String? from = fromLocation.text;
     String? to = toLocation.text;
@@ -185,7 +126,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     String? height = heightController.text;
 
     // Upload the images before creating the order
-    await _uploadImages();
 
     // Get the current date and time
     Timestamp now = Timestamp.now();
@@ -203,17 +143,9 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       'status': 'pending',
       'createdAt': now,
     });
+    orderRef.update({'imageUrls': _downloadUrl});
 
     // Update the order document with the image URLs
-    for (int i = 0; i < _selectedImages.length; i++) {
-      File? selectedImage = _selectedImages[i];
-      if (selectedImage != null) {
-        String fileName = Path.basename(selectedImage.path);
-        String imageUrl = await _uploadImageToFirebaseStorage(
-            selectedImage, fileName);
-        orderRef.update({'imageUrls.$i': imageUrl});
-      }
-    }
 
     // Clear the input fields
     fromLocation.clear();
@@ -224,8 +156,10 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
 
     // Clear the selected images
     setState(() {
-      _selectedImages = List.generate(3, (_) => null);
+      _imageFile = null;
+      _downloadUrl = null;
     });
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -244,24 +178,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       },
     );
   }
-
-  Future<String> _uploadImageToFirebaseStorage(File imageFile,
-      String fileName) async {
-    try {
-      String compressedPath = await convertImageToWebP(imageFile.path);
-      Reference storageReference = _storage.ref().child(
-          'images/$fileName.webp');
-      UploadTask uploadTask = storageReference.putFile(File(compressedPath));
-      TaskSnapshot taskSnapshot = await uploadTask;
-      String imageUrl = await taskSnapshot.ref.getDownloadURL();
-      return imageUrl;
-    } catch (e) {
-      print("Error uploading image: $e");
-      throw e;
-    }
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +210,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
           ),
         ]),
         backgroundColor: Colors.blue,
-        leading:  IconButton(
+        leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -326,7 +242,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (BuildContext context) => add(context, fromLocation),
+                    builder: (BuildContext context) =>
+                        add(context, fromLocation),
                   );
                 },
               ),
@@ -341,7 +258,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (BuildContext context) => add(context, toLocation),
+                    builder: (BuildContext context) =>
+                        add(context, toLocation),
                   );
                 },
               ),
@@ -382,56 +300,61 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 ),
               ),
               SizedBox(height: 10),
-              for (int i = 0; i < _selectedImages.length; i++)
-                GestureDetector(
-                  onTap: () => _pickImage(i),
-                  child: Padding(
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-                    child: DottedBorder(
-                      borderType: BorderType.RRect,
-                      radius: Radius.circular(10),
-                      dashPattern: [10, 4],
-                      strokeCap: StrokeCap.round,
-                      color: Colors.blue.shade400,
-                      child: Container(
-                        width: double.infinity,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50.withOpacity(.3),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Iconsax.folder_open,
-                              color: Colors.blue,
-                              size: 35,
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Select your file ${i + 1}',
-                              style: TextStyle(
-                                  fontSize: 15, color: Colors.grey.shade400),
-                            ),
-                            Text(
-                              'File should be jpg, png',
-                              style: TextStyle(
-                                  fontSize: 10, color: Colors.grey.shade500),
-                            ),
-                          ],
-                        ),
+              GestureDetector(
+                onTap: () {
+                  _pickImage();
+                },
+                child: Padding(
+                  padding:
+                  EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  child: DottedBorder(
+                    borderType: BorderType.RRect,
+                    radius: Radius.circular(10),
+                    dashPattern: [10, 4],
+                    strokeCap: StrokeCap.round,
+                    color: Colors.blue.shade400,
+                    child: Container(
+                      width: double.infinity,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50.withOpacity(.3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Iconsax.folder_open,
+                            color: Colors.blue,
+                            size: 35,
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'Select your file 1',
+                            style: TextStyle(
+                                fontSize: 15, color: Colors.grey.shade400),
+                          ),
+                          Text(
+                            'File should be jpg, png',
+                            style: TextStyle(
+                                fontSize: 10, color: Colors.grey.shade500),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              for (int i = 0; i < _selectedImages.length; i++)
-                _selectedImages[i] != null
-                    ? Image.file(_selectedImages[i]!, width: 150, height: 150)
-                    : Container(),
+              ),
+              if (_imageFile != null)
+                kIsWeb
+                    ? Image.network(_imageFile!.path)
+                    : Image.file(_imageFile!),
+              Container(),
               ElevatedButton(
-                onPressed: _createOrder,
+                onPressed: () async {
+                  String? downloadUrl = await _uploadImage(_imageFile);
+                  _createOrder(downloadUrl);
+                },
                 child: Text('Create Order'),
               ),
             ],
@@ -465,8 +388,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 });
               },
               markers: Set<Marker>.of([
-                if (fromMarker != null) fromMarker!,
-                if (toMarker != null) toMarker!,
+                if (fromMarker != null) fromMarker,
+                if (toMarker != null) toMarker,
               ]),
             ),
             if (currentCameraPosition != null)
@@ -540,5 +463,4 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     }
     return '';
   }
-
 }
