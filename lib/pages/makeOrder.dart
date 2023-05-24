@@ -11,12 +11,16 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as Path;
 import 'dart:async';
 import 'package:flutter/services.dart';
-
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:image_picker/image_picker.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
+import 'package:firebase_core/firebase_core.dart';
 
 class MakeOrderPage extends StatefulWidget {
   final TextEditingController controller;
@@ -29,33 +33,76 @@ class MakeOrderPage extends StatefulWidget {
 class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
-  File? _imageFile; // Added variable to store the uploaded image
-
-  Future<void> _pickImage() async {
+  Future<String?> uploadImage() async {
     final ImagePicker picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      if (pickedFile != null) {
-        _imageFile = File(pickedFile.path);
-      }
-    });
+    // Pick an image
+    final PickedFile? pickedFile;
+    if (kIsWeb) {
+      // For web, we need to use html.FileUploadInputElement
+      html.FileUploadInputElement input = html.FileUploadInputElement();
+      input.click();
+
+      await input.onChange.first;
+
+      if (input.files == null || input.files!.isEmpty) return null;
+
+      final blob = input.files!.first;
+      final reader = html.FileReader();
+
+      reader.readAsDataUrl(blob);
+      await reader.onLoad.first;
+
+      final fileName = blob.name;
+      String url = reader.result as String;
+
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref('uploads/$fileName');  // use file name as unique identifier
+
+      firebase_storage.UploadTask uploadTask = ref.putString(url, format: firebase_storage.PutStringFormat.dataUrl);
+      firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
+
+      // Retrieve the download URL
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      setState(() {
+        _downloadUrl = downloadUrl; // Assign the downloadUrl to _downloadUrl variable
+      });
+      return downloadUrl;
+    } else {
+      // Android file handling
+      XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
+      if (pickedFile == null) return null;
+
+      File file = File(pickedFile.path);
+      String compressedPath = await convertImageToWebP(file.path); // Compress the image
+      File compressedFile = File(compressedPath);
+
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref('uploads/${file.path.split('/').last}');
+      firebase_storage.UploadTask uploadTask = ref.putFile(compressedFile); // Upload the compressed image
+      firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      setState(() {
+        _downloadUrl = downloadUrl; // Assign the downloadUrl to _downloadUrl variable
+      });
+      return downloadUrl;
+    }
   }
 
-  Future<String?> _uploadImage(File? imageFile) async {
-    if (imageFile == null) return null;
+  Future<String> convertImageToWebP(String imagePath) async {
+    // Compressed image file path
+    final compressedPath =
+        (await getTemporaryDirectory()).path + '/compressed.webp';
 
-    final String fileName = Path.basename(imageFile.path);
-    final firebase_storage.Reference ref =
-    firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+    // Compress the image to WebP format
+    await FlutterImageCompress.compressAndGetFile(
+      imagePath,
+      compressedPath,
+      quality: 90,
+      format: CompressFormat.webp,
+    );
 
-    firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
-    firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
-    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-    setState(() {
-      _downloadUrl = downloadUrl;
-    });
-    return downloadUrl;
+    return compressedPath;
   }
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -157,10 +204,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     heightController.clear();
 
     // Clear the selected images
-    setState(() {
-      _imageFile = null;
-      _downloadUrl = null;
-    });
 
     showDialog(
       context: context,
@@ -304,7 +347,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
               SizedBox(height: 10),
               GestureDetector(
                 onTap: () {
-                  _pickImage();
+                  uploadImage();
                 },
                 child: Padding(
                   padding:
@@ -347,16 +390,9 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              if (_imageFile != null)
-                kIsWeb
-                    ? Image.network(_imageFile!.path)
-                    : Image.file(_imageFile!),
               Container(),
               ElevatedButton(
-                onPressed: () async {
-                  String? downloadUrl = await _uploadImage(_imageFile);
-                  _createOrder(downloadUrl);
-                },
+                onPressed: () => _createOrder(_downloadUrl),
                 child: Text('Create Order'),
               ),
             ],
