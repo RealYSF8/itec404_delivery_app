@@ -17,7 +17,8 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:google_maps_webservice/places.dart';
 import 'dart:math';
 
-
+import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:google_maps_webservice/places.dart';
 
 class MakeOrderPage extends StatefulWidget {
   final TextEditingController controller;
@@ -31,6 +32,10 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
   File? _imageFile; // Added variable to store the uploaded image
+  final places =
+      GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+  List<String> placePredictions = [];
+  List<String> toPlacePredictions = [];
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -42,13 +47,32 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       }
     });
   }
+  Future<List<String>> fetchToPlacePredictions(String input) async {
+    final response = await places.autocomplete(input, types: []);
+    if (response.isOkay) {
+      return response.predictions.map((prediction) => prediction.description!).toList();
+    } else {
+      throw response.errorMessage!;
+    }
+  }
+
+  Future<List<String>> fetchPlacePredictions(String input) async {
+    final response = await places.autocomplete(input, types: []);
+    if (response.isOkay) {
+      return response.predictions
+          .map((prediction) => prediction.description!)
+          .toList();
+    } else {
+      throw response.errorMessage!;
+    }
+  }
 
   Future<String?> _uploadImage(File? imageFile) async {
     if (imageFile == null) return null;
 
     final String fileName = Path.basename(imageFile.path);
     final firebase_storage.Reference ref =
-    firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+        firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
 
     firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
     firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
@@ -85,8 +109,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     loadingController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
-    )
-      ..addListener(() {
+    )..addListener(() {
         setState(() {});
       });
     super.initState();
@@ -244,22 +267,35 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   suffixIcon: Icon(Icons.navigation_sharp),
                   suffix: Text('Source'),
                 ),
-                onTap: () async {
-                  Prediction? prediction = await PlacesAutocomplete.show(
-                    offset: 0,
-                    radius: 1000,
-                    strictbounds: false,
-                    hint: 'Search for everything and anything',
-                    context: context,
-                    apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY',
-                    mode: Mode.overlay,
-                    language: 'en',
-                    components: [new Component(Component.country, "cy")],
-                    types: [],
-                  );
-                  if (prediction != null) {
-                    fromLocation.text = prediction.description!;
+                onChanged: (input) {
+                  if (input.isNotEmpty) {
+                    fetchPlacePredictions(input).then((predictions) {
+                      setState(() {
+                        placePredictions = predictions;
+                      });
+                    }).catchError((error) {
+                      // Handle the error if fetching predictions fails
+                    });
+                  } else {
+                    setState(() {
+                      placePredictions = [];
+                    });
                   }
+                },
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: placePredictions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(placePredictions[index]),
+                    onTap: () {
+                      fromLocation.text = placePredictions[index];
+                      setState(() {
+                        placePredictions = [];
+                      });
+                    },
+                  );
                 },
               ),
               TextFormField(
@@ -270,24 +306,38 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   suffixIcon: Icon(Icons.assistant_navigation),
                   suffix: Text('Destination'),
                 ),
-                onTap: () async {
-                  Prediction? prediction = await PlacesAutocomplete.show(
-                    offset: 0,
-                    radius: 1000,
-                    strictbounds: false,
-                    hint: 'Search for everything and anything',
-                    context: context,
-                    apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY',
-                    mode: Mode.overlay,
-                    language: 'en',
-                    components: [new Component(Component.country, "cy")],
-                    types: [],
-                  );
-                  if (prediction != null) {
-                    toLocation.text = prediction.description!;
+                onChanged: (input) {
+                  if (input.isNotEmpty) {
+                    fetchToPlacePredictions(input).then((predictions) {
+                      setState(() {
+                        toPlacePredictions = predictions;
+                      });
+                    }).catchError((error) {
+                      // Handle the error if fetching predictions fails
+                    });
+                  } else {
+                    setState(() {
+                      toPlacePredictions = [];
+                    });
                   }
                 },
               ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: toPlacePredictions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(toPlacePredictions[index]),
+                    onTap: () {
+                      toLocation.text = toPlacePredictions[index];
+                      setState(() {
+                        toPlacePredictions = [];
+                      });
+                    },
+                  );
+                },
+              ),
+
               TextFormField(
                 controller: lengthController,
                 decoration: const InputDecoration(
@@ -331,7 +381,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 },
                 child: Padding(
                   padding:
-                  EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                      EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     radius: Radius.circular(10),
