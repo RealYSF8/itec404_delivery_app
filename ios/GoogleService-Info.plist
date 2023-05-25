@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>655429434868-1cnpg6v7tuhj57uod86ub8m0os6hd6vd.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.655429434868-1cnpg6v7tuhj57uod86ub8m0os6hd6vd</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>655429434868-ko3ijisnnije8qoq9lpb3dk9todr8di1.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBvbfu238RzrtoXfCQ58FIz0JEPXICPRBY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>655429434868</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.itec404DeliveryApp</string>
+	<key>PROJECT_ID</key>
+	<string>itec404deliveryapp</string>
+	<key>STORAGE_BUCKET</key>
+	<string>itec404deliveryapp.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:655429434868:ios:2261b474c8532db83bcda1</string>
+</dict>
+</plist>

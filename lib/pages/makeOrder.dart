@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,10 +11,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as Path;
 import 'dart:async';
 import 'package:flutter/services.dart';
+
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:google_maps_webservice/places.dart';
-
 
 
 class MakeOrderPage extends StatefulWidget {
@@ -30,34 +30,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
   File? _imageFile; // Added variable to store the uploaded image
-  final places = GoogleMapsPlaces(apiKey: 'AIzaSyCKGOQLEf3OZpG77XTfScdkzWIlyNc2rcI');
-
-  @override
-  void dispose() {
-    // Dispose the GoogleMapsPlaces instance when no longer needed
-    places.dispose();
-    super.dispose();
-  }
-
-  // Function to handle the location autofill
-  Future<void> _autofillLocation(TextEditingController controller) async {
-    // Show the autocomplete overlay
-    Prediction? prediction = await PlacesAutocomplete.show(
-      context: context,
-      apiKey: 'AIzaSyCKGOQLEf3OZpG77XTfScdkzWIlyNc2rcI',
-      language: 'en',
-      mode: Mode.overlay,
-      components: [Component(Component.country, 'cy')], // Adjust the country code if needed
-    );
-
-    // Update the controller with the selected location
-    if (prediction != null) {
-      PlacesDetailsResponse detailsResponse = await places.getDetailsByPlaceId(prediction.placeId!);
-      String location = detailsResponse.result!.formattedAddress!;
-      controller.text = location;
-    }
-  }
-
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -270,7 +242,11 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   suffix: Text('Source'),
                 ),
                 onTap: () {
-                  _autofillLocation(fromLocation);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        add(context, fromLocation),
+                  );
                 },
               ),
               TextFormField(
@@ -282,7 +258,11 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   suffix: Text('Destination'),
                 ),
                 onTap: () {
-                  _autofillLocation(toLocation);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        add(context, toLocation),
+                  );
                 },
               ),
               TextFormField(
@@ -384,5 +364,105 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  Widget add(BuildContext context, TextEditingController controller) {
+    GoogleMapController? mapController;
+    CameraPosition? currentCameraPosition;
+    Marker? fromMarker;
+    Marker? toMarker;
+
+    return AlertDialog(
+      title: Text('Select Location'),
+      content: Container(
+        width: double.maxFinite,
+        height: 300,
+        child: Stack(
+          children: [
+            GoogleMap(
+              initialCameraPosition: CameraPosition(target: LatLng(0, 0)),
+              onMapCreated: (controller) {
+                mapController = controller;
+              },
+              onCameraMove: (position) {
+                setState(() {
+                  currentCameraPosition = position;
+                });
+              },
+              markers: Set<Marker>.of([
+                if (fromMarker != null) fromMarker,
+                if (toMarker != null) toMarker,
+              ]),
+            ),
+            if (currentCameraPosition != null)
+              Positioned(
+                top: 10,
+                left: 10,
+                child: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    'Selected Location: ${currentCameraPosition!.target.latitude}, ${currentCameraPosition!.target.longitude}',
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text('CANCEL'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: Text('SELECT'),
+          onPressed: () async {
+            if (currentCameraPosition != null) {
+              final LatLng selectedLocation = currentCameraPosition!.target;
+
+              // Call getAddressFromLatLng to retrieve the address
+              String address = await getAddressFromLatLng(
+                selectedLocation.latitude,
+                selectedLocation.longitude,
+              );
+
+              setState(() {
+                if (fromMarker == null) {
+                  fromMarker = Marker(
+                    markerId: MarkerId('from_location'),
+                    position: selectedLocation,
+                  );
+                } else {
+                  toMarker = Marker(
+                    markerId: MarkerId('to_location'),
+                    position: selectedLocation,
+                  );
+                }
+              });
+
+              mapController?.animateCamera(CameraUpdate.newLatLng(selectedLocation));
+              controller.text = address; // Update the text field with the selected location's address
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Future<String> getAddressFromLatLng(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks != null && placemarks.isNotEmpty) {
+        Placemark placemark = placemarks[0];
+        String address = '${placemark.street}, ${placemark.subLocality}, ${placemark.locality}, ${placemark.postalCode}';
+        return address;
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+    return '';
   }
 }
