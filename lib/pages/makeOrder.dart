@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:google_maps_webservice/places.dart';
+import 'dart:math';
 
 
 class MakeOrderPage extends StatefulWidget {
@@ -152,7 +153,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     String? length = lengthController.text;
     String? width = widthController.text;
     String? height = heightController.text;
-
+    Random random = Random();
+    int randomOrder = random.nextInt(10000);
     // Upload the images before creating the order
 
     // Get the current date and time
@@ -170,6 +172,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       'height': height,
       'status': 'pending',
       'createdAt': now,
+      'orderNumber': randomOrder,
     });
     orderRef.update({'imageUrls': _downloadUrl});
 

@@ -83,7 +83,10 @@ void main() async {
         '/makeorder': (context) => MakeOrderPage(controller: TextEditingController()),
         '/account': (context) => Account(firestore: firestore),
         '/more': (context) => More(),
-        '/orderdetail': (context) => OrderDetail(documentId: '',),
+        '/orderdetail': (context) => OrderDetail(
+          documentId: ModalRoute.of(context)!.settings.arguments as String,
+        ),
+
         '/about': (context) => About(),
         '/contact': (context) => Contact(),
         '/courrier': (context) => Courrier(),

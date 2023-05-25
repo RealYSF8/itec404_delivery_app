@@ -102,7 +102,6 @@ class _OrderPageState extends State<OrderPage> {
       body: MyCardClass(),
     );
   }
-
 }
 
 class MyCardClass extends StatefulWidget {
@@ -135,7 +134,6 @@ class _MyCardClassState extends State<MyCardClass> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -164,17 +162,16 @@ class _MyCardClassState extends State<MyCardClass> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                  Container(
-                  width: 60,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                        image: NetworkImage(firstImageUrl),
-                        fit: BoxFit.fill
+                    Container(
+                      width: 60,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: NetworkImage(firstImageUrl),
+                            fit: BoxFit.fill),
+                      ),
                     ),
-                  ),
-                ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -206,8 +203,9 @@ class _MyCardClassState extends State<MyCardClass> {
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            // Navigate to the "/review" page
-                            Navigator.pushNamed(context, '/orderdetail');
+                            // Navigate to the "/orderdetail" page with the document ID
+                            Navigator.pushNamed(context, '/orderdetail',
+                                arguments: order.id);
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Colors.grey[200],
@@ -222,27 +220,6 @@ class _MyCardClassState extends State<MyCardClass> {
                         ),
                       ),
                     ),
-                    // Container(
-                    //   child: Padding(
-                    //     padding: const EdgeInsets.all(8.0),
-                    //     child: ElevatedButton(
-                    //       onPressed: () {
-                    //         // Navigate to the "/review" page
-                    //         Navigator.pushNamed(context, '/review');
-                    //       },
-                    //       style: ElevatedButton.styleFrom(
-                    //         primary: Colors.transparent,
-                    //         shape: RoundedRectangleBorder(
-                    //           borderRadius: BorderRadius.circular(20),
-                    //         ),
-                    //       ),
-                    //       child: Text(
-                    //         "Review",
-                    //         style: TextStyle(color: Colors.teal),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Text(
@@ -260,4 +237,3 @@ class _MyCardClassState extends State<MyCardClass> {
     );
   }
 }
-//comment for aboude
