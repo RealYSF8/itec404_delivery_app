@@ -18,6 +18,7 @@ import 'package:google_maps_webservice/places.dart';
 import 'dart:math';
 
 
+
 class MakeOrderPage extends StatefulWidget {
   final TextEditingController controller;
   MakeOrderPage({required this.controller});
@@ -30,33 +31,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
   File? _imageFile; // Added variable to store the uploaded image
-  final places = GoogleMapsPlaces(apiKey: 'AIzaSyCKGOQLEf3OZpG77XTfScdkzWIlyNc2rcI');
-
-  @override
-  void dispose() {
-    // Dispose the GoogleMapsPlaces instance when no longer needed
-    places.dispose();
-    super.dispose();
-  }
-
-  // Function to handle the location autofill
-  Future<void> _autofillLocation(TextEditingController controller) async {
-    // Show the autocomplete overlay
-    Prediction? prediction = await PlacesAutocomplete.show(
-      context: context,
-      apiKey: 'AIzaSyCKGOQLEf3OZpG77XTfScdkzWIlyNc2rcI',
-      language: 'en',
-      mode: Mode.overlay,
-      components: [Component(Component.country, 'cy')], // Adjust the country code if needed
-    );
-
-    // Update the controller with the selected location
-    if (prediction != null) {
-      PlacesDetailsResponse detailsResponse = await places.getDetailsByPlaceId(prediction.placeId!);
-      String location = detailsResponse.result!.formattedAddress!;
-      controller.text = location;
-    }
-  }
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -270,8 +244,22 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   suffixIcon: Icon(Icons.navigation_sharp),
                   suffix: Text('Source'),
                 ),
-                onTap: () {
-                  _autofillLocation(fromLocation);
+                onTap: () async {
+                  Prediction? prediction = await PlacesAutocomplete.show(
+                    offset: 0,
+                    radius: 1000,
+                    strictbounds: false,
+                    hint: 'Search for everything and anything',
+                    context: context,
+                    apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY',
+                    mode: Mode.overlay,
+                    language: 'en',
+                    components: [new Component(Component.country, "cy")],
+                    types: ['(cities)'],
+                  );
+                  if (prediction != null) {
+                    fromLocation.text = prediction.description!;
+                  }
                 },
               ),
               TextFormField(
@@ -282,8 +270,22 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   suffixIcon: Icon(Icons.assistant_navigation),
                   suffix: Text('Destination'),
                 ),
-                onTap: () {
-                  _autofillLocation(toLocation);
+                onTap: () async {
+                  Prediction? prediction = await PlacesAutocomplete.show(
+                    offset: 0,
+                    radius: 1000,
+                    strictbounds: false,
+                    hint: 'Search for everything and anything',
+                    context: context,
+                    apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY',
+                    mode: Mode.overlay,
+                    language: 'en',
+                    components: [new Component(Component.country, "cy")],
+                    types: ['(cities)'],
+                  );
+                  if (prediction != null) {
+                    toLocation.text = prediction.description!;
+                  }
                 },
               ),
               TextFormField(
