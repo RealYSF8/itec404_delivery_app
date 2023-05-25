@@ -255,7 +255,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                     mode: Mode.overlay,
                     language: 'en',
                     components: [new Component(Component.country, "cy")],
-                    types: ['(cities)'],
+                    types: [],
                   );
                   if (prediction != null) {
                     fromLocation.text = prediction.description!;
@@ -281,7 +281,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                     mode: Mode.overlay,
                     language: 'en',
                     components: [new Component(Component.country, "cy")],
-                    types: ['(cities)'],
+                    types: [],
                   );
                   if (prediction != null) {
                     toLocation.text = prediction.description!;
