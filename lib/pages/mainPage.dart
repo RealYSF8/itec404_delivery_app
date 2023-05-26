@@ -271,6 +271,39 @@ class _MainPage extends State<MainPage> {
                 ),
               ],
             ),
+            GridView.count(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 0.7,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                InkWell(
+                  onTap: () {
+                    // Navigate to orders page for Personal Care
+                    Navigator.pushNamed(context, '/makeorder');
+                  },
+                  child: buildCategory("Personal Care", "assets/personalcare.png"),
+                ),
+                InkWell(
+                  onTap: () {
+                    // Navigate to orders page for Car Parts
+                    Navigator.pushNamed(context, '/makeorder');
+                  },
+                  child: buildCategory("Car Parts", "assets/carparts.png"),
+                ),
+                InkWell(
+                  onTap: () {
+
+                    // Navigate to orders page for Jewelry
+                    Navigator.pushNamed(context, '/makeorder');
+                  },
+                  child: buildCategory("Jewelry", "assets/jewel.png"),
+                ),
+              ],
+            ),
           ],
         ),
       ),
