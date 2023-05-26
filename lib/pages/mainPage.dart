@@ -238,6 +238,39 @@ class _MainPage extends State<MainPage> {
                 ),
               ],
             ),
+            GridView.count(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 0.7,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                InkWell(
+                  onTap: () {
+                    // Navigate to orders page for Furniture
+                    Navigator.pushNamed(context, '/makeorder');
+                  },
+                  child: buildCategory("Furniture", "assets/couch.png"),
+                ),
+                InkWell(
+                  onTap: () {
+                    // Navigate to orders page for Toys
+                    Navigator.pushNamed(context, '/makeorder');
+                  },
+                  child: buildCategory("Toys", "assets/toys.png"),
+                ),
+                InkWell(
+                  onTap: () {
+
+                    // Navigate to orders page for Tools
+                    Navigator.pushNamed(context, '/makeorder');
+                  },
+                  child: buildCategory("Tools", "assets/tools.png"),
+                ),
+              ],
+            ),
           ],
         ),
       ),

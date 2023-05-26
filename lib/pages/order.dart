@@ -176,6 +176,15 @@ class _MyCardClassState extends State<MyCardClass> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
+                          "ORDER27468",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
                           "Price: Placeholder", // Placeholder for the price
                           style: TextStyle(fontSize: 16),
                         ),
