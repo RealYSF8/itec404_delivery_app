@@ -29,6 +29,10 @@ class MakeOrderPage extends StatefulWidget {
 }
 
 class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
+  Future<String?> _getAddress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('address');
+  }
   final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
   File? _imageFile; // Added variable to store the uploaded image
@@ -47,10 +51,13 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       }
     });
   }
+
   Future<List<String>> fetchToPlacePredictions(String input) async {
     final response = await places.autocomplete(input, types: []);
     if (response.isOkay) {
-      return response.predictions.map((prediction) => prediction.description!).toList();
+      return response.predictions
+          .map((prediction) => prediction.description!)
+          .toList();
     } else {
       throw response.errorMessage!;
     }
@@ -117,6 +124,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     getNameFromSharedPreferences();
     _getUserData();
     getCategoryFromSharedPreferences();
+    _getAddress().then((value) => fromLocation.text = value ?? '');
+
   }
 
   void getCategoryFromSharedPreferences() async {
@@ -337,7 +346,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   );
                 },
               ),
-
               TextFormField(
                 controller: lengthController,
                 decoration: const InputDecoration(

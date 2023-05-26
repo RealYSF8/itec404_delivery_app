@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:itec404_delivery_app/register_validator.dart';
+import 'package:google_maps_webservice/places.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
   _RegisterPageState createState() => _RegisterPageState();
+
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  List<String> placePredictions = [];
+  final places =
+  GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+
+
+  Future<List<String>> fetchPlacePredictions(String input) async {
+    final response = await places.autocomplete(input, types: []);
+    if (response.isOkay) {
+      return response.predictions
+          .map((prediction) => prediction.description!)
+          .toList();
+    } else {
+      throw response.errorMessage!;
+    }
+  }
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -108,11 +125,40 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(height: 16),
               TextFormField(
                 controller: _addressController,
-                validator: (value) => validateAddress(value),
                 decoration: InputDecoration(
                   hintText: "House Address",
                   prefixIcon: Icon(Icons.home, color: Colors.black, size: 24),
                 ),
+                onChanged: (input) {
+                  if (input.isNotEmpty) {
+                    fetchPlacePredictions(input).then((predictions) {
+                      setState(() {
+                        placePredictions = predictions;
+                      });
+                    }).catchError((error) {
+                      // Handle the error if fetching predictions fails
+                    });
+                  } else {
+                    setState(() {
+                      placePredictions = [];
+                    });
+                  }
+                },
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: placePredictions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(placePredictions[index]),
+                    onTap: () {
+                      _addressController.text = placePredictions[index];
+                      setState(() {
+                        placePredictions = [];
+                      });
+                    },
+                  );
+                },
               ),
               SizedBox(height: 16),
               TextFormField(
