@@ -92,7 +92,7 @@ void main() async {
         '/courrier': (context) => Courrier(),
         '/changepass': (context) => Changepass(),
         '/reset': (context) => PasswordResetForm(),
-        '/review': (context) => review(),
+        '/review': (context) => Review(),
         '/admin': (context) {
           if (_isAdmin) {
             return AdminPage();

@@ -185,8 +185,8 @@ class _MyCardClassState extends State<MyCardClass> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Price: Placeholder", // Placeholder for the price
-                          style: TextStyle(fontSize: 16),
+                          order['status'],
+                          style: TextStyle(fontSize: 20),
                         ),
                       ],
                     ),
@@ -229,11 +229,25 @@ class _MyCardClassState extends State<MyCardClass> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Text(
-                        order['status'],
-                        style: TextStyle(fontSize: 20),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/review',
+                                arguments: order.id);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.grey[200],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Review",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
                       ),
                     ),
                   ],

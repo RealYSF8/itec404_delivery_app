@@ -277,9 +277,9 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                   ),
                                 ),
                                 SizedBox(height: 20.0),
+
                               ],
                             ),
-                            // Display other order details as needed
                           ],
                         ),
                       ),
