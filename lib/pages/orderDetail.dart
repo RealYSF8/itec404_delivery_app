@@ -118,12 +118,14 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                   ),
                                 ),
                                 SizedBox(width: 10.0),
-                                Text(
-                                  orderData?['from'] ?? '',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    letterSpacing: 2.0,
-                                    fontSize: 18.0,
+                                Flexible(
+                                  child: Text(
+                                    orderData?['from'] ?? '',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      letterSpacing: 2.0,
+                                      fontSize: 18.0,
+                                    ),
                                   ),
                                 ),
                                 SizedBox(height: 20.0),
@@ -142,12 +144,14 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                   ),
                                 ),
                                 SizedBox(width: 10.0),
-                                Text(
-                                  orderData?['to'] ?? '',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    letterSpacing: 2.0,
-                                    fontSize: 18.0,
+                                Flexible(
+                                  child: Text(
+                                    orderData?['to'] ?? '',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      letterSpacing: 2.0,
+                                      fontSize: 18.0,
+                                    ),
                                   ),
                                 ),
                                 SizedBox(height: 20.0),
@@ -166,12 +170,14 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                   ),
                                 ),
                                 SizedBox(width: 10.0),
-                                Text(
-                                  orderData?['length'] ?? '',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    letterSpacing: 2.0,
-                                    fontSize: 18.0,
+                                Flexible(
+                                  child: Text(
+                                    orderData?['length'] ?? '',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      letterSpacing: 2.0,
+                                      fontSize: 18.0,
+                                    ),
                                   ),
                                 ),
                                 SizedBox(height: 20.0),
