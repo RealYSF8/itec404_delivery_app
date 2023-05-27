@@ -16,7 +16,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:google_maps_webservice/places.dart';
 import 'dart:math';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
 
@@ -53,24 +54,58 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   }
 
   Future<List<String>> fetchToPlacePredictions(String input) async {
-    final response = await places.autocomplete(input, types: []);
-    if (response.isOkay) {
-      return response.predictions
-          .map((prediction) => prediction.description!)
-          .toList();
-    } else {
-      throw response.errorMessage!;
+    if (kIsWeb) {
+      final response = await http.get(
+        Uri.parse(
+            'https://us-central1-itec404deliveryapp.cloudfunctions.net/getPlaceAutocomplete?input=$input'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['predictions']
+            .map<String>((prediction) => prediction['description'])
+            .toList();
+      } else {
+        throw Exception('Failed to load predictions');
+      }
+    }
+    else {
+      final response = await places.autocomplete(input, types: []);
+      if (response.isOkay) {
+        return response.predictions
+            .map((prediction) => prediction.description!)
+            .toList();
+      } else {
+        throw response.errorMessage!;
+      }
     }
   }
 
   Future<List<String>> fetchPlacePredictions(String input) async {
-    final response = await places.autocomplete(input, types: []);
-    if (response.isOkay) {
-      return response.predictions
-          .map((prediction) => prediction.description!)
-          .toList();
-    } else {
-      throw response.errorMessage!;
+    if (kIsWeb) {
+      final response = await http.get(
+        Uri.parse(
+            'https://us-central1-itec404deliveryapp.cloudfunctions.net/getPlaceAutocomplete?input=$input'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['predictions']
+            .map<String>((prediction) => prediction['description'])
+            .toList();
+      } else {
+        throw Exception('Failed to load predictions');
+      }
+    }
+    else{
+      final response = await places.autocomplete(input, types: []);
+      if (response.isOkay) {
+        return response.predictions
+            .map((prediction) => prediction.description!)
+            .toList();
+      } else {
+        throw response.errorMessage!;
+      }
     }
   }
 

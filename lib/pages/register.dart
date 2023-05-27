@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:itec404_delivery_app/register_validator.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -13,17 +16,34 @@ class _RegisterPageState extends State<RegisterPage> {
   final places =
   GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
 
-
   Future<List<String>> fetchPlacePredictions(String input) async {
-    final response = await places.autocomplete(input, types: []);
-    if (response.isOkay) {
-      return response.predictions
-          .map((prediction) => prediction.description!)
-          .toList();
-    } else {
-      throw response.errorMessage!;
+    if (kIsWeb) {
+      final response = await http.get(
+        Uri.parse(
+            'https://us-central1-itec404deliveryapp.cloudfunctions.net/getPlaceAutocomplete?input=$input'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['predictions']
+            .map<String>((prediction) => prediction['description'])
+            .toList();
+      } else {
+        throw Exception('Failed to load predictions');
+      }
+    }
+    else{
+      final response = await places.autocomplete(input, types: []);
+      if (response.isOkay) {
+        return response.predictions
+            .map((prediction) => prediction.description!)
+            .toList();
+      } else {
+        throw response.errorMessage!;
+      }
     }
   }
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
