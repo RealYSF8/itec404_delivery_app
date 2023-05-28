@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../main.dart';
 
 
 class About extends StatefulWidget {
@@ -8,11 +11,37 @@ class About extends StatefulWidget {
 
 class _AboutState extends State<About> {
   String name = "";
+  bool _isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getDarkModeStatusFromSharedPreferences();
+  }
+
+  Future<void> toggleDarkMode(BuildContext context) async {
+    setState(() {
+      _isDarkMode = !_isDarkMode; // Update the dark mode status
+    });
+
+    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    themeProvider.toggleTheme();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkMode', themeProvider.isDarkMode);
+  }
+
+  void getDarkModeStatusFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: _isDarkMode ? Colors.grey[900] : Colors.white,
       appBar: AppBar(
         elevation: 0,
         centerTitle: false,
@@ -51,7 +80,7 @@ class _AboutState extends State<About> {
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 24,
-                color: Colors.black,
+                color: _isDarkMode ? Colors.white : Colors.grey[900],
               ),
             ),
             Text(
@@ -60,7 +89,7 @@ class _AboutState extends State<About> {
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
-                color: Colors.black,
+                color: _isDarkMode ? Colors.white : Colors.grey[900],
               ),
             ),
             Image.asset(
@@ -75,7 +104,7 @@ class _AboutState extends State<About> {
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 12,
-                  color: Color(0xff222020),
+                  color: _isDarkMode ? Colors.white : Colors.grey[900],
                 ),
               ),
             ),
@@ -91,7 +120,7 @@ class _AboutState extends State<About> {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 20,
-                      color: Color(0xff3a57e8),
+                      color: _isDarkMode ? Colors.white : Colors.grey[900],
                     ),
                   ),
                   Padding(
@@ -102,7 +131,7 @@ class _AboutState extends State<About> {
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
-                        color: Colors.black,
+                        color: _isDarkMode ? Colors.white : Colors.grey[900],
                       ),
                     ),
                   ),
@@ -112,7 +141,7 @@ class _AboutState extends State<About> {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 20,
-                      color: Color(0xff3a57e8),
+                      color: _isDarkMode ? Colors.white : Colors.grey[900],
                     ),
                   ),
                   Padding(
@@ -123,7 +152,7 @@ class _AboutState extends State<About> {
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
-                        color: Colors.black,
+                        color: _isDarkMode ? Colors.white : Colors.grey[900],
                       ),
                     ),
                   ),
