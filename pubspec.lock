@@ -302,14 +302,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_dialogs:
-    dependency: "direct main"
-    description:
-      name: flutter_dialogs
-      sha256: "108152d5a8c9a8df09310f4ac11a3979723d11bc19ba54563342e50d126b9d22"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
   flutter_google_places:
     dependency: "direct main"
     description:
@@ -680,14 +672,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.3"
-  image_picker_web:
-    dependency: "direct main"
-    description:
-      name: image_picker_web
-      sha256: "2792196db19157d9af2903310ad99d42270841b872c51977b984d06e63bdb3ce"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.1"
   intl:
     dependency: "direct main"
     description:
@@ -1137,10 +1121,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_android
-      sha256: "1a5848f598acc5b7d8f7c18b8cb834ab667e59a13edc3c93e9d09cf38cc6bc87"
+      sha256: eed4e6a1164aa9794409325c3b707ff424d4d1c2a785e7db67f8bbda00e36e51
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.34"
+    version: "6.0.35"
   url_launcher_ios:
     dependency: transitive
     description:

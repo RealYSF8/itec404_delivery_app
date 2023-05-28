@@ -1,12 +1,10 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:itec404_delivery_app/pages/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../main.dart';
+import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -19,6 +17,7 @@ void _setCategoryName(String categoryName) async {
 
 class _MainPage extends State<MainPage> {
   String address = "";
+  bool _isDarkMode = false;
 
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
@@ -32,7 +31,28 @@ class _MainPage extends State<MainPage> {
   void initState() {
     super.initState();
     getAddressFromSharedPreferences();
+    getDarkModeStatusFromSharedPreferences();
   }
+
+  Future<void> toggleDarkMode(BuildContext context) async {
+    setState(() {
+      _isDarkMode = !_isDarkMode; // Update the dark mode status
+    });
+
+    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    themeProvider.toggleTheme();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkMode', themeProvider.isDarkMode);
+  }
+
+  void getDarkModeStatusFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
+  }
+
   void getAddressFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -49,9 +69,12 @@ class _MainPage extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
     PageController pageController = PageController();
 
     return Scaffold(
+      backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: false,
@@ -73,9 +96,7 @@ class _MainPage extends State<MainPage> {
                   fontSize: 22,
                   color: Color(0xfffba808))),
         ]),
-        backgroundColor: Colors.blue,
       ),
-      backgroundColor: Color(0xffe2e5e7),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +220,7 @@ class _MainPage extends State<MainPage> {
                       fontWeight: FontWeight.w700,
                       fontStyle: FontStyle.normal,
                       fontSize: 20,
-                      color: Color(0xff000000),
+                      color: isDarkMode ? Colors.white : Colors.grey[900],
                     ),
                   ),
                 ],
@@ -230,7 +251,6 @@ class _MainPage extends State<MainPage> {
                 ),
                 InkWell(
                   onTap: () {
-
                     // Navigate to orders page for Clothing
                     Navigator.pushNamed(context, '/makeorder');
                   },
@@ -330,6 +350,8 @@ class _MainPage extends State<MainPage> {
   }
 
   Widget buildCategory(String name, String imagePath) {
+    Color textColor = _isDarkMode ? Colors.white : Colors.black;
+
     return InkWell(
       onTap: () {
         _setCategoryName(name); // Set the selected category name in SharedPreferences
@@ -340,7 +362,7 @@ class _MainPage extends State<MainPage> {
         width: 200,
         height: 100,
         decoration: BoxDecoration(
-          color: Color(0x00ffffff),
+          color: _isDarkMode ? Colors.grey[900] : Colors.white,
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.zero,
         ),
@@ -354,7 +376,7 @@ class _MainPage extends State<MainPage> {
               width: 70,
               height: 70,
               decoration: BoxDecoration(
-                color: Color(0xffffffff),
+                color: _isDarkMode ? Colors.grey[400] : Colors.white,
                 shape: BoxShape.rectangle,
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -376,7 +398,6 @@ class _MainPage extends State<MainPage> {
                   fontWeight: FontWeight.w400,
                   fontStyle: FontStyle.normal,
                   fontSize: 14,
-                  color: Color(0xff000000),
                 ),
               ),
             ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../main.dart';
 
 class More extends StatefulWidget {
   @override
@@ -10,7 +12,7 @@ class _MoreState extends State<More> {
   String name = "";
   int _selectedIndex = 2;
   static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     Text(
       'Home Page',
@@ -28,6 +30,37 @@ class _MoreState extends State<More> {
 
   bool _isAdmin = false;
   bool _isCourier = false;
+  bool _isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getNameFromSharedPreferences();
+    getDarkModeStatusFromSharedPreferences();
+    _checkAdminStatus();
+    _checkDeliveryStatus();
+    print(_isAdmin);
+    print(_isCourier);
+  }
+
+  Future<void> toggleDarkMode(BuildContext context) async {
+    setState(() {
+      _isDarkMode = !_isDarkMode; // Update the dark mode status
+    });
+
+    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    themeProvider.toggleTheme();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkMode', themeProvider.isDarkMode);
+  }
+
+  void getDarkModeStatusFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -44,17 +77,6 @@ class _MoreState extends State<More> {
         Navigator.pushNamed(context, '/more');
         break;
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getNameFromSharedPreferences();
-    _checkAdminStatus();
-    _checkDeliveryStatus();
-    print(_isAdmin);
-    print(_isCourier); // add this line to check the value of _isAdmin
-// add this line to check the value of _isAdmin
   }
 
   void _checkAdminStatus() async {
@@ -82,54 +104,62 @@ class _MoreState extends State<More> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
     showCustomAlert() => showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text("Are you sure?"),
-              content: Text("Log out?"),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      return Navigator.pop(context, false);
-                    },
-                    child: Text("Cancel")),
-                TextButton(
-                    onPressed: () {
-                      return Navigator.pop(context, true);
-                    },
-                    child: Text("Yes")),
-              ],
-            ));
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Are you sure?"),
+        content: Text("Log out?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              return Navigator.pop(context, false);
+            },
+            child: Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              return Navigator.pop(context, true);
+            },
+            child: Text("Yes"),
+          ),
+        ],
+      ),
+    );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: false,
-        title: Row(children: <Widget>[
-          Text(
-            "My",
-            textAlign: TextAlign.start,
-            overflow: TextOverflow.clip,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontStyle: FontStyle.normal,
-              fontSize: 22,
-              color: Color(0xffffffff),
+        title: Row(
+          children: <Widget>[
+            Text(
+              "My",
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.clip,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.normal,
+                fontSize: 22,
+                color: Color(0xffffffff),
+              ),
             ),
-          ),
-          Text(
-            "Options",
-            textAlign: TextAlign.start,
-            overflow: TextOverflow.clip,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontStyle: FontStyle.normal,
-              fontSize: 22,
-              color: Color(0xfffba808),
+            Text(
+              "Options",
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.clip,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.normal,
+                fontSize: 22,
+                color: Color(0xfffba808),
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
         backgroundColor: Colors.blue,
       ),
       body: Padding(
@@ -160,7 +190,7 @@ class _MoreState extends State<More> {
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
-                            color: Colors.black,
+                            color: isDarkMode ? Colors.white : Colors.black,
                           ),
                         ),
                         SizedBox(height: 8),
@@ -169,7 +199,7 @@ class _MoreState extends State<More> {
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 14,
-                            color: Colors.black,
+                            color: isDarkMode ? Colors.white : Colors.black,
                           ),
                         ),
                       ],
@@ -181,11 +211,16 @@ class _MoreState extends State<More> {
               ),
             ),
             SizedBox(height: 15),
-            buildRowWithIconAndText(
-              icon: Icons.wb_sunny_outlined,
-              iconColor: Colors.white,
-              iconBackgroundColor: Colors.grey[700]!,
-              text: "Dark Mode",
+            GestureDetector(
+              onTap: () {
+                toggleDarkMode(context);
+              },
+              child: buildRowWithIconAndText(
+                icon: Icons.wb_sunny_outlined,
+                iconColor: Colors.white,
+                iconBackgroundColor: Colors.grey[700]!,
+                text: "Dark Mode",
+              ),
             ),
             SizedBox(height: 15),
             GestureDetector(
@@ -246,7 +281,7 @@ class _MoreState extends State<More> {
                 if (stat) {
                   Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
                   SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
+                  await SharedPreferences.getInstance();
 
                   await prefs.setBool("isLoggedIn", false);
                   await prefs.setBool("isadmin", false);
@@ -303,8 +338,6 @@ class _MoreState extends State<More> {
                   ),
                 ],
               ),
-
-
             if (_isCourier)
               Container(
                 margin: EdgeInsets.only(top: 15),
@@ -352,7 +385,11 @@ class _MoreState extends State<More> {
     required Color iconBackgroundColor,
     required String text,
     bool showTrailingIcon = false,
+    VoidCallback? onTap,
   }) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
     return Row(
       children: [
         CircleAvatar(
@@ -370,7 +407,7 @@ class _MoreState extends State<More> {
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 16,
-              color: Colors.black,
+              color: isDarkMode ? Colors.white : Colors.black,
             ),
           ),
         ),

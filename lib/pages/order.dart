@@ -114,11 +114,13 @@ class MyCardClass extends StatefulWidget {
 
 class _MyCardClassState extends State<MyCardClass> {
   late List<DocumentSnapshot> orders = [];
+  bool isDarkMode = false; // Variable to store the dark mode status
 
   @override
   void initState() {
     super.initState();
     fetchOrders();
+    getDarkModeStatus(); // Retrieve the dark mode status from SharedPreferences
   }
 
   Future<void> fetchOrders() async {
@@ -135,8 +137,16 @@ class _MyCardClassState extends State<MyCardClass> {
     });
   }
 
+  Future<void> getDarkModeStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    Color? cardColor = isDarkMode ? Colors.grey[900] : Colors.white; // Set the card's color based on the dark mode status
     return ListView.builder(
       shrinkWrap: true,
       itemCount: orders.length,
@@ -155,7 +165,7 @@ class _MyCardClassState extends State<MyCardClass> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          color: Colors.white,
+          color: cardColor,
           child: Column(
             children: [
               Padding(

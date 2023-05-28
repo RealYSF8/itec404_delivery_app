@@ -8,7 +8,21 @@ class Courrier extends StatefulWidget {
 }
 
 class _CourrierState extends State<Courrier> {
-  String name = "";
+  late TextEditingController textEditingController;
+  late bool isDarkMode;
+
+  @override
+  void initState() {
+    super.initState();
+    textEditingController = TextEditingController();
+    getThemeMode();
+  }
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+    super.dispose();
+  }
 
   void saveApplication() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -16,14 +30,12 @@ class _CourrierState extends State<Courrier> {
     String? name = prefs.getString('name');
     String? phoneNumber = prefs.getString('phone_number');
 
-    // Check if an application with the same email already exists
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('applications')
         .where('email', isEqualTo: email)
         .get();
 
     if (snapshot.docs.isNotEmpty) {
-      // Show a duplicate application message
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -42,7 +54,6 @@ class _CourrierState extends State<Courrier> {
         },
       );
     } else {
-      // Save the application data to Firebase
       FirebaseFirestore.instance.collection('applications').add({
         'email': email,
         'name': name,
@@ -50,7 +61,6 @@ class _CourrierState extends State<Courrier> {
         'status': 'pending',
       });
 
-      // Show a success message
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -71,21 +81,28 @@ class _CourrierState extends State<Courrier> {
     }
   }
 
+  Future<void> getThemeMode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff3a57e8),
+      backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
       appBar: AppBar(
         elevation: 4,
         centerTitle: false,
-        backgroundColor: const Color(0xff3a57e8),
+        backgroundColor: isDarkMode ? Colors.grey[700] : const Color(0xff3a57e8),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.zero,
         ),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: const Color(0xff212435),
+            color: isDarkMode ? Colors.white : const Color(0xff212435),
             size: 24,
           ),
           onPressed: () {
@@ -99,7 +116,7 @@ class _CourrierState extends State<Courrier> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Padding(
+              Padding(
                 padding: const EdgeInsets.only(bottom: 30),
                 child: Text(
                   "Become a Courier",
@@ -108,50 +125,50 @@ class _CourrierState extends State<Courrier> {
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 24,
-                    color: Colors.white,
+                    color: isDarkMode ? Colors.white : Colors.grey[700],
                   ),
                 ),
               ),
-              const Text(
+              Text(
                 "Tell us about yourself and why you want to become a rider:",
                 textAlign: TextAlign.start,
                 overflow: TextOverflow.clip,
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
-                  color: Colors.white,
+                  color: isDarkMode ? Colors.white : Colors.grey[700],
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: TextField(
-                  controller: TextEditingController(),
+                  controller: textEditingController,
                   maxLines: 7,
                   decoration: InputDecoration(
                     hintText: "Enter Text",
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: isDarkMode ? Colors.grey[700] : Colors.grey[200],
                     contentPadding: const EdgeInsets.all(12),
                   ),
                 ),
               ),
-              const SizedBox(height: 66),
+              SizedBox(height: 66),
               MaterialButton(
-                onPressed: saveApplication, // Call saveApplication method
-                color: const Color(0xfff80707),
+                onPressed: saveApplication,
+                color: isDarkMode ? const Color(0xfff80707) : const Color(0xff3a57e8),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(22.0),
                 ),
                 padding: const EdgeInsets.all(16),
-                child: const Text(
+                child: Text(
                   "APPLY NOW!",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
+                    color: Colors.white,
                   ),
-                ),//
-                textColor: Colors.white,
+                ),
                 height: 50,
                 minWidth: MediaQuery.of(context).size.width,
               ),

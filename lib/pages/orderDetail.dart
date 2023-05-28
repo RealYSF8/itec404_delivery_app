@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../main.dart';
 
 class OrderDetail extends StatefulWidget {
   final String documentId;
@@ -12,10 +15,13 @@ class OrderDetail extends StatefulWidget {
 
 class _OrderDetailPageState extends State<OrderDetail> {
   late Stream<DocumentSnapshot<Map<String, dynamic>>> orderStream;
+  bool _isDarkMode = false;
+
 
   @override
   void initState() {
     super.initState();
+    getDarkModeStatusFromSharedPreferences();
     // Retrieve the order details based on the document ID
     orderStream = FirebaseFirestore.instance
         .collection('orders')
@@ -23,10 +29,29 @@ class _OrderDetailPageState extends State<OrderDetail> {
         .snapshots();
   }
 
+  Future<void> toggleDarkMode(BuildContext context) async {
+    setState(() {
+      _isDarkMode = !_isDarkMode; // Update the dark mode status
+    });
+
+    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    themeProvider.toggleTheme();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkMode', themeProvider.isDarkMode);
+  }
+
+  void getDarkModeStatusFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: _isDarkMode ? Colors.grey[900] : Colors.white,
       appBar: AppBar(
         centerTitle: false,
         title: Row(
@@ -188,7 +213,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  orderData?['width'] ?? '',
+                                  'Width:',
                                   style: TextStyle(
                                     color: Color(0xfffba808),
                                     letterSpacing: 2.0,
@@ -245,7 +270,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                 ),
                                 SizedBox(width: 10.0),
                                 Text(
-                                  orderData?['from'] ?? '',
+                                  orderData?['height'] ?? '',
                                   style: TextStyle(
                                     color: Colors.grey,
                                     letterSpacing: 2.0,

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:itec404_delivery_app/pages/courier.dart';
@@ -22,7 +21,7 @@ import 'Pages/changepass.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'Pages/admin.dart';
 import 'package:get/get.dart';
-
+import 'package:provider/provider.dart';
 
 void main() async {
   bool isWeb = GetPlatform.isWeb;
@@ -40,88 +39,120 @@ void main() async {
         measurementId: "G-4JTX4BW6WX",
       ),
     );
-  }
-  else{
+  } else {
     await Firebase.initializeApp();
   }
-  bool _isAdmin = false;
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String role = prefs.getString('role') ?? '';
+  bool isDarkMode = prefs.getBool('isDarkMode') ?? false;
 
-    _isAdmin = role == 'Admin';
+  bool _isAdmin = false;
+  String role = prefs.getString('role') ?? '';
+  _isAdmin = role == 'Admin';
 
   bool _isCourier = false;
-
-  SharedPreferences prefs1 = await SharedPreferences.getInstance();
-  String role1 = prefs1.getString('role') ?? '';
-
+  String role1 = prefs.getString('role') ?? '';
   _isCourier = role == 'Courier';
 
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-
   runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          },
-        ),
+    ChangeNotifierProvider<ThemeProvider>(
+      create: (_) => ThemeProvider(isDarkMode: isDarkMode),
+      child: MyApp(
+        isLoggedIn: isLoggedIn,
+        isAdmin: _isAdmin,
+        isCourier: _isCourier,
+        firestore: FirebaseFirestore.instance,
       ),
-      initialRoute: isLoggedIn ? '/mainPage' : '/',
-      routes: {
-        '/': (context) => HomeScreen(),
-        '/register': (context) => RegisterPage(),
-        '/login': (context) => LoginPage(),
-        '/mainPage': (context) => MainPage(),
-        '/order': (context) => OrderPage(),
-        '/makeorder': (context) => MakeOrderPage(controller: TextEditingController()),
-        '/account': (context) => Account(firestore: firestore),
-        '/more': (context) => More(),
-        '/orderdetail': (context) => OrderDetail(
-          documentId: ModalRoute.of(context)!.settings.arguments as String,
-        ),
-
-        '/about': (context) => About(),
-        '/contact': (context) => Contact(),
-        '/courrier': (context) => Courrier(),
-        '/changepass': (context) => Changepass(),
-        '/reset': (context) => PasswordResetForm(),
-        '/review': (context) => ReviewPage(
-          documentId: ModalRoute.of(context)!.settings.arguments as String,
-        ),
-        '/admin': (context) {
-          if (_isAdmin) {
-            return AdminPage();
-          } else {
-            // Redirect to a different page or show an error message
-            return Scaffold(
-              appBar: AppBar(),
-              body: Center(
-                child: Text('Access Denied'),
-              ),
-            );
-          }
-        },
-        '/courier': (context) {
-          if (_isCourier||_isAdmin) {
-            return CourierPage();
-          } else {
-            // Redirect to a different page or show an error message
-            return Scaffold(
-              appBar: AppBar(),
-              body: Center(
-                child: Text('Access Denied'),
-              ),
-            );
-          }
-        },
-      },
     ),
   );
+}
+
+class ThemeProvider with ChangeNotifier {
+  bool _isDarkMode;
+
+  ThemeProvider({required bool isDarkMode}) : _isDarkMode = isDarkMode;
+
+  ThemeData get themeData => _isDarkMode ? ThemeData.dark() : ThemeData.light();
+
+  bool get isDarkMode => _isDarkMode;
+
+  void toggleTheme() {
+    _isDarkMode = !_isDarkMode;
+    notifyListeners();
+  }
+}
+
+class MyApp extends StatelessWidget {
+  final bool isLoggedIn;
+  final bool isAdmin;
+  final bool isCourier;
+  final FirebaseFirestore firestore;
+
+  const MyApp({
+    Key? key,
+    required this.isLoggedIn,
+    required this.isAdmin,
+    required this.isCourier,
+    required this.firestore,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, _) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: themeProvider.themeData,
+        initialRoute: isLoggedIn ? '/mainPage' : '/',
+        routes: {
+          '/': (context) => HomeScreen(),
+          '/register': (context) => RegisterPage(),
+          '/login': (context) => LoginPage(),
+          '/mainPage': (context) => MainPage(),
+          '/order': (context) => OrderPage(),
+          '/makeorder': (context) => MakeOrderPage(controller: TextEditingController()),
+          '/account': (context) => Account(firestore: firestore),
+          '/more': (context) => More(),
+          '/orderdetail': (context) => OrderDetail(
+            documentId: ModalRoute.of(context)!.settings.arguments as String,
+          ),
+          '/about': (context) => About(),
+          '/contact': (context) => Contact(),
+          '/courrier': (context) => Courrier(),
+          '/changepass': (context) => Changepass(),
+          '/reset': (context) => PasswordResetForm(),
+          '/review': (context) => ReviewPage(
+            documentId: ModalRoute.of(context)!.settings.arguments as String,
+          ),
+          '/admin': (context) {
+            if (isAdmin) {
+              return AdminPage();
+            } else {
+              // Redirect to a different page or show an error message
+              return Scaffold(
+                appBar: AppBar(),
+                body: Center(
+                  child: Text('Access Denied'),
+                ),
+              );
+            }
+          },
+          '/courier': (context) {
+            if (isCourier || isAdmin) {
+              return CourierPage();
+            } else {
+              // Redirect to a different page or show an error message
+              return Scaffold(
+                appBar: AppBar(),
+                body: Center(
+                  child: Text('Access Denied'),
+                ),
+              );
+            }
+          },
+        },
+      ),
+    );
+  }
 }

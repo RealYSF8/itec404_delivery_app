@@ -6,6 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import '../main.dart';
+
 class Account extends StatefulWidget {
   final FirebaseFirestore firestore;
 
@@ -16,9 +19,11 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
+  bool _isDarkMode = false;
+
   List<String> placePredictions = [];
   final places =
-      GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+  GoogleMapsPlaces(apiKey: 'YOUR_API_KEY');
 
   Future<List<String>> fetchPlacePredictions(String input) async {
     if (kIsWeb) {
@@ -35,8 +40,7 @@ class _AccountState extends State<Account> {
       } else {
         throw Exception('Failed to load predictions');
       }
-    }
-    else{
+    } else {
       final response = await places.autocomplete(input, types: []);
       if (response.isOkay) {
         return response.predictions
@@ -46,6 +50,13 @@ class _AccountState extends State<Account> {
         throw response.errorMessage!;
       }
     }
+  }
+
+  void getDarkModeStatusFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
   }
 
   TextEditingController _nameController = TextEditingController();
@@ -80,12 +91,13 @@ class _AccountState extends State<Account> {
     _getPhoneNumber().then((value) => _phoneController.text = value ?? '');
     _getAddress().then((value) => _addressController.text = value ?? '');
     _getEmail().then((value) => _emailController.text = value ?? '');
+    getDarkModeStatusFromSharedPreferences();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: _isDarkMode ? Colors.grey[900] : Colors.white,
       appBar: AppBar(
         centerTitle: false,
         title: Text(
@@ -127,7 +139,7 @@ class _AccountState extends State<Account> {
           Navigator.popAndPushNamed(context, '/more');
         },
         child: const Icon(Icons.edit),
-        backgroundColor: Colors.grey[800],
+        backgroundColor: _isDarkMode ? Colors.white : Colors.grey[900],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -168,10 +180,8 @@ class _AccountState extends State<Account> {
                       margin: const EdgeInsets.all(7),
                       child: TextFormField(
                         controller: _addressController,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          color: _isDarkMode ? Colors.white : Colors.black,
                         ),
                         onChanged: (input) {
                           if (input.isNotEmpty) {
@@ -198,27 +208,28 @@ class _AccountState extends State<Account> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.blue, width: 1.0),
+                            borderSide: const BorderSide(
+                                color: Colors.blue, width: 1.0),
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           fillColor: Colors.grey,
                           hintText: 'Address',
-                          hintStyle: const TextStyle(
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .copyWith(
                             color: Colors.grey,
-                            fontSize: 16,
-                            fontFamily: 'verdana_regular',
-                            fontWeight: FontWeight.w400,
                           ),
                           labelText: 'Address',
-                          labelStyle: const TextStyle(
+                          labelStyle: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .copyWith(
                             color: Colors.grey,
-                            fontSize: 18,
-                            fontFamily: 'verdana_regular',
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-
                     ),
                     ListView.builder(
                       shrinkWrap: true,
@@ -250,20 +261,18 @@ class _AccountState extends State<Account> {
   }
 
   Widget buildTextField(
-    IconData icon,
-    String labelText,
-    String initialValue, {
-    bool enabled = true,
-    TextEditingController? controller,
-  }) {
+      IconData icon,
+      String labelText,
+      String initialValue, {
+        bool enabled = true,
+        TextEditingController? controller,
+      }) {
     return Container(
       margin: const EdgeInsets.all(7),
       child: TextFormField(
         controller: controller,
-        style: const TextStyle(
-          fontSize: 20,
-          color: Colors.black,
-          fontWeight: FontWeight.w600,
+        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+          color: _isDarkMode ? Colors.white : Colors.black,
         ),
         onChanged: (value) {
           setState(() {});
@@ -278,23 +287,19 @@ class _AccountState extends State<Account> {
             borderRadius: BorderRadius.circular(10.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.blue, width: 1.0),
+            borderSide:
+            const BorderSide(color: Colors.blue, width: 1.0),
             borderRadius: BorderRadius.circular(10.0),
           ),
           fillColor: Colors.grey,
           hintText: labelText,
-          hintStyle: const TextStyle(
+          hintStyle: Theme.of(context).textTheme.bodyText1!.copyWith(
             color: Colors.grey,
-            fontSize: 16,
-            fontFamily: 'verdana_regular',
-            fontWeight: FontWeight.w400,
           ),
           labelText: labelText,
-          labelStyle: const TextStyle(
+          labelStyle: Theme.of(context).textTheme.bodyText1!.copyWith(
             color: Colors.grey,
-            fontSize: 18,
-            fontFamily: 'verdana_regular',
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
