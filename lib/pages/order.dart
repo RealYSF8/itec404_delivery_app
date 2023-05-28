@@ -146,7 +146,8 @@ class _MyCardClassState extends State<MyCardClass> {
 
   @override
   Widget build(BuildContext context) {
-    Color? cardColor = isDarkMode ? Colors.grey[900] : Colors.white; // Set the card's color based on the dark mode status
+    Color? cardColor =
+    isDarkMode ? Colors.grey[900] : Colors.white; // Set the card's color based on the dark mode status
     return ListView.builder(
       shrinkWrap: true,
       itemCount: orders.length,
@@ -156,10 +157,13 @@ class _MyCardClassState extends State<MyCardClass> {
         final imageUrls = order['imageUrls'];
 
         String firstImageUrl = '';
-        if (imageUrls is List<dynamic> && imageUrls.isNotEmpty) {
-          firstImageUrl = imageUrls[0] as String;
-        } else if (imageUrls is Map<String, dynamic> && imageUrls.isNotEmpty) {
-          firstImageUrl = imageUrls.values.first as String;
+        if (imageUrls != null && imageUrls.isNotEmpty) {
+          if (imageUrls is String) {
+            firstImageUrl = imageUrls;
+          } else if (imageUrls is List<dynamic>) {
+            firstImageUrl =
+                imageUrls.firstWhere((url) => url is String, orElse: () => '');
+          }
         }
         return Card(
           shape: RoundedRectangleBorder(
@@ -187,7 +191,7 @@ class _MyCardClassState extends State<MyCardClass> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "ORDER27468",
+                          "#" + order['orderNumber'].toString(),
                           style: TextStyle(fontSize: 16),
                         ),
                       ],
@@ -248,7 +252,8 @@ class _MyCardClassState extends State<MyCardClass> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ReviewPage(documentId: order.id),
+                                builder: (context) =>
+                                    ReviewPage(documentId: order.id),
                               ),
                             );
                           },
