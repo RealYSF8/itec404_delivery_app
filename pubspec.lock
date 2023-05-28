@@ -302,6 +302,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_dialogs:
+    dependency: "direct main"
+    description:
+      name: flutter_dialogs
+      sha256: "108152d5a8c9a8df09310f4ac11a3979723d11bc19ba54563342e50d126b9d22"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   flutter_google_places:
     dependency: "direct main"
     description:
@@ -672,6 +680,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.3"
+  image_picker_web:
+    dependency: "direct main"
+    description:
+      name: image_picker_web
+      sha256: "2792196db19157d9af2903310ad99d42270841b872c51977b984d06e63bdb3ce"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
   intl:
     dependency: "direct main"
     description:
@@ -760,6 +776,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.0"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   package_info_plus:
     dependency: transitive
     description:
@@ -896,6 +920,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.4"
+  provider:
+    dependency: "direct main"
+    description:
+      name: provider
+      sha256: cdbe7530b12ecd9eb455bdaa2fcb8d4dad22e80b8afb4798b41479d5ce26847f
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.5"
   pub_semver:
     dependency: transitive
     description:

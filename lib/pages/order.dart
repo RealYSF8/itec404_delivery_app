@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itec404_delivery_app/pages/review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -234,8 +235,12 @@ class _MyCardClassState extends State<MyCardClass> {
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/review',
-                                arguments: order.id);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReviewPage(documentId: order.id),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Colors.grey[200],

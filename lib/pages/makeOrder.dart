@@ -38,7 +38,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   String? _downloadUrl;
   File? _imageFile; // Added variable to store the uploaded image
   final places =
-      GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+  GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
   List<String> placePredictions = [];
   List<String> toPlacePredictions = [];
 
@@ -114,7 +114,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
 
     final String fileName = Path.basename(imageFile.path);
     final firebase_storage.Reference ref =
-        firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+    firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
 
     firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
     firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
@@ -152,8 +152,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(seconds: 10),
     )..addListener(() {
-        setState(() {});
-      });
+      setState(() {});
+    });
     super.initState();
     super.initState();
     getNameFromSharedPreferences();
@@ -424,7 +424,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 },
                 child: Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     radius: Radius.circular(10),

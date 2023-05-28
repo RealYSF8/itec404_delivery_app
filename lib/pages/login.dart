@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:itec404_delivery_app/login_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +7,22 @@ class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
-
+Future<bool> validateLogin(String email, String password) async {
+  try {
+    UserCredential userCredential =
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    return true;
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+      return false;
+    } else {
+      throw e;
+    }
+  }
+}
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();

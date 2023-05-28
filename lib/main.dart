@@ -92,7 +92,9 @@ void main() async {
         '/courrier': (context) => Courrier(),
         '/changepass': (context) => Changepass(),
         '/reset': (context) => PasswordResetForm(),
-        '/review': (context) => Review(),
+        '/review': (context) => ReviewPage(
+          documentId: ModalRoute.of(context)!.settings.arguments as String,
+        ),
         '/admin': (context) {
           if (_isAdmin) {
             return AdminPage();
