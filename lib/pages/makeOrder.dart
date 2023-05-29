@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,17 +8,19 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart' as Path;
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:universal_html/html.dart' as html;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:google_maps_webservice/places.dart';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_google_places/flutter_google_places.dart';
-import 'package:google_maps_webservice/places.dart';
+import 'dart:math';
+import 'dart:html' as html;
+import 'dart:async';
 
 class MakeOrderPage extends StatefulWidget {
   final TextEditingController controller;
@@ -34,24 +35,88 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('address');
   }
+
   final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
-  File? _imageFile; // Added variable to store the uploaded image
   final places =
-  GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+  GoogleMapsPlaces(apiKey: 'YOUR_GOOGLE_MAPS_API_KEY');
   List<String> placePredictions = [];
   List<String> toPlacePredictions = [];
 
-  Future<void> _pickImage() async {
+  Future<void> uploadImage() async {
     final ImagePicker picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      if (pickedFile != null) {
-        _imageFile = File(pickedFile.path);
+    // Pick an image
+    final PickedFile? pickedFile;
+    if (kIsWeb) {
+      html.FileUploadInputElement input = html.FileUploadInputElement();
+      input.accept = 'image/*';
+      input.click();
+
+      final completer = Completer<html.File>();
+      input.onChange.listen((e) {
+        final files = input.files;
+        if (files != null && files.isNotEmpty) {
+          completer.complete(files[0]);
+        } else {
+          completer.completeError('No file selected');
+        }
+      });
+
+      try {
+        final file = await completer.future;
+        final reader = html.FileReader();
+        reader.readAsDataUrl(file);
+        await reader.onLoad.first;
+
+        final fileName = file.name;
+        final fileSize = file.size;
+        final url = reader.result as String;
+
+        firebase_storage.Reference ref =
+        firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+        firebase_storage.UploadTask uploadTask = ref.putString(
+          url,
+          format: firebase_storage.PutStringFormat.dataUrl,
+        );
+        firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
+        String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+        final fileSizeInBytes = fileSize;
+        final fileSizeInMB = fileSizeInBytes / (1024 * 1024); // Convert to MB
+
+        setState(() {
+          _downloadUrl = downloadUrl;
+          _selectedFileName = fileName;
+          _selectedFileSize = fileSizeInMB.toStringAsFixed(2) + ' MB'; // Display size with 2 decimal places
+        });
+      } catch (e) {
+        print('Error selecting image: $e');
       }
-    });
+    } else {
+      XFile? pickedFile =
+      await picker.pickImage(source: ImageSource.camera);
+      if (pickedFile == null) return;
+
+      File file = File(pickedFile.path);
+      String compressedPath = await convertImageToWebP(
+          file.path); // Compress the image
+      File compressedFile = File(compressedPath);
+
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref('uploads/${file.path.split('/').last}');
+      firebase_storage.UploadTask uploadTask =
+      ref.putFile(compressedFile); // Upload the compressed image
+      firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      setState(() {
+        _downloadUrl = downloadUrl;
+        _selectedFileName = file.path.split('/').last;
+        _selectedFileSize = file.lengthSync().toString();
+      });
+    }
   }
+
 
   Future<List<String>> fetchToPlacePredictions(String input) async {
     if (kIsWeb) {
@@ -68,8 +133,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       } else {
         throw Exception('Failed to load predictions');
       }
-    }
-    else {
+    } else {
       final response = await places.autocomplete(input, types: []);
       if (response.isOkay) {
         return response.predictions
@@ -96,8 +160,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       } else {
         throw Exception('Failed to load predictions');
       }
-    }
-    else{
+    } else {
       final response = await places.autocomplete(input, types: []);
       if (response.isOkay) {
         return response.predictions
@@ -109,20 +172,20 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     }
   }
 
-  Future<String?> _uploadImage(File? imageFile) async {
-    if (imageFile == null) return null;
+  Future<String> convertImageToWebP(String imagePath) async {
+    // Compressed image file path
+    final compressedPath =
+        (await getTemporaryDirectory()).path + '/compressed.webp';
 
-    final String fileName = Path.basename(imageFile.path);
-    final firebase_storage.Reference ref =
-    firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+    // Compress the image to WebP format
+    await FlutterImageCompress.compressAndGetFile(
+      imagePath,
+      compressedPath,
+      quality: 90,
+      format: CompressFormat.webp,
+    );
 
-    firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
-    firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
-    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-    setState(() {
-      _downloadUrl = downloadUrl;
-    });
-    return downloadUrl;
+    return compressedPath;
   }
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -146,21 +209,25 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
 
   String? _category;
 
+  bool _isImageSelected = false;
+  String _selectedFileName = '';
+  String _selectedFileSize = '';
+
   @override
   void initState() {
     loadingController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
-    )..addListener(() {
-      setState(() {});
-    });
+    )
+      ..addListener(() {
+        setState(() {});
+      });
     super.initState();
     super.initState();
     getNameFromSharedPreferences();
     _getUserData();
     getCategoryFromSharedPreferences();
     _getAddress().then((value) => fromLocation.text = value ?? '');
-
   }
 
   void getCategoryFromSharedPreferences() async {
@@ -227,10 +294,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     heightController.clear();
 
     // Clear the selected images
-    setState(() {
-      _imageFile = null;
-      _downloadUrl = null;
-    });
 
     showDialog(
       context: context,
@@ -420,11 +483,10 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
               SizedBox(height: 10),
               GestureDetector(
                 onTap: () {
-                  _pickImage();
+                  uploadImage();
                 },
                 child: Padding(
-                  padding:
-                  EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     radius: Radius.circular(10),
@@ -448,7 +510,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                           ),
                           SizedBox(height: 5),
                           Text(
-                            'Select your file 1',
+                            'Select your file',
                             style: TextStyle(
                                 fontSize: 15, color: Colors.grey.shade400),
                           ),
@@ -463,16 +525,80 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              if (_imageFile != null)
-                kIsWeb
-                    ? Image.network(_imageFile!.path)
-                    : Image.file(_imageFile!),
-              Container(),
+              if (_downloadUrl != null)
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Selected File',
+                        style: TextStyle(
+                          color: Colors.grey.shade400,
+                          fontSize: 15,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade200,
+                              offset: Offset(0, 1),
+                              blurRadius: 3,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Image.network(
+                                    _downloadUrl!,
+                                    height: 150,
+                                    width: 150,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    'File Name: $_selectedFileName',
+                                    style: TextStyle(fontSize: 13, color: Colors.black),
+                                  ),
+                                  Text(
+                                    'File Size: $_selectedFileSize',
+                                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Container(
+                                    height: 5,
+                                    clipBehavior: Clip.hardEdge,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: Colors.blue.shade50,
+                                    ),
+                                    child: LinearProgressIndicator(
+                                      value: loadingController.value,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ElevatedButton(
-                onPressed: () async {
-                  String? downloadUrl = await _uploadImage(_imageFile);
-                  _createOrder(downloadUrl);
-                },
+                onPressed: () => _createOrder(_downloadUrl),
                 child: Text('Create Order'),
               ),
             ],
