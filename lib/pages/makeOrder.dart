@@ -559,25 +559,28 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.network(
-                                      _downloadUrl!,
-                                      height: 75,
-                                      width: 100,
-                                      fit: BoxFit.cover,
+                                  Row(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        _downloadUrl!,
+                                        height: 75,
+                                        width: 70,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
+                                    SizedBox(width: 15),
+                                    Flexible(
+                                      child: Text(
+                                        'File Name: $_selectedFileName\n' +
+                                        'File Size: $_selectedFileSize KB',
+                                        style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                                      ),
+                                    ),
+                                  ]
                                   ),
-                                  SizedBox(height: 5),
-                                  Text(
-                                    'File Name: $_selectedFileName',
-                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-                                  ),
-                                  Text(
-                                    'File Size: $_selectedFileSize KB',
-                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-                                  ),
-                                  SizedBox(height: 5),
+                                  SizedBox(height: 8),
                                   Container(
                                     height: 5,
                                     clipBehavior: Clip.hardEdge,
