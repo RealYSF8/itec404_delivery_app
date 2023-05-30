@@ -257,6 +257,16 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
                 ),
               ),
               SizedBox(height: 20),
+              Text(
+                "Upload Document",
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.clip,
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  color: isDarkMode ? Colors.white : Colors.grey[700],
+                ),
+              ),
               GestureDetector(
                 onTap: selectFile,
                 child: Padding(
