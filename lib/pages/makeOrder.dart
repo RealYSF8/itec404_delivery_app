@@ -19,7 +19,6 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
-import 'dart:html' as html;
 import 'dart:async';
 
 class MakeOrderPage extends StatefulWidget {
