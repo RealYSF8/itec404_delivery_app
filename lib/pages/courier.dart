@@ -12,6 +12,7 @@ class _CourierPageState extends State<CourierPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String? userEmail;
+  DateTime? acceptedDate; // Added variable to store the accepted date and time
 
   @override
   void initState() {
@@ -114,18 +115,18 @@ class _CourierPageState extends State<CourierPage>
               DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
               final String status = order['status'];
               return ListTile(
-                  subtitle: Card(
-                    child: ListTile(
-                      title: Text(name),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(date),
-                          Text(status),
-                        ],
-                      ),
+                subtitle: Card(
+                  child: ListTile(
+                    title: Text(name),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(date),
+                        Text(status),
+                      ],
                     ),
                   ),
+                ),
 
                 onTap: () async {
                   SharedPreferences prefs =
@@ -142,10 +143,14 @@ class _CourierPageState extends State<CourierPage>
                           TextButton(
                             child: Text('Accept'),
                             onPressed: () {
-                              // Update order status and acceptedBy field
+                              // Set acceptedDate to the current date and time
+                              acceptedDate = DateTime.now();
+
+                              // Update order status, acceptedBy field, and acceptedDate field
                               order.reference.update({
                                 'status': 'processing',
-                                'acceptedBy': userEmail
+                                'acceptedBy': userEmail,
+                                'acceptedDate': acceptedDate,
                               });
                               Navigator.of(context).pop();
                             },
@@ -204,18 +209,18 @@ class _CourierPageState extends State<CourierPage>
               DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
               String status = order['status'];
               return ListTile(
-                  subtitle: Card(
-                    child: ListTile(
-                      title: Text(name),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(date),
-                          Text(status),
-                        ],
-                      ),
+                subtitle: Card(
+                  child: ListTile(
+                    title: Text(name),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(date),
+                        Text(status),
+                      ],
                     ),
                   ),
+                ),
                 onTap: () async {
                   showDialog(
                     context: context,
@@ -259,5 +264,4 @@ class _CourierPageState extends State<CourierPage>
       },
     );
   }
-
 }

@@ -165,6 +165,9 @@ class _MyCardClassState extends State<MyCardClass> {
                 imageUrls.firstWhere((url) => url is String, orElse: () => '');
           }
         }
+
+        bool canLeaveReview = order['status'] == 'delivered'; // Check if the order status is "delivered"
+
         return Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -244,32 +247,33 @@ class _MyCardClassState extends State<MyCardClass> {
                         ),
                       ),
                     ),
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ReviewPage(documentId: order.id),
+                    if (canLeaveReview) // Only show the review button if the order status is "delivered"
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ReviewPage(documentId: order.id),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.grey[200],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.grey[200],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
                             ),
-                          ),
-                          child: Text(
-                            "Review",
-                            style: TextStyle(color: Colors.black),
+                            child: Text(
+                              "Review",
+                              style: TextStyle(color: Colors.black),
+                            ),
                           ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
