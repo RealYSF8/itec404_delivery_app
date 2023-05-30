@@ -559,20 +559,23 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Image.network(
-                                    _downloadUrl!,
-                                    height: 150,
-                                    width: 150,
-                                    fit: BoxFit.cover,
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.network(
+                                      _downloadUrl!,
+                                      height: 75,
+                                      width: 100,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                   SizedBox(height: 5),
                                   Text(
                                     'File Name: $_selectedFileName',
-                                    style: TextStyle(fontSize: 13, color: Colors.black),
+                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                                   ),
                                   Text(
                                     'File Size: $_selectedFileSize',
-                                    style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                                   ),
                                   SizedBox(height: 5),
                                   Container(
