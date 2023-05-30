@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class More extends StatefulWidget {
   @override
   _MoreState createState() => _MoreState();
+
 }
 
 class _MoreState extends State<More> {
+
   String name = "";
+  String email = "";
   int _selectedIndex = 2;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
@@ -31,24 +35,27 @@ class _MoreState extends State<More> {
   bool _isAdmin = false;
   bool _isCourier = false;
   bool _isDarkMode = false;
+  List<double> ratings = []; // Or initialize with actual ratings data
 
   @override
   void initState() {
     super.initState();
     getNameFromSharedPreferences();
+    getEmailFromSharedPreferences();
     getDarkModeStatusFromSharedPreferences();
     _checkAdminStatus();
     _checkDeliveryStatus();
     print(_isAdmin);
     print(_isCourier);
+    fetchRatingsFromDatabase();
   }
 
   Future<void> toggleDarkMode(BuildContext context) async {
     setState(() {
       _isDarkMode = !_isDarkMode; // Update the dark mode status
     });
-
-    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    ThemeProvider themeProvider =
+    Provider.of<ThemeProvider>(context, listen: false);
     themeProvider.toggleTheme();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -102,32 +109,92 @@ class _MoreState extends State<More> {
     });
   }
 
+  void getEmailFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      email = prefs.getString("email") ?? "";
+    });
+  }
+
+  void fetchRatingsFromDatabase() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userEmail = prefs.getString('email') ?? '';
+
+    if (userEmail.isNotEmpty) {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      CollectionReference usersCollection = firestore.collection('users');
+
+      usersCollection
+          .where('email', isEqualTo: userEmail)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        if (querySnapshot.size > 0) {
+          QueryDocumentSnapshot documentSnapshot = querySnapshot.docs[0];
+          if (documentSnapshot.exists) {
+            Map<String, dynamic>? data = documentSnapshot.data() as Map<String, dynamic>?;
+            if (data != null && data['ratings'] != null) {
+              setState(() {
+                ratings = (data['ratings'] as List<dynamic>).cast<double>().toList();
+              });
+            }
+          }
+        }
+      });
+    }
+  }
+
+  double calculateAverageRating() {
+    if (ratings.isEmpty) {
+      return 0;
+    }
+    double sum = ratings.reduce((value, element) => value + element);
+    double average = sum / ratings.length.toDouble();
+    return average;
+  }
+
+  Widget buildRatingStars(double rating) {
+    List<Widget> stars = [];
+    for (int i = 0; i < rating.floor(); i++) {
+      stars.add(
+        Icon(Icons.star, color: Colors.green, size: 16),
+      );
+    }
+    if (rating % 1 != 0) {
+      stars.add(
+        Icon(Icons.star_half, color: Colors.green, size: 16),
+      );
+    }
+    return Row(children: stars);
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
 
-    showCustomAlert() => showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Are you sure?"),
-        content: Text("Log out?"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              return Navigator.pop(context, false);
-            },
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              return Navigator.pop(context, true);
-            },
-            child: Text("Yes"),
-          ),
-        ],
-      ),
-    );
+    showCustomAlert() =>
+        showDialog(
+          context: context,
+          builder: (context) =>
+              AlertDialog(
+                title: Text("Are you sure?"),
+                content: Text("Log out?"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      return Navigator.pop(context, false);
+                    },
+                    child: Text("Cancel"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      return Navigator.pop(context, true);
+                    },
+                    child: Text("Yes"),
+                  ),
+                ],
+              ),
+        );
 
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
@@ -185,13 +252,26 @@ class _MoreState extends State<More> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                            color: isDarkMode ? Colors.white : Colors.black,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              name,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            buildRatingStars(calculateAverageRating()),
+                            Text('${calculateAverageRating().toStringAsFixed(1)}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            )
+                          ],
                         ),
                         SizedBox(height: 8),
                         Text(
@@ -205,6 +285,7 @@ class _MoreState extends State<More> {
                       ],
                     ),
                   ),
+
                   Icon(Icons.arrow_forward_ios,
                       color: Colors.grey[600], size: 18),
                 ],
@@ -354,6 +435,8 @@ class _MoreState extends State<More> {
                   ),
                 ),
               ),
+            SizedBox(height: 15),
+
           ],
         ),
       ),
@@ -389,7 +472,6 @@ class _MoreState extends State<More> {
   }) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-
     return Row(
       children: [
         CircleAvatar(
