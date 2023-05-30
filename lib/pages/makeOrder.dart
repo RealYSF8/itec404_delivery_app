@@ -574,7 +574,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                                     style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                                   ),
                                   Text(
-                                    'File Size: $_selectedFileSize',
+                                    'File Size: $_selectedFileSize KB',
                                     style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                                   ),
                                   SizedBox(height: 5),
