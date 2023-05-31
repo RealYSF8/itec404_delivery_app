@@ -477,7 +477,9 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   suffixIcon: Icon(Icons.price_check),
                   suffix: Text('TL'),
                 ),
+                enabled: false, // Set the field as not editable
               ),
+
               SizedBox(height: 10),
               GestureDetector(
                 onTap: () {
