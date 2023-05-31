@@ -258,19 +258,28 @@ class _MoreState extends State<More> {
                               name,
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                fontSize: 16,
+                                fontSize: 18,
                                 color: isDarkMode ? Colors.white : Colors.black,
                               ),
                             ),
                             SizedBox(width: 4),
                             // buildRatingStars(calculateAverageRating()),
-                            Text('(${calculateAverageRating().toStringAsFixed(1)})',
+
+                            Text('( ${calculateAverageRating().toStringAsFixed(1)}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 18,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            Icon(IconData(0xe5f9, fontFamily: 'MaterialIcons')),
+                            Text(' )',
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,
                                 color: isDarkMode ? Colors.white : Colors.black,
                               ),
-                            )
+                            ),
                           ],
                         ),
                         SizedBox(height: 8),
