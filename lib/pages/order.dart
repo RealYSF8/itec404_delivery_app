@@ -166,7 +166,7 @@ class _MyCardClassState extends State<MyCardClass> {
           }
         }
 
-        bool canLeaveReview = order['status'] == 'delivered'; // Check if the order status is "delivered"
+        bool canLeaveReview = order['status'] == 'Delivered'; // Check if the order status is "delivered"
 
         return Card(
           shape: RoundedRectangleBorder(

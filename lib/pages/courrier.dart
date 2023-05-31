@@ -13,19 +13,42 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as Path;
 import 'dart:async';
 import 'package:flutter/services.dart';
-
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:universal_html/html.dart' as html;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:google_maps_webservice/places.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:math';
+import 'dart:async';
 class Courrier extends StatefulWidget {
   @override
   _CourrierState createState() => _CourrierState();
 }
 
 class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
-  late TextEditingController textEditingController;
+  final TextEditingController textEditingController = TextEditingController();
+
   late bool isDarkMode;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   File? _selectedImage;
   String? _userId;
   String? _Name;
+  String? _downloadUrl;
 
   String _image = 'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
   late AnimationController loadingController;
@@ -35,28 +58,6 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
 
 
   // late final file;
-  selectFile() async {
-    // file = null;
-    final file = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['png', 'jpg', 'jpeg'],
-        allowMultiple: true
-    );
-    _platformFile = [];
-    _file = [];
-    if (file != null) {
-
-      for (int i = 0; i < file.files.length; i++) {
-        setState(() {
-          _file.add(File(file.files[i].path!));
-          _platformFile.add(file.files[i]);
-        });
-        await _uploadImage();
-      }
-    }
-
-    loadingController.forward();
-  }
 
   @override
   void initState() {
@@ -66,7 +67,6 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
     )..addListener(() { setState(() {}); });
     super.initState();
     super.initState();
-    textEditingController = TextEditingController();
     getThemeMode();
   }
 
@@ -79,28 +79,98 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
 
 
 
-  Future<String> _uploadImage() async {
-    try {
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference storageReference = storage.refFromURL('gs://itec404deliveryapp.appspot.com');
-      String fileName = Path.basename(_selectedImage!.path);
-      Reference imageReference = storageReference.child('images/$fileName');
-      UploadTask uploadTask = imageReference.putFile(_selectedImage!);
+  Future<void> uploadImage() async {
+    final ImagePicker picker = ImagePicker();
 
-      TaskSnapshot taskSnapshot = await uploadTask;
+    // Pick an image
+    final PickedFile? pickedFile;
+    if (kIsWeb) {
+      html.FileUploadInputElement input = html.FileUploadInputElement();
+      input.accept = 'image/*';
+      input.click();
 
-      String imageUrl = await taskSnapshot.ref.getDownloadURL();
-      print("Image uploaded successfully. Download URL: $imageUrl");
+      final completer = Completer<html.File>();
+      input.onChange.listen((e) {
+        final files = input.files;
+        if (files != null && files.isNotEmpty) {
+          completer.complete(files[0]);
+        } else {
+          completer.completeError('No file selected');
+        }
+      });
 
-      return imageUrl;
-    } catch (e) {
-      print("Error uploading image: $e");
-      throw e; // Re-throw the error to be handled by the caller
+      try {
+        final file = await completer.future;
+        final reader = html.FileReader();
+        reader.readAsDataUrl(file);
+        await reader.onLoad.first;
+
+        final fileName = file.name;
+        final fileSize = file.size;
+        final url = reader.result as String;
+
+        firebase_storage.Reference ref =
+        firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+        firebase_storage.UploadTask uploadTask = ref.putString(
+          url,
+          format: firebase_storage.PutStringFormat.dataUrl,
+        );
+        firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
+        String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+        final fileSizeInBytes = fileSize;
+        final fileSizeInMB = fileSizeInBytes / (1024 * 1024); // Convert to MB
+
+        setState(() {
+          _downloadUrl = downloadUrl;
+          _selectedFileName = fileName;
+          _selectedFileSize = fileSizeInMB.toStringAsFixed(2) + ' MB'; // Display size with 2 decimal places
+        });
+      } catch (e) {
+        print('Error selecting image: $e');
+      }
+    } else {
+      XFile? pickedFile =
+      await picker.pickImage(source: ImageSource.camera);
+      if (pickedFile == null) return;
+
+      File file = File(pickedFile.path);
+      String compressedPath = await convertImageToWebP(
+          file.path); // Compress the image
+      File compressedFile = File(compressedPath);
+
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref('uploads/${file.path.split('/').last}');
+      firebase_storage.UploadTask uploadTask =
+      ref.putFile(compressedFile); // Upload the compressed image
+      firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      setState(() {
+        _downloadUrl = downloadUrl;
+        _selectedFileName = file.path.split('/').last;
+        _selectedFileSize = file.lengthSync().toString();
+      });
     }
   }
 
 
+  Future<String> convertImageToWebP(String imagePath) async {
+    // Compressed image file path
+    final compressedPath =
+        (await getTemporaryDirectory()).path + '/compressed.webp';
 
+    // Compress the image to WebP format
+    await FlutterImageCompress.compressAndGetFile(
+      imagePath,
+      compressedPath,
+      quality: 90,
+      format: CompressFormat.webp,
+    );
+
+    return compressedPath;
+  }
+  String _selectedFileName = '';
+  String _selectedFileSize = '';
   Future<void> _pickImage() async {
     try {
       PickedFile? pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
@@ -117,6 +187,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
 
 
   void saveApplication() async {
+    String? reason = textEditingController.text;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? email = prefs.getString('email');
     String? name = prefs.getString('name');
@@ -151,8 +222,10 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
         'name': name,
         'phone_number': phoneNumber,
         'status': 'pending',
+        'imageUrls': _downloadUrl,
+        'reason': reason,
       });
-
+      textEditingController.clear();
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -268,7 +341,9 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
                 ),
               ),
               GestureDetector(
-                onTap: selectFile,
+                onTap: () {
+                  uploadImage();
+                },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
@@ -297,83 +372,84 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
                   ),
                 ),
               ),
-              _platformFile.isNotEmpty
-                  ? Container(
-                // padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                  padding: const EdgeInsets.only(left:10, top:0, right:10, bottom:10),
+              if (_downloadUrl != null)
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Selected File',
-                        style: TextStyle(color: Colors.grey.shade400, fontSize: 15, ),),
-                      const SizedBox(height: 10,),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.shade200,
-                                offset: const Offset(0, 1),
-                                blurRadius: 3,
-                                spreadRadius: 2,
-                              )
-                            ]
+                      Text(
+                        'Selected File',
+                        style: TextStyle(
+                          color: Colors.grey.shade400,
+                          fontSize: 15,
                         ),
-                        child:_platformFile.isNotEmpty?
-                        ListView.builder(
-                            physics:const NeverScrollableScrollPhysics(),
-                            shrinkWrap:true,
-                            itemCount: _platformFile.length,
-                            itemBuilder: (context, index){
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.file(_file[index]!, width: 80, height: 60, fit: BoxFit.fill,)
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(_platformFile[index]!.name,
-                                            style: const TextStyle(fontSize: 13, color: Colors.black),),
-                                          const SizedBox(height: 5,),
-                                          Text('${(_platformFile[index]!.size / 1024).ceil()} KB',
-                                            style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade200,
+                              offset: Offset(0, 1),
+                              blurRadius: 3,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(10),
+                                          child: Image.network(
+                                            _downloadUrl!,
+                                            height: 75,
+                                            width: 70,
+                                            fit: BoxFit.cover,
                                           ),
-                                          const SizedBox(height: 5,),
-                                          Container(
-                                              height: 5,
-                                              clipBehavior: Clip.hardEdge,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(5),
-                                                color: Colors.blue.shade50,
-                                              ),
-                                              child: LinearProgressIndicator(
-                                                value: loadingController.value,
-                                              )
+                                        ),
+                                        SizedBox(width: 15),
+                                        Flexible(
+                                          child: Text(
+                                            'File Name: $_selectedFileName\n' +
+                                                'File Size: $_selectedFileSize KB',
+                                            style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ]
+                                  ),
+                                  SizedBox(height: 8),
+                                  Container(
+                                    height: 5,
+                                    clipBehavior: Clip.hardEdge,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: Colors.blue.shade50,
                                     ),
-                                    const SizedBox(width: 10,),
-                                  ],
-                                ),
-                              );
-                            }
-                        )
-                            : Container(),
+                                    child: LinearProgressIndicator(
+                                      value: loadingController.value,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                          ],
+                        ),
                       ),
                     ],
-                  ))
-                  : Container(),
+                  ),
+                ),
               MaterialButton(
                 onPressed: saveApplication,
                 color: isDarkMode ? const Color(0xfff80707) : const Color(0xff3a57e8),
