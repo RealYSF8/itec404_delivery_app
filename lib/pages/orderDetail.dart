@@ -145,7 +145,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
         backgroundColor: Colors.blue,
       ),
       body: Padding(
-        padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 0.0),
+        padding: EdgeInsets.fromLTRB(30.0, 20.0, 30.0, 0.0),
         child: SingleChildScrollView(
           child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
             stream: orderStream,
