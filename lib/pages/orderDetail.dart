@@ -178,29 +178,39 @@ class _OrderDetailPageState extends State<OrderDetail> {
                         child: Column(
                           children: [
                             if (imageUrl != null)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10.0),
-                                child: Image.network(
-                                  imageUrl,
-                                  width: 200,
-                                  height: 200,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
                             ListTile(
                               title: Padding(
                                 padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                                child: Text(
-                                  "Order #" +
-                                      (orderData?['orderNumber'] ?? '')
-                                          .toString(),
-                                  textAlign: TextAlign.start,
-                                  overflow: TextOverflow.clip,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontStyle: FontStyle.normal,
-                                    fontSize: 35,
-                                  ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    SizedBox(width: 10,),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(60),
+                                        child: Image.network(
+                                          imageUrl,
+                                          height: 70,
+                                          width: 70,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 10,),
+                                    Text(
+                                      "Order #" +
+                                          (orderData?['orderNumber'] ?? '')
+                                              .toString(),
+                                      textAlign: TextAlign.start,
+                                      overflow: TextOverflow.clip,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontStyle: FontStyle.normal,
+                                        fontSize: 30,
+                                      ),
+                                    ),
+                                  ]
                                 ),
                               ),
                               subtitle: Column(
@@ -235,7 +245,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       SizedBox(height: 20.0),
                                     ],
                                   ),
-                                  SizedBox(height: 20.0),
+                                  SizedBox(height: 15.0),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
@@ -383,6 +393,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       SizedBox(height: 20.0),
                                     ],
                                   ),
+                                  SizedBox(height: 15.0),
                                   if (['processing', 'Shipped', 'Delivered'].contains(status))
 
                                     StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -417,7 +428,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
 
                                               Text(
 
-                                                'Accepted By:',
+                                                'Courier:',
                                                 style: TextStyle(
                                                   color: Color(0xfffba808),
                                                   letterSpacing: 2.0,
@@ -426,15 +437,121 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                               ),
 
                                               SizedBox(width: 10.0),
+                                              Flexible(
+                                                child: Text(
+                                                  userName ?? 'N/A' + '${calculateAverageRating().toStringAsFixed(1)}',
+                                                  style: TextStyle(
+                                                    color: Colors.grey,
+                                                    letterSpacing: 2.0,
+                                                    fontSize: 18.0,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  Visibility(
+                                    visible: ['processing', 'Shipped'].contains(status),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          'Estimated Delivery Time:',
+                                          style: TextStyle(
+                                            color: Color(0xfffba808),
+                                            letterSpacing: 2.0,
+                                            fontSize: 25.0,
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.0),
+                                        Text(
+                                          orderData?['acceptedDate'] != null
+                                              ? getEstimatedDeliveryTime(orderData?['acceptedDate'] as Timestamp)
+                                              : 'N/A',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            letterSpacing: 2.0,
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                        SizedBox(height: 20.0),
+                                      ],
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: ['processing', 'Shipped'].contains(status),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          'Estimated Delivery Time:',
+                                          style: TextStyle(
+                                            color: Color(0xfffba808),
+                                            letterSpacing: 2.0,
+                                            fontSize: 25.0,
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.0),
+                                        Text(
+                                          orderData?['acceptedDate'] != null
+                                              ? getEstimatedDeliveryTime(orderData?['acceptedDate'] as Timestamp)
+                                              : 'N/A',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            letterSpacing: 2.0,
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                        SizedBox(height: 20.0),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 15.0),
+                                  if (['processing', 'Shipped', 'Delivered'].contains(status))
+
+                                    StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('users')
+                                          .where('email', isEqualTo: acceptedBy)
+                                          .snapshots(),
+                                      builder: (context, userSnapshot) {
+                                        if (userSnapshot.hasError) {
+                                          return Text('Error: ${userSnapshot.error}');
+                                        }
+
+                                        if (userSnapshot.connectionState == ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
+                                        }
+
+                                        if (!userSnapshot.hasData || userSnapshot.data == null) {
+                                          return Text('No data available');
+                                        }
+
+                                        final userData = userSnapshot.data!.docs.first.data() as Map<String, dynamic>;
+                                        final userName = userData['name'] as String?;
+                                        print(userName);
+
+                                        return Visibility(
+
+                                          visible: userName != null,
+                                          child: Row(
+
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: <Widget>[
+
                                               Text(
-                                                userName ?? 'N/A' + '${calculateAverageRating().toStringAsFixed(1)}',
+
+                                                'Raiting:',
                                                 style: TextStyle(
-                                                  color: Colors.grey,
+                                                  color: Color(0xfffba808),
                                                   letterSpacing: 2.0,
-                                                  fontSize: 18.0,
+                                                  fontSize: 25.0,
                                                 ),
                                               ),
 
+                                              SizedBox(width: 10.0),
                                               SizedBox(height: 20.0),
                                               buildRatingStars(calculateAverageRating()),
 
@@ -443,6 +560,34 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         );
                                       },
                                     ),
+                                  Visibility(
+                                    visible: ['processing', 'Shipped'].contains(status),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          'Estimated Delivery Time:',
+                                          style: TextStyle(
+                                            color: Color(0xfffba808),
+                                            letterSpacing: 2.0,
+                                            fontSize: 25.0,
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.0),
+                                        Text(
+                                          orderData?['acceptedDate'] != null
+                                              ? getEstimatedDeliveryTime(orderData?['acceptedDate'] as Timestamp)
+                                              : 'N/A',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            letterSpacing: 2.0,
+                                            fontSize: 18.0,
+                                          ),
+                                        ),
+                                        SizedBox(height: 20.0),
+                                      ],
+                                    ),
+                                  ),
                                   Visibility(
                                     visible: ['processing', 'Shipped'].contains(status),
                                     child: Row(

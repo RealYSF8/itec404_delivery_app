@@ -70,9 +70,12 @@ class _ReviewPageState extends State<ReviewPage> {
           child: Column(
             children: [
               if (_hasRated)
-                const Text(
-                  'You have already rated this order.',
-                  style: TextStyle(fontSize: 25),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: const Text(
+                    'Rated Order',
+                    style: TextStyle(fontSize: 25),
+                  ),
                 )
               else
                 const Text(

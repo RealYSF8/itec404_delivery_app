@@ -262,9 +262,9 @@ class _MoreState extends State<More> {
                                 color: isDarkMode ? Colors.white : Colors.black,
                               ),
                             ),
-                            SizedBox(width: 8),
-                            buildRatingStars(calculateAverageRating()),
-                            Text('${calculateAverageRating().toStringAsFixed(1)}',
+                            SizedBox(width: 4),
+                            // buildRatingStars(calculateAverageRating()),
+                            Text('(${calculateAverageRating().toStringAsFixed(1)})',
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,
