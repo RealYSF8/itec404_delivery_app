@@ -43,30 +43,36 @@ class _AboutState extends State<About> {
     return Scaffold(
       backgroundColor: _isDarkMode ? Colors.grey[900] : Colors.white,
       appBar: AppBar(
-        elevation: 0,
-        centerTitle: false,
         automaticallyImplyLeading: false,
-        backgroundColor: Color(0xff3a63e8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-        ),
-        title: Text(
-          "About Us",
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-            color: Colors.white,
+        centerTitle: false,
+        title: Row(children: <Widget>[
+          Text(
+            "About",
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Color(0xffffffff),
+            ),
           ),
-        ),
+          Text(
+            "Us",
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Color(0xfffba808),
+            ),
+          ),
+        ]),
+        backgroundColor: Colors.blue,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-            size: 24,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: SingleChildScrollView(
@@ -74,32 +80,26 @@ class _AboutState extends State<About> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              "Delivery App",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 24,
-                color: _isDarkMode ? Colors.white : Colors.grey[900],
-              ),
-            ),
-            Text(
-              "ITEC404",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-                color: _isDarkMode ? Colors.white : Colors.grey[900],
-              ),
-            ),
             Image.asset(
               "assets/about.png",
 
             ),
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              padding: EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 5.0),
               child: Text(
-                "Our delivery app",
+                "Swift Delivery",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                  color: _isDarkMode ? Colors.white : Colors.grey[900],
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+              child: Text(
+                "Version 1.0.1",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.w400,

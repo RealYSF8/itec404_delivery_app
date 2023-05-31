@@ -145,7 +145,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
         backgroundColor: Colors.blue,
       ),
       body: Padding(
-        padding: EdgeInsets.fromLTRB(30.0, 20.0, 30.0, 0.0),
+        padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 20.0),
         child: SingleChildScrollView(
           child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
             stream: orderStream,
@@ -174,13 +174,13 @@ class _OrderDetailPageState extends State<OrderDetail> {
                     onTap: () {},
                     subtitle: Card(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                        padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: Column(
                           children: [
                             if (imageUrl != null)
                             ListTile(
                               title: Padding(
-                                padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                padding: EdgeInsets.fromLTRB(25.0, 0.0, 25.0, 0.0),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: <Widget>[
@@ -197,7 +197,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(width: 10,),
+                                    SizedBox(width: 15,),
                                     Text(
                                       "Order #" +
                                           (orderData?['orderNumber'] ?? '')
@@ -228,7 +228,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         style: TextStyle(
                                           color: Color(0xfffba808),
                                           letterSpacing: 2.0,
-                                          fontSize: 25.0,
+                                          fontSize: 24.0,
                                         ),
                                       ),
                                       SizedBox(width: 10.0),
@@ -245,7 +245,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       SizedBox(height: 20.0),
                                     ],
                                   ),
-                                  SizedBox(height: 15.0),
+                                  SizedBox(height: 10.0),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
@@ -254,7 +254,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         style: TextStyle(
                                           color: Color(0xfffba808),
                                           letterSpacing: 2.0,
-                                          fontSize: 25.0,
+                                          fontSize: 24.0,
                                         ),
                                       ),
                                       SizedBox(width: 10.0),
@@ -271,7 +271,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       SizedBox(height: 20.0),
                                     ],
                                   ),
-                                  SizedBox(height: 15.0),
+                                  SizedBox(height: 10.0),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
@@ -280,12 +280,11 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         style: TextStyle(
                                           color: Color(0xfffba808),
                                           letterSpacing: 2.0,
-                                          fontSize: 25.0,
+                                          fontSize: 24.0,
                                         ),
                                       ),
                                       SizedBox(width: 10.0),
-                                      Flexible(
-                                        child: Text(
+                                      Text(
                                           orderData?['length'] ?? '',
                                           style: TextStyle(
                                             color: Colors.grey,
@@ -293,11 +292,18 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                             fontSize: 18.0,
                                           ),
                                         ),
+                                      Text(
+                                        ' CM',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          letterSpacing: 2.0,
+                                          fontSize: 18.0,
+                                        ),
                                       ),
                                       SizedBox(height: 20.0),
                                     ],
                                   ),
-                                  SizedBox(height: 15.0),
+                                  SizedBox(height: 10.0),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
@@ -306,7 +312,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         style: TextStyle(
                                           color: Color(0xfffba808),
                                           letterSpacing: 2.0,
-                                          fontSize: 25.0,
+                                          fontSize: 24.0,
                                         ),
                                       ),
                                       SizedBox(width: 10.0),
@@ -318,10 +324,18 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                           fontSize: 18.0,
                                         ),
                                       ),
+                                      Text(
+                                        ' CM',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          letterSpacing: 2.0,
+                                          fontSize: 18.0,
+                                        ),
+                                      ),
                                       SizedBox(height: 20.0),
                                     ],
                                   ),
-                                  SizedBox(height: 15.0),
+                                  SizedBox(height: 10.0),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
@@ -330,7 +344,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         style: TextStyle(
                                           color: Color(0xfffba808),
                                           letterSpacing: 2.0,
-                                          fontSize: 25.0,
+                                          fontSize: 24.0,
                                         ),
                                       ),
                                       SizedBox(width: 10.0),
@@ -342,10 +356,18 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                           fontSize: 18.0,
                                         ),
                                       ),
+                                      Text(
+                                        ' CM',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          letterSpacing: 2.0,
+                                          fontSize: 18.0,
+                                        ),
+                                      ),
                                       SizedBox(height: 20.0),
                                     ],
                                   ),
-                                  SizedBox(height: 15.0),
+                                  SizedBox(height: 10.0),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
@@ -354,7 +376,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         style: TextStyle(
                                           color: Color(0xfffba808),
                                           letterSpacing: 2.0,
-                                          fontSize: 25.0,
+                                          fontSize: 24.0,
                                         ),
                                       ),
                                       SizedBox(width: 10.0),
@@ -366,10 +388,18 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                           fontSize: 18.0,
                                         ),
                                       ),
+                                      Text(
+                                        ' TL',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          letterSpacing: 2.0,
+                                          fontSize: 18.0,
+                                        ),
+                                      ),
                                       SizedBox(height: 20.0),
                                     ],
                                   ),
-                                  SizedBox(height: 15.0),
+                                  SizedBox(height: 10.0),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
@@ -378,7 +408,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         style: TextStyle(
                                           color: Color(0xfffba808),
                                           letterSpacing: 2.0,
-                                          fontSize: 25.0,
+                                          fontSize: 24.0,
                                         ),
                                       ),
                                       SizedBox(width: 10.0),
@@ -393,7 +423,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       SizedBox(height: 20.0),
                                     ],
                                   ),
-                                  SizedBox(height: 15.0),
+                                  SizedBox(height: 10.0),
                                   if (['processing', 'Shipped', 'Delivered'].contains(status))
 
                                     StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -432,7 +462,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                                 style: TextStyle(
                                                   color: Color(0xfffba808),
                                                   letterSpacing: 2.0,
-                                                  fontSize: 25.0,
+                                                  fontSize: 24.0,
                                                 ),
                                               ),
 
@@ -452,63 +482,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         );
                                       },
                                     ),
-                                  Visibility(
-                                    visible: ['processing', 'Shipped'].contains(status),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          'Estimated Delivery Time:',
-                                          style: TextStyle(
-                                            color: Color(0xfffba808),
-                                            letterSpacing: 2.0,
-                                            fontSize: 25.0,
-                                          ),
-                                        ),
-                                        SizedBox(width: 10.0),
-                                        Text(
-                                          orderData?['acceptedDate'] != null
-                                              ? getEstimatedDeliveryTime(orderData?['acceptedDate'] as Timestamp)
-                                              : 'N/A',
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                            letterSpacing: 2.0,
-                                            fontSize: 18.0,
-                                          ),
-                                        ),
-                                        SizedBox(height: 20.0),
-                                      ],
-                                    ),
-                                  ),
-                                  Visibility(
-                                    visible: ['processing', 'Shipped'].contains(status),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          'Estimated Delivery Time:',
-                                          style: TextStyle(
-                                            color: Color(0xfffba808),
-                                            letterSpacing: 2.0,
-                                            fontSize: 25.0,
-                                          ),
-                                        ),
-                                        SizedBox(width: 10.0),
-                                        Text(
-                                          orderData?['acceptedDate'] != null
-                                              ? getEstimatedDeliveryTime(orderData?['acceptedDate'] as Timestamp)
-                                              : 'N/A',
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                            letterSpacing: 2.0,
-                                            fontSize: 18.0,
-                                          ),
-                                        ),
-                                        SizedBox(height: 20.0),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 15.0),
+                                  SizedBox(height: 10.0),
                                   if (['processing', 'Shipped', 'Delivered'].contains(status))
 
                                     StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -547,7 +521,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                                 style: TextStyle(
                                                   color: Color(0xfffba808),
                                                   letterSpacing: 2.0,
-                                                  fontSize: 25.0,
+                                                  fontSize: 24.0,
                                                 ),
                                               ),
 
@@ -560,6 +534,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         );
                                       },
                                     ),
+                                  SizedBox(height: 10.0),
                                   Visibility(
                                     visible: ['processing', 'Shipped'].contains(status),
                                     child: Row(
@@ -570,46 +545,28 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                           style: TextStyle(
                                             color: Color(0xfffba808),
                                             letterSpacing: 2.0,
-                                            fontSize: 25.0,
-                                          ),
-                                        ),
-                                        SizedBox(width: 10.0),
-                                        Text(
-                                          orderData?['acceptedDate'] != null
-                                              ? getEstimatedDeliveryTime(orderData?['acceptedDate'] as Timestamp)
-                                              : 'N/A',
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                            letterSpacing: 2.0,
-                                            fontSize: 18.0,
+                                            fontSize: 24.0,
                                           ),
                                         ),
                                         SizedBox(height: 20.0),
                                       ],
                                     ),
-                                  ),
+                                  ),SizedBox(height: 5.0),
                                   Visibility(
                                     visible: ['processing', 'Shipped'].contains(status),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: <Widget>[
-                                        Text(
-                                          'Estimated Delivery Time:',
-                                          style: TextStyle(
-                                            color: Color(0xfffba808),
-                                            letterSpacing: 2.0,
-                                            fontSize: 25.0,
-                                          ),
-                                        ),
-                                        SizedBox(width: 10.0),
-                                        Text(
-                                          orderData?['acceptedDate'] != null
-                                              ? getEstimatedDeliveryTime(orderData?['acceptedDate'] as Timestamp)
-                                              : 'N/A',
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                            letterSpacing: 2.0,
-                                            fontSize: 18.0,
+                                        Flexible(
+                                          child: Text(
+                                            orderData?['acceptedDate'] != null
+                                                ? getEstimatedDeliveryTime(orderData?['acceptedDate'] as Timestamp)
+                                                : 'N/A',
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                              letterSpacing: 2.0,
+                                              fontSize: 18.0,
+                                            ),
                                           ),
                                         ),
                                         SizedBox(height: 20.0),
@@ -624,7 +581,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 15.0),
+                  SizedBox(height: 10.0),
                 ],
               );
             },

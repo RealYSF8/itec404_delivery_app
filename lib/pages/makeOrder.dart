@@ -471,7 +471,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 ),
               ),
               TextFormField(
-                controller: heightController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'Price',

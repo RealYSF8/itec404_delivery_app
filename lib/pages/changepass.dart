@@ -40,22 +40,36 @@ class _ChangepassState extends State<Changepass> {
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
       appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        title: const Text(
-          'Change Password',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-            color: Colors.grey,
+        centerTitle: false,
+        title: Row(children: <Widget>[
+          Text(
+            "Change",
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Color(0xffffffff),
+            ),
           ),
-        ),
+          Text(
+            "Password",
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Color(0xfffba808),
+            ),
+          ),
+        ]),
+        backgroundColor: Colors.blue,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.grey),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
-
         ),
       ),
       body: SingleChildScrollView(

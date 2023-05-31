@@ -44,19 +44,35 @@ class _ContactState extends State<Contact> {
     return Scaffold(
       backgroundColor: _isDarkMode ? Colors.grey[900] : Colors.white,
       appBar: AppBar(
-        elevation: 0,
-        centerTitle: false,
         automaticallyImplyLeading: false,
-        backgroundColor: Color(0xff3a63e8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-            size: 24,
+        centerTitle: false,
+        title: Row(children: <Widget>[
+          Text(
+            "Contact",
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Color(0xffffffff),
+            ),
           ),
+          Text(
+            "Us",
+            textAlign: TextAlign.start,
+            overflow: TextOverflow.clip,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+              fontSize: 22,
+              color: Color(0xfffba808),
+            ),
+          ),
+        ]),
+        backgroundColor: Colors.blue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -71,18 +87,7 @@ class _ContactState extends State<Contact> {
             mainAxisSize: MainAxisSize.max,
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
-                child: Text(
-                  "Contact Us",
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.clip,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                    fontSize: 24,
-                    color: Color(0xff3a57e8),
-                  ),
-                ),
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 35),
               ),
               Container(
                 margin: EdgeInsets.all(0),
