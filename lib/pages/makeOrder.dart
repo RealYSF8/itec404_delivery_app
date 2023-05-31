@@ -483,7 +483,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
               GestureDetector(
                 onTap: () {
                   uploadImage();
-                },
+                },/
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
