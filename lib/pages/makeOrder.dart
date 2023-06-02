@@ -21,6 +21,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:async';
 
+
 class MakeOrderPage extends StatefulWidget {
   final TextEditingController controller;
   MakeOrderPage({required this.controller});
@@ -38,7 +39,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
   final places =
-  GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+  GoogleMapsPlaces(apiKey: 'YOUR_API_KEY_HERE');
   List<String> placePredictions = [];
   List<String> toPlacePredictions = [];
 
@@ -82,12 +83,14 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
         final fileSizeInBytes = fileSize;
-        final fileSizeInMB = fileSizeInBytes / (1024 * 1024); // Convert to MB
+        final fileSizeInMB =
+            fileSizeInBytes / (1024 * 1024); // Convert to MB
 
         setState(() {
           _downloadUrl = downloadUrl;
           _selectedFileName = fileName;
-          _selectedFileSize = fileSizeInMB.toStringAsFixed(2) + ' MB'; // Display size with 2 decimal places
+          _selectedFileSize =
+              fileSizeInMB.toStringAsFixed(2) + ' MB'; // Display size with 2 decimal places
         });
       } catch (e) {
         print('Error selecting image: $e');
@@ -98,8 +101,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       if (pickedFile == null) return;
 
       File file = File(pickedFile.path);
-      String compressedPath = await convertImageToWebP(
-          file.path); // Compress the image
+      String compressedPath =
+      await convertImageToWebP(file.path); // Compress the image
       File compressedFile = File(compressedPath);
 
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
@@ -115,7 +118,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       });
     }
   }
-
 
   Future<List<String>> fetchToPlacePredictions(String input) async {
     if (kIsWeb) {
@@ -194,7 +196,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final TextEditingController lengthController = TextEditingController();
   final TextEditingController widthController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
-  final TextEditingController priceController = TextEditingController(text: '0.00');
+  final TextEditingController priceController =
+  TextEditingController(text: '0.00');
 
   String? _userId;
   String? _Name;
@@ -281,6 +284,39 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     Timestamp now = Timestamp.now();
 
     // Create a new order document with the data and timestamp
+    if (from == null ||
+        to == null ||
+        length == null ||
+        width == null ||
+        height == null ||
+        price == null ||
+        downloadUrl == null ||
+        from.isEmpty ||
+        to.isEmpty ||
+        length.isEmpty ||
+        width.isEmpty ||
+        height.isEmpty ||
+        price.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Incomplete Order'),
+            content: Text('Please fill all the required fields.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     DocumentReference orderRef = await _db.collection('orders').add({
       'createdBy': _Email,
       'userId': _userId,
@@ -290,14 +326,12 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       'length': length,
       'width': width,
       'height': height,
-      'price' : price,
+      'price': price,
       'status': 'pending',
       'createdAt': now,
       'orderNumber': randomOrder,
     });
     orderRef.update({'imageUrls': _downloadUrl});
-
-    // Update the order document with the image URLs
 
     // Clear the input fields
     fromLocation.clear();
@@ -319,6 +353,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                // Navigating to /orderdetail page with the document ID
+                Navigator.pushNamed(context, '/orderdetail', arguments: orderRef.id);
               },
               child: Text('OK'),
             ),
@@ -403,6 +439,12 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                     });
                   }
                 },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'From location is required';
+                  }
+                  return null;
+                },
               ),
               ListView.builder(
                 shrinkWrap: true,
@@ -442,6 +484,12 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                     });
                   }
                 },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'To location is required';
+                  }
+                  return null;
+                },
               ),
               ListView.builder(
                 shrinkWrap: true,
@@ -466,6 +514,12 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   suffixIcon: Icon(Icons.straighten),
                   suffix: Text('CM'),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Length is required';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                 controller: widthController,
@@ -475,6 +529,12 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   suffixIcon: Icon(Icons.straighten),
                   suffix: Text('CM'),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Width is required';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                 controller: heightController,
@@ -484,6 +544,12 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   suffixIcon: Icon(Icons.straighten),
                   suffix: Text('CM'),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Height is required';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                 controller: priceController,
@@ -500,7 +566,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
               GestureDetector(
                 onTap: () {
                   uploadImage();
-                },//
+                },
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
@@ -577,25 +643,25 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        _downloadUrl!,
-                                        height: 75,
-                                        width: 70,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    SizedBox(width: 15),
-                                    Flexible(
-                                      child: Text(
-                                        'File Name: $_selectedFileName\n' +
-                                        'File Size: $_selectedFileSize KB',
-                                        style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                                      ),
-                                    ),
-                                  ]
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(10),
+                                          child: Image.network(
+                                            _downloadUrl!,
+                                            height: 75,
+                                            width: 70,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        SizedBox(width: 15),
+                                        Flexible(
+                                          child: Text(
+                                            'File Name: $_selectedFileName\n' +
+                                                'File Size: $_selectedFileSize KB',
+                                            style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                                          ),
+                                        ),
+                                      ]
                                   ),
                                   SizedBox(height: 8),
                                   Container(
@@ -620,7 +686,11 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   ),
                 ),
               ElevatedButton(
-                onPressed: () => _createOrder(_downloadUrl),
+                onPressed: () {
+                  if (_validateFormFields(context)) {
+                    _createOrder(_downloadUrl);
+                  }
+                },
                 child: Text('Create Order'),
               ),
             ],
@@ -629,4 +699,50 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       ),
     );
   }
+
+  bool _validateFormFields(BuildContext context) {
+    bool isValid = true;
+
+    if (fromLocation.text.isEmpty) {
+      _showErrorSnackBar(context, 'From location is required');
+      isValid = false;
+    }
+
+    if (toLocation.text.isEmpty) {
+      _showErrorSnackBar(context, 'To location is required');
+      isValid = false;
+    }
+
+    if (lengthController.text.isEmpty) {
+      _showErrorSnackBar(context, 'Length is required');
+      isValid = false;
+    }
+
+    if (widthController.text.isEmpty) {
+      _showErrorSnackBar(context, 'Width is required');
+      isValid = false;
+    }
+
+    if (heightController.text.isEmpty) {
+      _showErrorSnackBar(context, 'Height is required');
+      isValid = false;
+    }
+
+    if (_downloadUrl == null) {
+      _showErrorSnackBar(context, 'Image is required');
+      return false;
+    }
+
+    return isValid;
+  }
+
+  void _showErrorSnackBar(BuildContext context, String errorMessage) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
 }
