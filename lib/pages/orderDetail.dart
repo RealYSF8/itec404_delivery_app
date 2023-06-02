@@ -381,7 +381,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       ),
                                       SizedBox(width: 10.0),
                                       Text(
-                                        orderData?['height'] ?? '',
+                                        orderData?['price'] ?? '',
                                         style: TextStyle(
                                           color: Colors.grey,
                                           letterSpacing: 2.0,

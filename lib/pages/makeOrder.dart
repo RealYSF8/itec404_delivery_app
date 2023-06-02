@@ -194,6 +194,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final TextEditingController lengthController = TextEditingController();
   final TextEditingController widthController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
+  final TextEditingController priceController = TextEditingController(text: '0.00');
 
   String? _userId;
   String? _Name;
@@ -222,11 +223,22 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
         setState(() {});
       });
     super.initState();
-    super.initState();
+    lengthController.addListener(calculatePrice);
+    widthController.addListener(calculatePrice);
+    heightController.addListener(calculatePrice);
     getNameFromSharedPreferences();
     _getUserData();
     getCategoryFromSharedPreferences();
     _getAddress().then((value) => fromLocation.text = value ?? '');
+  }
+
+  void calculatePrice() {
+    double length = double.tryParse(lengthController.text) ?? 0;
+    double width = double.tryParse(widthController.text) ?? 0;
+    double height = double.tryParse(heightController.text) ?? 0;
+
+    double price = (length * width * height) / 2000;
+    priceController.text = price.toStringAsFixed(2);
   }
 
   void getCategoryFromSharedPreferences() async {
@@ -260,6 +272,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     String? length = lengthController.text;
     String? width = widthController.text;
     String? height = heightController.text;
+    String? price = priceController.text;
     Random random = Random();
     int randomOrder = random.nextInt(10000);
     // Upload the images before creating the order
@@ -277,6 +290,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       'length': length,
       'width': width,
       'height': height,
+      'price' : price,
       'status': 'pending',
       'createdAt': now,
       'orderNumber': randomOrder,
@@ -291,6 +305,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     lengthController.clear();
     widthController.clear();
     heightController.clear();
+    priceController.clear();
 
     // Clear the selected images
 
@@ -471,6 +486,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 ),
               ),
               TextFormField(
+                controller: priceController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'Price',
