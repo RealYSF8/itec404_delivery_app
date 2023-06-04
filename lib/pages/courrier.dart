@@ -221,7 +221,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
         'email': email,
         'name': name,
         'phone_number': phoneNumber,
-        'status': 'pending',
+        'status': 'Pending',
         'imageUrls': _downloadUrl,
         'reason': reason,
       });

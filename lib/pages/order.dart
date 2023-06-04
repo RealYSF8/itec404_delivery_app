@@ -28,7 +28,7 @@ class OrderPage extends StatefulWidget {
 class _OrderPageState extends State<OrderPage> {
   int _selectedIndex = 1;
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   void _onItemTapped(int index) {
     setState(() {
@@ -146,8 +146,9 @@ class _MyCardClassState extends State<MyCardClass> {
 
   @override
   Widget build(BuildContext context) {
-    Color? cardColor =
-    isDarkMode ? Colors.grey[900] : Colors.white; // Set the card's color based on the dark mode status
+    Color? cardColor = isDarkMode
+        ? Colors.grey[900]
+        : Colors.white; // Set the card's color based on the dark mode status
     return ListView.builder(
       shrinkWrap: true,
       itemCount: orders.length,
@@ -166,7 +167,8 @@ class _MyCardClassState extends State<MyCardClass> {
           }
         }
 
-        bool canLeaveReview = order['status'] == 'Delivered'; // Check if the order status is "delivered"
+        bool canLeaveReview = order['status'] ==
+            'Delivered'; // Check if the order status is "delivered"
 
         return Card(
           shape: RoundedRectangleBorder(

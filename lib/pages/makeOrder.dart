@@ -39,7 +39,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
   final places =
-  GoogleMapsPlaces(apiKey: 'YOUR_API_KEY_HERE');
+  GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
   List<String> placePredictions = [];
   List<String> toPlacePredictions = [];
 
@@ -327,7 +327,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       'width': width,
       'height': height,
       'price': price,
-      'status': 'pending',
+      'status': 'Pending',
       'createdAt': now,
       'orderNumber': randomOrder,
     });

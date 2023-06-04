@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminPage extends StatefulWidget {
   @override
@@ -8,6 +9,8 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
+  late List<DocumentSnapshot> orders = [];
+
   String searchQuery = '';
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
@@ -35,7 +38,11 @@ class _AdminPageState extends State<AdminPage> {
       _selectedIndex = index;
     });
   }
-
+  @override
+  void initState() {
+    super.initState();
+    fetchOrders();
+  }
   void _toggleSearch() {
     setState(() {
       isSearching = !isSearching;
@@ -49,7 +56,18 @@ class _AdminPageState extends State<AdminPage> {
       }
     });
   }
+  Future<void> fetchOrders() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userEmail = prefs.getString('email') ?? '';
 
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('orders')
+        .get();
+
+    setState(() {
+      orders = snapshot.docs;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,7 +173,6 @@ class _AdminPageState extends State<AdminPage> {
                               // Update user's role to "Courier" in the user's table
                               await FirebaseFirestore.instance
                                   .collection('users')
-                                  .where('email', isEqualTo: email)
                                   .get()
                                   .then((QuerySnapshot querySnapshot) {
                                 querySnapshot.docs.forEach((doc) async {
@@ -519,48 +536,161 @@ class _AdminPageState extends State<AdminPage> {
 
   Widget _buildOrdersTab() {
     // add this method to build the orders tab
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('orders').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: orders.length,
+      itemBuilder: (context, index) {
+        final order = orders[index];
+        final createdAt = (order['createdAt'] as Timestamp).toDate();
+        final imageUrls = order['imageUrls'];
+
+        String firstImageUrl = '';
+        if (imageUrls != null && imageUrls.isNotEmpty) {
+          if (imageUrls is String) {
+            firstImageUrl = imageUrls;
+          } else if (imageUrls is List<dynamic>) {
+            firstImageUrl =
+                imageUrls.firstWhere((url) => url is String, orElse: () => '');
+          }
         }
-        if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        final List<DocumentSnapshot> orders = snapshot.data!.docs;
-
-        return ListView.builder(
-          itemCount: orders.length,
-          itemBuilder: (context, index) {
-            final DocumentSnapshot<Object?> order = orders[index];
-
-            try {
-              final String name = order['Name'];
-              final String date =
-              DateFormat.yMd().add_jm().format(order['createdAt'].toDate());
-              final String status = order['status'];
-              return ListTile(
-                subtitle:Card(
-                  child: ListTile(
-                    title: Text(name),
-                    subtitle: Column(
+  return Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: NetworkImage(firstImageUrl),
+                            fit: BoxFit.fill),
+                      ),
+                    ),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(date),
-                        Text(status),
+                        Text(
+                          "#" + order['orderNumber'].toString(),
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ],
                     ),
-                    // isThreeLine: true,
-                  ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          order['status'],
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              );
-            } catch (e, stackTrace) {
-              print('Error accessing order fields: $e\n$stackTrace');
-              return Text('Error accessing order fields');
-            }
-          },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Divider(
+                  thickness: 3,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Date: ${createdAt.toString().substring(0, 10)}",
+                    ),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Change Status'),
+                                  content: Text('Select the new status:'),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Shipped'),
+                                      onPressed: () {
+                                        order.reference.update(
+                                            {'status': 'Shipped'});
+                                        Navigator.of(context).pop();
+                                        fetchOrders();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text('Delivered'),
+                                      onPressed: () {
+                                        order.reference.update(
+                                            {'status': 'Delivered'});
+                                        Navigator.of(context).pop();
+                                        fetchOrders();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text('Cancel'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.grey[200],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Change Status",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Navigate to the "/orderdetail" page with the document ID
+                            Navigator.pushNamed(context, '/orderdetail',
+                                arguments: order.id);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.grey[200],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Order Detail",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

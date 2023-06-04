@@ -32,34 +32,18 @@ class _OrderDetailPageState extends State<OrderDetail> {
   }
 
   void fetchRatingsFromDatabase() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userEmail = prefs.getString('email') ?? '';
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    DocumentSnapshot orderSnapshot =
+    await firestore.collection('orders').doc(widget.documentId).get();
+    Map<String, dynamic>? orderData = orderSnapshot.data() as Map<String, dynamic>?;
 
-    if (userEmail.isNotEmpty) {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      CollectionReference usersCollection = firestore.collection('users');
-
-      usersCollection
-          .where('email', isEqualTo: userEmail)
-          .get()
-          .then((QuerySnapshot querySnapshot) {
-        if (querySnapshot.size > 0) {
-          QueryDocumentSnapshot documentSnapshot = querySnapshot.docs[0];
-          if (documentSnapshot.exists) {
-            Map<String, dynamic>? data = documentSnapshot.data() as Map<
-                String,
-                dynamic>?;
-            if (data != null && data['ratings'] != null) {
-              setState(() {
-                ratings =
-                    (data['ratings'] as List<dynamic>).cast<double>().toList();
-              });
-            }
-          }
-        }
+    if (orderData != null && orderData['rating'] != null) {
+      setState(() {
+        ratings = [(orderData['rating'] as double).toDouble()];
       });
     }
   }
+
 
   double calculateAverageRating() {
     if (ratings.isEmpty) {
@@ -449,7 +433,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         ],
                                       ),
                                       SizedBox(height: 10.0),
-                                      if (['processing', 'Shipped', 'Delivered']
+                                      if (['Processing', 'Shipped', 'Delivered']
                                           .contains(status))
 
                                         StreamBuilder<QuerySnapshot<
@@ -521,7 +505,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                           },
                                         ),
                                       SizedBox(height: 10.0),
-                                      if (['processing', 'Shipped', 'Delivered']
+                                      if (['Processing', 'Shipped', 'Delivered']
                                           .contains(status))
 
                                         StreamBuilder<QuerySnapshot<
@@ -565,7 +549,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
 
                                                   Text(
 
-                                                    'Raiting:',
+                                                    'Rating:',
                                                     style: TextStyle(
                                                       color: Color(0xfffba808),
                                                       letterSpacing: 2.0,
@@ -575,8 +559,9 @@ class _OrderDetailPageState extends State<OrderDetail> {
 
                                                   SizedBox(width: 10.0),
                                                   SizedBox(height: 20.0),
-                                                  buildRatingStars(
-                                                      calculateAverageRating()),
+                                                  if (calculateAverageRating() > 0)
+                                                    buildRatingStars(
+                                                        calculateAverageRating()),
 
                                                 ],
                                               ),
@@ -585,7 +570,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         ),
                                       SizedBox(height: 10.0),
                                       Visibility(
-                                        visible: ['processing', 'Shipped']
+                                        visible: ['Processing', 'Shipped']
                                             .contains(status),
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment
@@ -602,9 +587,10 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                             SizedBox(height: 20.0),
                                           ],
                                         ),
-                                      ), SizedBox(height: 5.0),
+                                      ),
+                                      SizedBox(height: 5.0),
                                       Visibility(
-                                        visible: ['processing', 'Shipped']
+                                        visible: ['Processing', 'Shipped']
                                             .contains(status),
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment
@@ -648,4 +634,3 @@ class _OrderDetailPageState extends State<OrderDetail> {
     );
   }
 }
-

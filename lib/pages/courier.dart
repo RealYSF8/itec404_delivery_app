@@ -109,7 +109,7 @@ class _CourierPageState extends State<CourierPage>
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('orders')
-          .where('status', isEqualTo: 'pending')
+          .where('status', isEqualTo: 'Pending')
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -218,7 +218,7 @@ class _CourierPageState extends State<CourierPage>
 
                                             // Update order status, acceptedBy field, and acceptedDate field
                                             order.reference.update({
-                                              'status': 'processing',
+                                              'status': 'Processing',
                                               'acceptedBy': userEmail,
                                               'acceptedDate': acceptedDate,
                                             });
