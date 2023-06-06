@@ -19,6 +19,7 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
+import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 
 
@@ -31,6 +32,16 @@ class MakeOrderPage extends StatefulWidget {
 }
 
 class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
+  late bool isDarkMode;
+
+  Future<void> getThemeMode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
+  }
+
+
   Future<String?> _getAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('address');
@@ -194,6 +205,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final TextEditingController fromLocation = TextEditingController();
   final TextEditingController toLocation = TextEditingController();
   final TextEditingController lengthController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController widthController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
   final TextEditingController priceController =
@@ -218,6 +230,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    getThemeMode();
     loadingController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
@@ -273,6 +286,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     String? from = fromLocation.text;
     String? to = toLocation.text;
     String? length = lengthController.text;
+    String? name = nameController.text;
     String? width = widthController.text;
     String? height = heightController.text;
     String? price = priceController.text;
@@ -328,6 +342,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       'height': height,
       'price': price,
       'status': 'Pending',
+      'productName': name,
       'createdAt': now,
       'orderNumber': randomOrder,
     });
@@ -337,6 +352,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     fromLocation.clear();
     toLocation.clear();
     lengthController.clear();
+    nameController.clear();
     widthController.clear();
     heightController.clear();
     priceController.clear();
@@ -415,6 +431,21 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   fontSize: 20,
                   // color: Color(0xffffffff),
                 ),
+              ),
+              TextFormField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'Product Name',
+                  suffixIcon: Icon(Icons.label),
+                  suffix: Text('Name'),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Product Name is required';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                 controller: fromLocation,
@@ -625,7 +656,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
+                          color: isDarkMode ? Colors.grey[700] : Colors.white, //Changes the background colour for SELECT YOUR FILE
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.shade200,
@@ -637,6 +668,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                         ),
                         child: Row(
                           children: [
+
                             SizedBox(width: 10),
                             Expanded(
                               child: Column(
@@ -702,6 +734,11 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
 
   bool _validateFormFields(BuildContext context) {
     bool isValid = true;
+
+    if (nameController.text.isEmpty) {
+      _showErrorSnackBar(context, 'Product name is required');
+      isValid = false;
+    }
 
     if (fromLocation.text.isEmpty) {
       _showErrorSnackBar(context, 'From location is required');

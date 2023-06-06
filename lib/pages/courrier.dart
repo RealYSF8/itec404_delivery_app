@@ -390,7 +390,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
+                          color: isDarkMode ? Colors.grey[700] : Colors.white ,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.shade200,

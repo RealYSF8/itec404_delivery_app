@@ -141,8 +141,22 @@ class _AdminPageState extends State<AdminPage> {
             String name = applicationData['name'];
             String phoneNumber = applicationData['phone_number'];
             String status = applicationData['status'];
+            String? imageUrl = applicationData['imageUrls']; // Fetch image URL
 
             return ListTile(
+              leading: imageUrl != null
+                  ? InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
+                      child: Image.network(imageUrl),
+                    ),
+                  );
+                },
+                child: Image.network(imageUrl),
+              )
+                  : null,
               title: Text('Email: $email'),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,6 +221,7 @@ class _AdminPageState extends State<AdminPage> {
       },
     );
   }
+
 
 
 

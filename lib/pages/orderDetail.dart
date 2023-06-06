@@ -227,6 +227,33 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                             .start,
                                         children: <Widget>[
                                           Text(
+                                            'Product Name:',
+                                            style: TextStyle(
+                                              color: Color(0xfffba808),
+                                              letterSpacing: 2.0,
+                                              fontSize: 24.0,
+                                            ),
+                                          ),
+                                          SizedBox(width: 10.0),
+                                          Flexible(
+                                            child: Text(
+                                              orderData?['productName'] ?? '',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                letterSpacing: 2.0,
+                                                fontSize: 18.0,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 20.0),
+                                        ],
+                                      ),
+                                      SizedBox(height: 10.0),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .start,
+                                        children: <Widget>[
+                                          Text(
                                             'Source:',
                                             style: TextStyle(
                                               color: Color(0xfffba808),
