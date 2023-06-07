@@ -114,13 +114,13 @@ class MyCardClass extends StatefulWidget {
 
 class _MyCardClassState extends State<MyCardClass> {
   late List<DocumentSnapshot> orders = [];
-  bool isDarkMode = false; // Variable to store the dark mode status
+  bool isDarkMode = false;
 
   @override
   void initState() {
     super.initState();
     fetchOrders();
-    getDarkModeStatus(); // Retrieve the dark mode status from SharedPreferences
+    getDarkModeStatus();
   }
 
   Future<void> fetchOrders() async {
@@ -146,9 +146,7 @@ class _MyCardClassState extends State<MyCardClass> {
 
   @override
   Widget build(BuildContext context) {
-    Color? cardColor = isDarkMode
-        ? Colors.grey[900]
-        : Colors.white; // Set the card's color based on the dark mode status
+    Color? cardColor = isDarkMode ? Colors.grey[900] : Colors.white;
     return ListView.builder(
       shrinkWrap: true,
       itemCount: orders.length,
@@ -167,8 +165,7 @@ class _MyCardClassState extends State<MyCardClass> {
           }
         }
 
-        bool canLeaveReview = order['status'] ==
-            'Delivered'; // Check if the order status is "delivered"
+        bool canLeaveReview = order['status'] == 'Delivered';
 
         return Card(
           shape: RoundedRectangleBorder(
@@ -232,7 +229,6 @@ class _MyCardClassState extends State<MyCardClass> {
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            // Navigate to the "/orderdetail" page with the document ID
                             Navigator.pushNamed(context, '/orderdetail',
                                 arguments: order.id);
                           },
@@ -249,7 +245,7 @@ class _MyCardClassState extends State<MyCardClass> {
                         ),
                       ),
                     ),
-                    if (canLeaveReview) // Only show the review button if the order status is "delivered"
+                    if (canLeaveReview)
                       Container(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),

@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 
-
 class About extends StatefulWidget {
   @override
   _AboutState createState() => _AboutState();
@@ -21,10 +20,11 @@ class _AboutState extends State<About> {
 
   Future<void> toggleDarkMode(BuildContext context) async {
     setState(() {
-      _isDarkMode = !_isDarkMode; // Update the dark mode status
+      _isDarkMode = !_isDarkMode;
     });
 
-    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    ThemeProvider themeProvider =
+        Provider.of<ThemeProvider>(context, listen: false);
     themeProvider.toggleTheme();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -82,7 +82,6 @@ class _AboutState extends State<About> {
           children: [
             Image.asset(
               "assets/about.png",
-
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 5.0),

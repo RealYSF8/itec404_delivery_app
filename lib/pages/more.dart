@@ -7,16 +7,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class More extends StatefulWidget {
   @override
   _MoreState createState() => _MoreState();
-
 }
 
 class _MoreState extends State<More> {
-
   String name = "";
   String email = "";
   int _selectedIndex = 2;
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     Text(
       'Home Page',
@@ -35,7 +33,7 @@ class _MoreState extends State<More> {
   bool _isAdmin = false;
   bool _isCourier = false;
   bool _isDarkMode = false;
-  List<double> ratings = []; // Or initialize with actual ratings data
+  List<double> ratings = [];
 
   @override
   void initState() {
@@ -52,10 +50,10 @@ class _MoreState extends State<More> {
 
   Future<void> toggleDarkMode(BuildContext context) async {
     setState(() {
-      _isDarkMode = !_isDarkMode; // Update the dark mode status
+      _isDarkMode = !_isDarkMode;
     });
     ThemeProvider themeProvider =
-    Provider.of<ThemeProvider>(context, listen: false);
+        Provider.of<ThemeProvider>(context, listen: false);
     themeProvider.toggleTheme();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -131,10 +129,12 @@ class _MoreState extends State<More> {
         if (querySnapshot.size > 0) {
           QueryDocumentSnapshot documentSnapshot = querySnapshot.docs[0];
           if (documentSnapshot.exists) {
-            Map<String, dynamic>? data = documentSnapshot.data() as Map<String, dynamic>?;
+            Map<String, dynamic>? data =
+                documentSnapshot.data() as Map<String, dynamic>?;
             if (data != null && data['ratings'] != null) {
               setState(() {
-                ratings = (data['ratings'] as List<dynamic>).cast<double>().toList();
+                ratings =
+                    (data['ratings'] as List<dynamic>).cast<double>().toList();
               });
             }
           }
@@ -172,28 +172,26 @@ class _MoreState extends State<More> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
 
-    showCustomAlert() =>
-        showDialog(
+    showCustomAlert() => showDialog(
           context: context,
-          builder: (context) =>
-              AlertDialog(
-                title: Text("Are you sure?"),
-                content: Text("Log out?"),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      return Navigator.pop(context, false);
-                    },
-                    child: Text("Cancel"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      return Navigator.pop(context, true);
-                    },
-                    child: Text("Yes"),
-                  ),
-                ],
+          builder: (context) => AlertDialog(
+            title: Text("Are you sure?"),
+            content: Text("Log out?"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  return Navigator.pop(context, false);
+                },
+                child: Text("Cancel"),
               ),
+              TextButton(
+                onPressed: () {
+                  return Navigator.pop(context, true);
+                },
+                child: Text("Yes"),
+              ),
+            ],
+          ),
         );
 
     return Scaffold(
@@ -263,9 +261,8 @@ class _MoreState extends State<More> {
                               ),
                             ),
                             SizedBox(width: 4),
-                            // buildRatingStars(calculateAverageRating()),
-
-                            Text('( ${calculateAverageRating().toStringAsFixed(1)}',
+                            Text(
+                              '( ${calculateAverageRating().toStringAsFixed(1)}',
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 18,
@@ -273,7 +270,8 @@ class _MoreState extends State<More> {
                               ),
                             ),
                             Icon(IconData(0xe5f9, fontFamily: 'MaterialIcons')),
-                            Text(' )',
+                            Text(
+                              ' )',
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,
@@ -294,7 +292,6 @@ class _MoreState extends State<More> {
                       ],
                     ),
                   ),
-
                   Icon(Icons.arrow_forward_ios,
                       color: Colors.grey[600], size: 18),
                 ],
@@ -371,7 +368,7 @@ class _MoreState extends State<More> {
                 if (stat) {
                   Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
                   SharedPreferences prefs =
-                  await SharedPreferences.getInstance();
+                      await SharedPreferences.getInstance();
 
                   await prefs.setBool("isLoggedIn", false);
                   await prefs.setBool("isadmin", false);
@@ -445,7 +442,6 @@ class _MoreState extends State<More> {
                 ),
               ),
             SizedBox(height: 15),
-
           ],
         ),
       ),

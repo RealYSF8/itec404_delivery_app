@@ -55,10 +55,8 @@ String? validatePhoneNumber(String? value) {
   return null;
 }
 
-
 void register(String email, String password, String name, String address,
     String phoneNumber) {
-
   FirebaseAuth.instance
       .createUserWithEmailAndPassword(
     email: email,
@@ -73,11 +71,9 @@ void register(String email, String password, String name, String address,
       'address': address,
       'phone_number': phoneNumber,
       'email': email,
-
       'role': 'General',
     });
   }).catchError((error) {
     print('Registration failed: $error');
   });
 }
-

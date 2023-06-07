@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class Changepass extends StatefulWidget {
   @override
   _ChangepassState createState() => _ChangepassState();
@@ -78,7 +77,8 @@ class _ChangepassState extends State<Changepass> {
             Align(
               alignment: Alignment.center,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 50),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 50),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -97,7 +97,9 @@ class _ChangepassState extends State<Changepass> {
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 24,
-                          color: isDarkMode ? const Color(0xffd2d2d2) : Colors.grey[500],
+                          color: isDarkMode
+                              ? const Color(0xffd2d2d2)
+                              : Colors.grey[500],
                         ),
                       ),
                     ),
@@ -107,7 +109,9 @@ class _ChangepassState extends State<Changepass> {
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 16,
-                        color: isDarkMode ? const Color(0xffd2d2d2) : Colors.grey[500],
+                        color: isDarkMode
+                            ? const Color(0xffd2d2d2)
+                            : Colors.grey[500],
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -117,7 +121,9 @@ class _ChangepassState extends State<Changepass> {
                       decoration: InputDecoration(
                         hintText: 'Type Your Previous Password',
                         filled: true,
-                        fillColor: isDarkMode ? Colors.grey[700] : const Color(0xffe2e0e0),
+                        fillColor: isDarkMode
+                            ? Colors.grey[700]
+                            : const Color(0xffe2e0e0),
                         contentPadding: const EdgeInsets.symmetric(
                           vertical: 8,
                           horizontal: 12,
@@ -177,16 +183,14 @@ class _ChangepassState extends State<Changepass> {
               child: MaterialButton(
                 onPressed: () async {
                   try {
-                    // Verify the old password
                     final credential = EmailAuthProvider.credential(
                         email: user?.email ?? '',
                         password: oldPasswordController.text.trim());
                     await user?.reauthenticateWithCredential(credential);
 
-                    // Update the password to the new one
-                    await user?.updatePassword(newPasswordController.text.trim());
+                    await user
+                        ?.updatePassword(newPasswordController.text.trim());
 
-                    // Display a success message and close the dialog
                     showDialog(
                       context: context,
                       builder: (context) {
@@ -204,9 +208,9 @@ class _ChangepassState extends State<Changepass> {
                     );
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'wrong-password') {
-                      debugPrint('User ${user?.uid ?? ''} entered wrong password');
+                      debugPrint(
+                          'User ${user?.uid ?? ''} entered wrong password');
 
-                      // Display an error message
                       showDialog(
                         context: context,
                         builder: (context) {
@@ -231,7 +235,8 @@ class _ChangepassState extends State<Changepass> {
                     topLeft: Radius.circular(30),
                     bottomLeft: Radius.circular(30),
                   ),
-                  side: const BorderSide(color: const Color(0xff808080), width: 1),
+                  side: const BorderSide(
+                      color: const Color(0xff808080), width: 1),
                 ),
                 padding: const EdgeInsets.all(16),
                 child: const Text(

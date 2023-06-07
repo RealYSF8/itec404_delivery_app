@@ -17,7 +17,7 @@ class OrderDetail extends StatefulWidget {
 class _OrderDetailPageState extends State<OrderDetail> {
   late Stream<DocumentSnapshot<Map<String, dynamic>>> orderStream;
   bool _isDarkMode = false;
-  List<double> ratings = []; // Or initialize with actual ratings data
+  List<double> ratings = [];
 
   @override
   void initState() {
@@ -34,8 +34,9 @@ class _OrderDetailPageState extends State<OrderDetail> {
   void fetchRatingsFromDatabase() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot orderSnapshot =
-    await firestore.collection('orders').doc(widget.documentId).get();
-    Map<String, dynamic>? orderData = orderSnapshot.data() as Map<String, dynamic>?;
+        await firestore.collection('orders').doc(widget.documentId).get();
+    Map<String, dynamic>? orderData =
+        orderSnapshot.data() as Map<String, dynamic>?;
 
     if (orderData != null && orderData['rating'] != null) {
       setState(() {
@@ -43,7 +44,6 @@ class _OrderDetailPageState extends State<OrderDetail> {
       });
     }
   }
-
 
   double calculateAverageRating() {
     if (ratings.isEmpty) {
@@ -75,7 +75,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
     });
 
     ThemeProvider themeProvider =
-    Provider.of<ThemeProvider>(context, listen: false);
+        Provider.of<ThemeProvider>(context, listen: false);
     themeProvider.toggleTheme();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -88,7 +88,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
       final deliveryTime = acceptedDateTime.add(Duration(minutes: 30));
       final deliveryStartTime = DateFormat.jm().format(deliveryTime);
       final deliveryEndTime =
-      DateFormat.jm().format(deliveryTime.add(Duration(minutes: 15)));
+          DateFormat.jm().format(deliveryTime.add(Duration(minutes: 15)));
       return '$deliveryStartTime - $deliveryEndTime';
     }
     return '';
@@ -179,16 +179,18 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                     padding: EdgeInsets.fromLTRB(
                                         25.0, 0.0, 25.0, 0.0),
                                     child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment
-                                            .center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          SizedBox(width: 10,),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                                10.0),
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius
-                                                  .circular(60),
+                                              borderRadius:
+                                                  BorderRadius.circular(60),
                                               child: Image.network(
                                                 imageUrl,
                                                 height: 70,
@@ -197,11 +199,13 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                               ),
                                             ),
                                           ),
-                                          SizedBox(width: 15,),
+                                          SizedBox(
+                                            width: 15,
+                                          ),
                                           Text(
                                             "Order #" +
                                                 (orderData?['orderNumber'] ??
-                                                    '')
+                                                        '')
                                                     .toString(),
                                             textAlign: TextAlign.start,
                                             overflow: TextOverflow.clip,
@@ -211,20 +215,19 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                               fontSize: 30,
                                             ),
                                           ),
-                                        ]
-                                    ),
+                                        ]),
                                   ),
                                   subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Divider(
                                         thickness: 3,
                                       ),
                                       SizedBox(height: 10),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             'Product Name:',
@@ -250,8 +253,8 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       ),
                                       SizedBox(height: 10.0),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             'Source:',
@@ -277,8 +280,8 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       ),
                                       SizedBox(height: 10.0),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             'Destination:',
@@ -304,8 +307,8 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       ),
                                       SizedBox(height: 10.0),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             'Length:',
@@ -337,8 +340,8 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       ),
                                       SizedBox(height: 10.0),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             'Width:',
@@ -370,8 +373,8 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       ),
                                       SizedBox(height: 10.0),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             'Height:',
@@ -403,8 +406,8 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       ),
                                       SizedBox(height: 10.0),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             'Price:',
@@ -436,8 +439,8 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       ),
                                       SizedBox(height: 10.0),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             'Status:',
@@ -462,18 +465,18 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       SizedBox(height: 10.0),
                                       if (['Processing', 'Shipped', 'Delivered']
                                           .contains(status))
-
-                                        StreamBuilder<QuerySnapshot<
-                                            Map<String, dynamic>>>(
+                                        StreamBuilder<
+                                            QuerySnapshot<
+                                                Map<String, dynamic>>>(
                                           stream: FirebaseFirestore.instance
                                               .collection('users')
-                                              .where(
-                                              'email', isEqualTo: acceptedBy)
+                                              .where('email',
+                                                  isEqualTo: acceptedBy)
                                               .snapshots(),
                                           builder: (context, userSnapshot) {
                                             if (userSnapshot.hasError) {
-                                              return Text('Error: ${userSnapshot
-                                                  .error}');
+                                              return Text(
+                                                  'Error: ${userSnapshot.error}');
                                             }
 
                                             if (userSnapshot.connectionState ==
@@ -486,24 +489,20 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                               return Text('No data available');
                                             }
 
-                                            final userData = userSnapshot.data!
-                                                .docs.first.data() as Map<
-                                                String,
-                                                dynamic>;
-                                            final userName = userData['name'] as String?;
+                                            final userData = userSnapshot
+                                                .data!.docs.first
+                                                .data() as Map<String, dynamic>;
+                                            final userName =
+                                                userData['name'] as String?;
                                             print(userName);
 
                                             return Visibility(
-
                                               visible: userName != null,
                                               child: Row(
-
-                                                mainAxisAlignment: MainAxisAlignment
-                                                    .start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
                                                 children: <Widget>[
-
                                                   Text(
-
                                                     'Courier:',
                                                     style: TextStyle(
                                                       color: Color(0xfffba808),
@@ -511,14 +510,12 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                                       fontSize: 24.0,
                                                     ),
                                                   ),
-
                                                   SizedBox(width: 10.0),
                                                   Flexible(
                                                     child: Text(
-                                                      userName ?? 'N/A' +
-                                                          '${calculateAverageRating()
-                                                              .toStringAsFixed(
-                                                              1)}',
+                                                      userName ??
+                                                          'N/A' +
+                                                              '${calculateAverageRating().toStringAsFixed(1)}',
                                                       style: TextStyle(
                                                         color: Colors.grey,
                                                         letterSpacing: 2.0,
@@ -534,18 +531,18 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                       SizedBox(height: 10.0),
                                       if (['Processing', 'Shipped', 'Delivered']
                                           .contains(status))
-
-                                        StreamBuilder<QuerySnapshot<
-                                            Map<String, dynamic>>>(
+                                        StreamBuilder<
+                                            QuerySnapshot<
+                                                Map<String, dynamic>>>(
                                           stream: FirebaseFirestore.instance
                                               .collection('users')
-                                              .where(
-                                              'email', isEqualTo: acceptedBy)
+                                              .where('email',
+                                                  isEqualTo: acceptedBy)
                                               .snapshots(),
                                           builder: (context, userSnapshot) {
                                             if (userSnapshot.hasError) {
-                                              return Text('Error: ${userSnapshot
-                                                  .error}');
+                                              return Text(
+                                                  'Error: ${userSnapshot.error}');
                                             }
 
                                             if (userSnapshot.connectionState ==
@@ -558,24 +555,20 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                               return Text('No data available');
                                             }
 
-                                            final userData = userSnapshot.data!
-                                                .docs.first.data() as Map<
-                                                String,
-                                                dynamic>;
-                                            final userName = userData['name'] as String?;
+                                            final userData = userSnapshot
+                                                .data!.docs.first
+                                                .data() as Map<String, dynamic>;
+                                            final userName =
+                                                userData['name'] as String?;
                                             print(userName);
 
                                             return Visibility(
-
                                               visible: userName != null,
                                               child: Row(
-
-                                                mainAxisAlignment: MainAxisAlignment
-                                                    .start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
                                                 children: <Widget>[
-
                                                   Text(
-
                                                     'Rating:',
                                                     style: TextStyle(
                                                       color: Color(0xfffba808),
@@ -583,13 +576,12 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                                       fontSize: 24.0,
                                                     ),
                                                   ),
-
                                                   SizedBox(width: 10.0),
                                                   SizedBox(height: 20.0),
-                                                  if (calculateAverageRating() > 0)
+                                                  if (calculateAverageRating() >
+                                                      0)
                                                     buildRatingStars(
                                                         calculateAverageRating()),
-
                                                 ],
                                               ),
                                             );
@@ -600,8 +592,8 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         visible: ['Processing', 'Shipped']
                                             .contains(status),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment
-                                              .start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
                                               'Estimated Delivery Time:',
@@ -620,15 +612,17 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                         visible: ['Processing', 'Shipped']
                                             .contains(status),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment
-                                              .start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: <Widget>[
                                             Flexible(
                                               child: Text(
                                                 orderData?['acceptedDate'] !=
-                                                    null
+                                                        null
                                                     ? getEstimatedDeliveryTime(
-                                                    orderData?['acceptedDate'] as Timestamp)
+                                                        orderData?[
+                                                                'acceptedDate']
+                                                            as Timestamp)
                                                     : 'N/A',
                                                 style: TextStyle(
                                                   color: Colors.grey,
@@ -654,7 +648,6 @@ class _OrderDetailPageState extends State<OrderDetail> {
                 );
               },
             ),
-
           ),
         ),
       ),

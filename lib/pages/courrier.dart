@@ -35,12 +35,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
 import 'dart:async';
+
 class Courrier extends StatefulWidget {
   @override
   _CourrierState createState() => _CourrierState();
 }
 
-class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
+class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
   final TextEditingController textEditingController = TextEditingController();
 
   late bool isDarkMode;
@@ -50,21 +51,21 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
   String? _Name;
   String? _downloadUrl;
 
-  String _image = 'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
+  String _image =
+      'https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png';
   late AnimationController loadingController;
 
   List<File?> _file = [];
   List<PlatformFile?> _platformFile = [];
-
-
-  // late final file;
 
   @override
   void initState() {
     loadingController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
-    )..addListener(() { setState(() {}); });
+    )..addListener(() {
+        setState(() {});
+      });
     super.initState();
     super.initState();
     getThemeMode();
@@ -76,13 +77,9 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
     super.dispose();
   }
 
-
-
-
   Future<void> uploadImage() async {
     final ImagePicker picker = ImagePicker();
 
-    // Pick an image
     final PickedFile? pickedFile;
     if (kIsWeb) {
       html.FileUploadInputElement input = html.FileUploadInputElement();
@@ -110,7 +107,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
         final url = reader.result as String;
 
         firebase_storage.Reference ref =
-        firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+            firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
         firebase_storage.UploadTask uploadTask = ref.putString(
           url,
           format: firebase_storage.PutStringFormat.dataUrl,
@@ -119,30 +116,27 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
         final fileSizeInBytes = fileSize;
-        final fileSizeInMB = fileSizeInBytes / (1024 * 1024); // Convert to MB
+        final fileSizeInMB = fileSizeInBytes / (1024 * 1024);
 
         setState(() {
           _downloadUrl = downloadUrl;
           _selectedFileName = fileName;
-          _selectedFileSize = fileSizeInMB.toStringAsFixed(2) + ' MB'; // Display size with 2 decimal places
+          _selectedFileSize = fileSizeInMB.toStringAsFixed(2) + ' MB';
         });
       } catch (e) {
         print('Error selecting image: $e');
       }
     } else {
-      XFile? pickedFile =
-      await picker.pickImage(source: ImageSource.camera);
+      XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
       if (pickedFile == null) return;
 
       File file = File(pickedFile.path);
-      String compressedPath = await convertImageToWebP(
-          file.path); // Compress the image
+      String compressedPath = await convertImageToWebP(file.path);
       File compressedFile = File(compressedPath);
 
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
           .ref('uploads/${file.path.split('/').last}');
-      firebase_storage.UploadTask uploadTask =
-      ref.putFile(compressedFile); // Upload the compressed image
+      firebase_storage.UploadTask uploadTask = ref.putFile(compressedFile);
       firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
       setState(() {
@@ -153,13 +147,10 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
     }
   }
 
-
   Future<String> convertImageToWebP(String imagePath) async {
-    // Compressed image file path
     final compressedPath =
         (await getTemporaryDirectory()).path + '/compressed.webp';
 
-    // Compress the image to WebP format
     await FlutterImageCompress.compressAndGetFile(
       imagePath,
       compressedPath,
@@ -169,11 +160,13 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
 
     return compressedPath;
   }
+
   String _selectedFileName = '';
   String _selectedFileSize = '';
   Future<void> _pickImage() async {
     try {
-      PickedFile? pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+      PickedFile? pickedFile =
+          await ImagePicker().getImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() {
           _selectedImage = File(pickedFile.path);
@@ -184,7 +177,6 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
       print('Error picking image: $e');
     }
   }
-
 
   void saveApplication() async {
     String? reason = textEditingController.text;
@@ -294,7 +286,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.only(top:30,bottom: 15),
+                padding: const EdgeInsets.only(top: 30, bottom: 15),
                 child: Text(
                   "Become a Courier",
                   textAlign: TextAlign.start,
@@ -318,7 +310,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20),
-                child: TextField(
+                child: TextFormField(
                   controller: textEditingController,
                   maxLines: 7,
                   decoration: InputDecoration(
@@ -327,6 +319,12 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
                     fillColor: isDarkMode ? Colors.grey[700] : Colors.grey[200],
                     contentPadding: const EdgeInsets.all(12),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'The textbox is required';
+                    }
+                    return null;
+                  },
                 ),
               ),
               SizedBox(height: 20),
@@ -345,7 +343,8 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
                   uploadImage();
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     radius: const Radius.circular(10),
@@ -357,15 +356,26 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
                       height: 100,
                       decoration: BoxDecoration(
                           color: Colors.blue.shade50.withOpacity(.3),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
+                          borderRadius: BorderRadius.circular(10)),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Iconsax.folder_open, color: Colors.blue, size: 35,),
+                          const Icon(
+                            Iconsax.folder_open,
+                            color: Colors.blue,
+                            size: 35,
+                          ),
                           const SizedBox(height: 5),
-                          Text('Select your file', style: TextStyle(fontSize: 15, color: Colors.grey.shade400),),
-                          Text('File should be jpg, png', style: TextStyle(fontSize: 10, color: Colors.grey.shade500),),
+                          Text(
+                            'Select your file',
+                            style: TextStyle(
+                                fontSize: 15, color: Colors.grey.shade400),
+                          ),
+                          Text(
+                            'File should be jpg, png',
+                            style: TextStyle(
+                                fontSize: 10, color: Colors.grey.shade500),
+                          ),
                         ],
                       ),
                     ),
@@ -390,7 +400,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: isDarkMode ? Colors.grey[700] : Colors.white ,
+                          color: isDarkMode ? Colors.grey[700] : Colors.white,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.shade200,
@@ -407,27 +417,27 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(10),
-                                          child: Image.network(
-                                            _downloadUrl!,
-                                            height: 75,
-                                            width: 70,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        SizedBox(width: 15),
-                                        Flexible(
-                                          child: Text(
-                                            'File Name: $_selectedFileName\n' +
-                                                'File Size: $_selectedFileSize KB',
-                                            style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                                          ),
-                                        ),
-                                      ]
-                                  ),
+                                  Row(children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        _downloadUrl!,
+                                        height: 75,
+                                        width: 70,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    SizedBox(width: 15),
+                                    Flexible(
+                                      child: Text(
+                                        'File Name: $_selectedFileName\n' +
+                                            'File Size: $_selectedFileSize KB',
+                                        style: TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.grey.shade700),
+                                      ),
+                                    ),
+                                  ]),
                                   SizedBox(height: 8),
                                   Container(
                                     height: 5,
@@ -451,8 +461,14 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
                   ),
                 ),
               MaterialButton(
-                onPressed: saveApplication,
-                color: isDarkMode ? const Color(0xfff80707) : const Color(0xff3a57e8),
+                onPressed: () {
+                  if (_validateFormFields(context)) {
+                    saveApplication;
+                  }
+                },
+                color: isDarkMode
+                    ? const Color(0xfff80707)
+                    : const Color(0xff3a57e8),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(22.0),
@@ -472,6 +488,31 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin{
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  bool _validateFormFields(BuildContext context) {
+    bool isValid = true;
+
+    if (textEditingController.text.isEmpty) {
+      _showErrorSnackBar(context, 'The textbox is requiredd');
+      isValid = false;
+    }
+
+    if (_downloadUrl == null) {
+      _showErrorSnackBar(context, 'Image is required');
+      return false;
+    }
+
+    return isValid;
+  }
+
+  void _showErrorSnackBar(BuildContext context, String errorMessage) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Colors.red,
       ),
     );
   }

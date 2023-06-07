@@ -6,8 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:provider/provider.dart';
-import '../main.dart';
 
 class Account extends StatefulWidget {
   final FirebaseFirestore firestore;
@@ -22,8 +20,7 @@ class _AccountState extends State<Account> {
   bool _isDarkMode = false;
 
   List<String> placePredictions = [];
-  final places =
-  GoogleMapsPlaces(apiKey: 'YOUR_API_KEY');
+  final places = GoogleMapsPlaces(apiKey: 'YOUR_API_KEY');
 
   Future<List<String>> fetchPlacePredictions(String input) async {
     if (kIsWeb) {
@@ -181,24 +178,22 @@ class _AccountState extends State<Account> {
                       child: TextFormField(
                         controller: _addressController,
                         style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                          color: _isDarkMode ? Colors.white : Colors.black,
-                        ),
+                              color: _isDarkMode ? Colors.white : Colors.black,
+                            ),
                         onChanged: (input) {
                           if (input.isNotEmpty) {
                             fetchPlacePredictions(input).then((predictions) {
                               setState(() {
                                 placePredictions = predictions;
                               });
-                            }).catchError((error) {
-                              // Handle the error if fetching predictions fails
-                            });
+                            }).catchError((error) {});
                           } else {
                             setState(() {
                               placePredictions = [];
                             });
                           }
                         },
-                        enabled: true, // Set enabled status as needed
+                        enabled: true,
                         decoration: InputDecoration(
                           prefixIcon: Icon(
                             Icons.location_on,
@@ -214,20 +209,16 @@ class _AccountState extends State<Account> {
                           ),
                           fillColor: Colors.grey,
                           hintText: 'Address',
-                          hintStyle: Theme.of(context)
-                              .textTheme
-                              .bodyText1!
-                              .copyWith(
-                            color: Colors.grey,
-                          ),
+                          hintStyle:
+                              Theme.of(context).textTheme.bodyText1!.copyWith(
+                                    color: Colors.grey,
+                                  ),
                           labelText: 'Address',
-                          labelStyle: Theme.of(context)
-                              .textTheme
-                              .bodyText1!
-                              .copyWith(
-                            color: Colors.grey,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          labelStyle:
+                              Theme.of(context).textTheme.bodyText1!.copyWith(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ),
                     ),
@@ -261,19 +252,19 @@ class _AccountState extends State<Account> {
   }
 
   Widget buildTextField(
-      IconData icon,
-      String labelText,
-      String initialValue, {
-        bool enabled = true,
-        TextEditingController? controller,
-      }) {
+    IconData icon,
+    String labelText,
+    String initialValue, {
+    bool enabled = true,
+    TextEditingController? controller,
+  }) {
     return Container(
       margin: const EdgeInsets.all(7),
       child: TextFormField(
         controller: controller,
         style: Theme.of(context).textTheme.bodyText1!.copyWith(
-          color: _isDarkMode ? Colors.white : Colors.black,
-        ),
+              color: _isDarkMode ? Colors.white : Colors.black,
+            ),
         onChanged: (value) {
           setState(() {});
         },
@@ -287,20 +278,19 @@ class _AccountState extends State<Account> {
             borderRadius: BorderRadius.circular(10.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide:
-            const BorderSide(color: Colors.blue, width: 1.0),
+            borderSide: const BorderSide(color: Colors.blue, width: 1.0),
             borderRadius: BorderRadius.circular(10.0),
           ),
           fillColor: Colors.grey,
           hintText: labelText,
           hintStyle: Theme.of(context).textTheme.bodyText1!.copyWith(
-            color: Colors.grey,
-          ),
+                color: Colors.grey,
+              ),
           labelText: labelText,
           labelStyle: Theme.of(context).textTheme.bodyText1!.copyWith(
-            color: Colors.grey,
-            fontWeight: FontWeight.bold,
-          ),
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ),
     );

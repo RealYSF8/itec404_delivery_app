@@ -7,10 +7,11 @@ class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
+
 Future<bool> validateLogin(String email, String password) async {
   try {
     UserCredential userCredential =
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
@@ -23,6 +24,7 @@ Future<bool> validateLogin(String email, String password) async {
     }
   }
 }
+
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -32,7 +34,6 @@ class _LoginPageState extends State<LoginPage> {
   String phone_number = '';
   String address = '';
   String role = '';
-
 
   @override
   void initState() {
@@ -63,7 +64,6 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setString('phone_number', phone_number);
       await prefs.setString('address', address);
       await prefs.setString('role', role);
-
 
       final savedName = prefs.getString('name');
       if (savedName != null) {
@@ -168,7 +168,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-
                 ElevatedButton(
                   onPressed: () async {
                     String email = emailController.text;
@@ -192,17 +191,20 @@ class _LoginPageState extends State<LoginPage> {
                           if (userRole == 'deactivated') {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Your account is deactivated. Please contact support.'),
+                                content: Text(
+                                    'Your account is deactivated. Please contact support.'),
                                 backgroundColor: Colors.red,
                               ),
                             );
                             await FirebaseAuth.instance.signOut();
                           } else {
                             _loadUserData();
-                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
                             prefs.setString('email', email);
                             prefs.setBool('isLoggedIn', true);
-                            Navigator.pushReplacementNamed(context, '/mainPage');
+                            Navigator.pushReplacementNamed(
+                                context, '/mainPage');
                           }
                         } on FirebaseAuthException catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -237,7 +239,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
                 if (errorMessage.isNotEmpty)
                   Text(

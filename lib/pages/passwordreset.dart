@@ -15,8 +15,7 @@ class _PasswordResetFormState extends State<PasswordResetForm> {
     if (_formKey.currentState!.validate()) {
       try {
         await _auth.sendPasswordResetEmail(email: _email);
-        // Password reset email sent successfully
-        // Display a success message to the user
+
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -35,14 +34,13 @@ class _PasswordResetFormState extends State<PasswordResetForm> {
           },
         );
       } catch (e) {
-        // An error occurred while sending the password reset email
-        // Display an error message to the user
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Error'),
-              content: Text('An error occurred while sending the password reset email.'),
+              content: Text(
+                  'An error occurred while sending the password reset email.'),
               actions: [
                 TextButton(
                   onPressed: () {

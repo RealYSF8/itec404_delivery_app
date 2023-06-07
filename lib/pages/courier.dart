@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
-import 'package:itec404_delivery_app/pages/review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CourierPage extends StatefulWidget {
@@ -13,7 +11,7 @@ class _CourierPageState extends State<CourierPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String? userEmail;
-  DateTime? acceptedDate; // Added variable to store the accepted date and time
+  DateTime? acceptedDate;
   late List<DocumentSnapshot> orders = [];
 
   @override
@@ -89,12 +87,11 @@ class _CourierPageState extends State<CourierPage>
           ),
         ]),
         backgroundColor: Colors.blue,
-        leading:  IconButton(
+        leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-
       body: TabBarView(
         controller: _tabController,
         children: [
@@ -133,7 +130,8 @@ class _CourierPageState extends State<CourierPage>
               if (imageUrls is String) {
                 firstImageUrl = imageUrls;
               } else if (imageUrls is List<dynamic>) {
-                firstImageUrl = imageUrls.firstWhere((url) => url is String, orElse: () => '');
+                firstImageUrl = imageUrls.firstWhere((url) => url is String,
+                    orElse: () => '');
               }
             }
 
@@ -200,7 +198,7 @@ class _CourierPageState extends State<CourierPage>
                             child: ElevatedButton(
                               onPressed: () async {
                                 SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
+                                    await SharedPreferences.getInstance();
                                 String? userEmail = prefs.getString('email');
 
                                 showDialog(
@@ -208,15 +206,13 @@ class _CourierPageState extends State<CourierPage>
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       title: Text('Order Options'),
-                                      content: Text('Do you want to accept this order?'),
+                                      content: Text(
+                                          'Do you want to accept this order?'),
                                       actions: [
                                         TextButton(
                                           child: Text('Accept'),
                                           onPressed: () {
-                                            // Set acceptedDate to the current date and time
                                             acceptedDate = DateTime.now();
-
-                                            // Update order status, acceptedBy field, and acceptedDate field
                                             order.reference.update({
                                               'status': 'Processing',
                                               'acceptedBy': userEmail,
@@ -255,7 +251,8 @@ class _CourierPageState extends State<CourierPage>
                             padding: const EdgeInsets.all(8.0),
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/orderdetail', arguments: order.id);
+                                Navigator.pushNamed(context, '/orderdetail',
+                                    arguments: order.id);
                               },
                               style: ElevatedButton.styleFrom(
                                 primary: Colors.grey[200],
@@ -281,7 +278,6 @@ class _CourierPageState extends State<CourierPage>
       },
     );
   }
-
 
   Widget _buildMyOrdersTab() {
     if (userEmail == null) {
@@ -393,8 +389,8 @@ class _CourierPageState extends State<CourierPage>
                                         TextButton(
                                           child: Text('Shipped'),
                                           onPressed: () {
-                                            order.reference.update(
-                                                {'status': 'Shipped'});
+                                            order.reference
+                                                .update({'status': 'Shipped'});
                                             Navigator.of(context).pop();
                                             fetchOrders();
                                           },

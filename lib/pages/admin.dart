@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminPage extends StatefulWidget {
@@ -14,7 +13,7 @@ class _AdminPageState extends State<AdminPage> {
   String searchQuery = '';
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
     Icon(
       Icons.people,
@@ -38,50 +37,53 @@ class _AdminPageState extends State<AdminPage> {
       _selectedIndex = index;
     });
   }
+
   @override
   void initState() {
     super.initState();
     fetchOrders();
   }
+
   void _toggleSearch() {
     setState(() {
       isSearching = !isSearching;
       if (isSearching) {
         searchIcon = Icon(Icons.close);
-        // Perform any necessary search-related actions
       } else {
         searchIcon = Icon(Icons.search);
-        searchQuery = ''; // Clear the search query
-        // Cancel or clear the search
+        searchQuery = '';
       }
     });
   }
+
   Future<void> fetchOrders() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userEmail = prefs.getString('email') ?? '';
 
-    final QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('orders')
-        .get();
+    final QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('orders').get();
 
     setState(() {
       orders = snapshot.docs;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: isSearching ? TextField(
-          onChanged: (value) {
-            setState(() {
-              searchQuery = value;
-            });
-          },
-          decoration: InputDecoration(
-            hintText: 'Search by name',
-          ),
-        ) : Text('Admin Panel'),
+        title: isSearching
+            ? TextField(
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search by name',
+                ),
+              )
+            : Text('Admin Panel'),
         actions: [
           IconButton(
             icon: searchIcon,
@@ -92,8 +94,8 @@ class _AdminPageState extends State<AdminPage> {
       body: _selectedIndex == 0
           ? _buildUsersTab()
           : _selectedIndex == 1
-          ? _buildOrdersTab()
-          : _buildApplicationsTab(),
+              ? _buildOrdersTab()
+              : _buildApplicationsTab(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -115,6 +117,7 @@ class _AdminPageState extends State<AdminPage> {
       ),
     );
   }
+
   Widget _buildApplicationsTab() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -136,26 +139,26 @@ class _AdminPageState extends State<AdminPage> {
           itemCount: applications.length,
           itemBuilder: (context, index) {
             Map<String, dynamic> applicationData =
-            applications[index].data()! as Map<String, dynamic>;
+                applications[index].data()! as Map<String, dynamic>;
             String email = applicationData['email'];
             String name = applicationData['name'];
             String phoneNumber = applicationData['phone_number'];
             String status = applicationData['status'];
-            String? imageUrl = applicationData['imageUrls']; // Fetch image URL
+            String? imageUrl = applicationData['imageUrls'];
 
             return ListTile(
               leading: imageUrl != null
                   ? InkWell(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => Dialog(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => Dialog(
+                            child: Image.network(imageUrl),
+                          ),
+                        );
+                      },
                       child: Image.network(imageUrl),
-                    ),
-                  );
-                },
-                child: Image.network(imageUrl),
-              )
+                    )
                   : null,
               title: Text('Email: $email'),
               subtitle: Column(
@@ -178,19 +181,18 @@ class _AdminPageState extends State<AdminPage> {
                           TextButton(
                             child: Text('Approve'),
                             onPressed: () async {
-                              // Update status to "approved"
                               await FirebaseFirestore.instance
                                   .collection('applications')
                                   .doc(applications[index].id)
                                   .update({'status': 'approved'});
 
-                              // Update user's role to "Courier" in the user's table
                               await FirebaseFirestore.instance
                                   .collection('users')
                                   .get()
                                   .then((QuerySnapshot querySnapshot) {
                                 querySnapshot.docs.forEach((doc) async {
-                                  await doc.reference.update({'role': 'Courier'});
+                                  await doc.reference
+                                      .update({'role': 'Courier'});
                                 });
                               });
 
@@ -200,7 +202,6 @@ class _AdminPageState extends State<AdminPage> {
                           TextButton(
                             child: Text('Reject'),
                             onPressed: () {
-                              // Delete the document from the table
                               FirebaseFirestore.instance
                                   .collection('applications')
                                   .doc(applications[index].id)
@@ -222,9 +223,6 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 
-
-
-
   Widget _buildUsersTab() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('users').snapshots(),
@@ -239,7 +237,6 @@ class _AdminPageState extends State<AdminPage> {
 
         final List<DocumentSnapshot> users = snapshot.data!.docs;
 
-        // Filter users based on the search query
         final filteredUsers = users.where((user) {
           final String name = user['name'] ?? '';
           return name.toLowerCase().contains(searchQuery.toLowerCase());
@@ -256,13 +253,7 @@ class _AdminPageState extends State<AdminPage> {
               final String role = user['role'];
               final String address = user['address'];
               final String email = user['email'];
-              // Column(
-              //   crossAxisAlignment: CrossAxisAlignment.start,
-              //   children: [
-              //     Text(date),
-              //     Text(status),
-              //   ],
-              // ),
+
               return ListTile(
                 subtitle: Card(
                   child: ListTile(
@@ -331,13 +322,13 @@ class _AdminPageState extends State<AdminPage> {
                                     String selectedRole = role;
                                     return StatefulBuilder(builder:
                                         (BuildContext context,
-                                        StateSetter setState) {
+                                            StateSetter setState) {
                                       return AlertDialog(
                                         title: Text('Modify User Role'),
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           children: <Widget>[
                                             RadioListTile<String>(
                                               title: Text('General'),
@@ -385,7 +376,7 @@ class _AdminPageState extends State<AdminPage> {
                                                   .collection('users')
                                                   .doc(user.id)
                                                   .update(
-                                                  {'role': selectedRole});
+                                                      {'role': selectedRole});
                                               Navigator.of(context).pop();
                                             },
                                           ),
@@ -460,13 +451,13 @@ class _AdminPageState extends State<AdminPage> {
                                     String selectedRole = role;
                                     return StatefulBuilder(builder:
                                         (BuildContext context,
-                                        StateSetter setState) {
+                                            StateSetter setState) {
                                       return AlertDialog(
                                         title: Text('Modify User Role'),
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           children: <Widget>[
                                             RadioListTile<String>(
                                               title: Text('General'),
@@ -514,7 +505,7 @@ class _AdminPageState extends State<AdminPage> {
                                                   .collection('users')
                                                   .doc(user.id)
                                                   .update(
-                                                  {'role': selectedRole});
+                                                      {'role': selectedRole});
                                               Navigator.of(context).pop();
                                             },
                                           ),
@@ -548,9 +539,7 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 
-
   Widget _buildOrdersTab() {
-    // add this method to build the orders tab
     return ListView.builder(
       shrinkWrap: true,
       itemCount: orders.length,
@@ -568,7 +557,7 @@ class _AdminPageState extends State<AdminPage> {
                 imageUrls.firstWhere((url) => url is String, orElse: () => '');
           }
         }
-  return Card(
+        return Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -639,8 +628,8 @@ class _AdminPageState extends State<AdminPage> {
                                     TextButton(
                                       child: Text('Shipped'),
                                       onPressed: () {
-                                        order.reference.update(
-                                            {'status': 'Shipped'});
+                                        order.reference
+                                            .update({'status': 'Shipped'});
                                         Navigator.of(context).pop();
                                         fetchOrders();
                                       },
@@ -648,8 +637,8 @@ class _AdminPageState extends State<AdminPage> {
                                     TextButton(
                                       child: Text('Delivered'),
                                       onPressed: () {
-                                        order.reference.update(
-                                            {'status': 'Delivered'});
+                                        order.reference
+                                            .update({'status': 'Delivered'});
                                         Navigator.of(context).pop();
                                         fetchOrders();
                                       },
@@ -683,7 +672,6 @@ class _AdminPageState extends State<AdminPage> {
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            // Navigate to the "/orderdetail" page with the document ID
                             Navigator.pushNamed(context, '/orderdetail',
                                 arguments: order.id);
                           },
@@ -700,7 +688,6 @@ class _AdminPageState extends State<AdminPage> {
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),

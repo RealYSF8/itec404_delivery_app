@@ -20,10 +20,11 @@ class _ContactState extends State<Contact> {
 
   Future<void> toggleDarkMode(BuildContext context) async {
     setState(() {
-      _isDarkMode = !_isDarkMode; // Update the dark mode status
+      _isDarkMode = !_isDarkMode;
     });
 
-    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    ThemeProvider themeProvider =
+        Provider.of<ThemeProvider>(context, listen: false);
     themeProvider.toggleTheme();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -36,8 +37,6 @@ class _ContactState extends State<Contact> {
       _isDarkMode = prefs.getBool('isDarkMode') ?? false;
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +75,6 @@ class _ContactState extends State<Contact> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-
-
       body: Padding(
         padding: EdgeInsets.fromLTRB(16, 16, 16, 20),
         child: SingleChildScrollView(
@@ -98,7 +95,7 @@ class _ContactState extends State<Contact> {
                   color: Color(0xffffffff),
                   shape: BoxShape.rectangle,
                   borderRadius:
-                  BorderRadius.only(topRight: Radius.circular(140.0)),
+                      BorderRadius.only(topRight: Radius.circular(140.0)),
                   border: Border.all(color: Color(0xff3a57e8), width: 1),
                 ),
                 child: Padding(
@@ -137,7 +134,7 @@ class _ContactState extends State<Contact> {
                       ),
                       Padding(
                         padding:
-                        EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+                            EdgeInsets.symmetric(vertical: 16, horizontal: 0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -198,7 +195,7 @@ class _ContactState extends State<Contact> {
                       ),
                       Padding(
                         padding:
-                        EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+                            EdgeInsets.symmetric(vertical: 16, horizontal: 0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,

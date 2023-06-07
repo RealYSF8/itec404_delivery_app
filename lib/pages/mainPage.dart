@@ -1,6 +1,4 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:itec404_delivery_app/pages/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../main.dart';
@@ -10,6 +8,7 @@ class MainPage extends StatefulWidget {
   @override
   _MainPage createState() => _MainPage();
 }
+
 void _setCategoryName(String categoryName) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setString("category", categoryName);
@@ -21,7 +20,7 @@ class _MainPage extends State<MainPage> {
 
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Home Page', style: optionStyle),
     Text('Order Page', style: optionStyle),
@@ -36,10 +35,11 @@ class _MainPage extends State<MainPage> {
 
   Future<void> toggleDarkMode(BuildContext context) async {
     setState(() {
-      _isDarkMode = !_isDarkMode; // Update the dark mode status
+      _isDarkMode = !_isDarkMode;
     });
 
-    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    ThemeProvider themeProvider =
+        Provider.of<ThemeProvider>(context, listen: false);
     themeProvider.toggleTheme();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -59,6 +59,7 @@ class _MainPage extends State<MainPage> {
       address = prefs.getString("address") ?? "";
     });
   }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -237,21 +238,18 @@ class _MainPage extends State<MainPage> {
               children: [
                 InkWell(
                   onTap: () {
-                    // Navigate to orders page for Electronics
                     Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Electronics", "assets/elect.png"),
                 ),
                 InkWell(
                   onTap: () {
-                    // Navigate to orders page for Food
                     Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Food", "assets/food.png"),
                 ),
                 InkWell(
                   onTap: () {
-                    // Navigate to orders page for Clothing
                     Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Clothing", "assets/clothing.png"),
@@ -269,22 +267,18 @@ class _MainPage extends State<MainPage> {
               children: [
                 InkWell(
                   onTap: () {
-                    // Navigate to orders page for Furniture
                     Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Furniture", "assets/couch.png"),
                 ),
                 InkWell(
                   onTap: () {
-                    // Navigate to orders page for Toys
                     Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Toys", "assets/toys.png"),
                 ),
                 InkWell(
                   onTap: () {
-
-                    // Navigate to orders page for Tools
                     Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Tools", "assets/tools.png"),
@@ -302,22 +296,19 @@ class _MainPage extends State<MainPage> {
               children: [
                 InkWell(
                   onTap: () {
-                    // Navigate to orders page for Personal Care
                     Navigator.pushNamed(context, '/makeorder');
                   },
-                  child: buildCategory("Personal Care", "assets/personalcare.png"),
+                  child:
+                      buildCategory("Personal Care", "assets/personalcare.png"),
                 ),
                 InkWell(
                   onTap: () {
-                    // Navigate to orders page for Car Parts
                     Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Car Parts", "assets/carparts.png"),
                 ),
                 InkWell(
                   onTap: () {
-
-                    // Navigate to orders page for Jewelry
                     Navigator.pushNamed(context, '/makeorder');
                   },
                   child: buildCategory("Jewelry", "assets/jewel.png"),
@@ -354,8 +345,8 @@ class _MainPage extends State<MainPage> {
 
     return InkWell(
       onTap: () {
-        _setCategoryName(name); // Set the selected category name in SharedPreferences
-        Navigator.pushNamed(context, '/makeorder'); // Navigate to orders page
+        _setCategoryName(name);
+        Navigator.pushNamed(context, '/makeorder');
       },
       child: Container(
         alignment: Alignment.center,
@@ -406,5 +397,4 @@ class _MainPage extends State<MainPage> {
       ),
     );
   }
-
 }

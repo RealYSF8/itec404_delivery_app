@@ -24,7 +24,7 @@ class _ReviewPageState extends State<ReviewPage> {
 
   Future<void> fetchRating() async {
     DocumentSnapshot orderSnapshot =
-    await firestore.collection('orders').doc(widget.documentId).get();
+        await firestore.collection('orders').doc(widget.documentId).get();
     setState(() {
       _ratingValue = orderSnapshot['rating'] ?? 0.0;
       _hasRated = _ratingValue != null;
@@ -123,7 +123,7 @@ class _ReviewPageState extends State<ReviewPage> {
                                   const SizedBox(height: 24.0),
                                   Row(
                                     mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                        MainAxisAlignment.spaceEvenly,
                                     children: <Widget>[
                                       ElevatedButton(
                                         onPressed: () {
@@ -143,16 +143,14 @@ class _ReviewPageState extends State<ReviewPage> {
                                             _hasRated = true;
                                           });
 
-                                          // Retrieve the acceptedBy email from the orders table
                                           DocumentSnapshot orderSnapshot =
-                                          await firestore
-                                              .collection('orders')
-                                              .doc(widget.documentId)
-                                              .get();
+                                              await firestore
+                                                  .collection('orders')
+                                                  .doc(widget.documentId)
+                                                  .get();
                                           String acceptedByEmail =
-                                          orderSnapshot['acceptedBy'];
+                                              orderSnapshot['acceptedBy'];
 
-                                          // Update the rating in the orders table
                                           firestore
                                               .collection('orders')
                                               .doc(widget.documentId)
@@ -160,12 +158,13 @@ class _ReviewPageState extends State<ReviewPage> {
                                             'rating': value,
                                           });
 
-                                          // Update the rating in the users table
-                                          QuerySnapshot userSnapshot = await firestore
-                                              .collection('users')
-                                              .where('email',
-                                              isEqualTo: acceptedByEmail)
-                                              .get();
+                                          QuerySnapshot userSnapshot =
+                                              await firestore
+                                                  .collection('users')
+                                                  .where('email',
+                                                      isEqualTo:
+                                                          acceptedByEmail)
+                                                  .get();
                                           if (userSnapshot.docs.isNotEmpty) {
                                             String userId =
                                                 userSnapshot.docs[0].id;
@@ -173,8 +172,8 @@ class _ReviewPageState extends State<ReviewPage> {
                                                 .collection('users')
                                                 .doc(userId)
                                                 .update({
-                                              'ratings':
-                                              FieldValue.arrayUnion([value]),
+                                              'ratings': FieldValue.arrayUnion(
+                                                  [value]),
                                             });
                                           }
                                         },

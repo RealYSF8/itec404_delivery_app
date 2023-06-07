@@ -8,13 +8,12 @@ import 'dart:convert';
 class RegisterPage extends StatefulWidget {
   @override
   _RegisterPageState createState() => _RegisterPageState();
-
 }
 
 class _RegisterPageState extends State<RegisterPage> {
   List<String> placePredictions = [];
   final places =
-  GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+      GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
 
   Future<List<String>> fetchPlacePredictions(String input) async {
     if (kIsWeb) {
@@ -31,8 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
       } else {
         throw Exception('Failed to load predictions');
       }
-    }
-    else{
+    } else {
       final response = await places.autocomplete(input, types: []);
       if (response.isOkay) {
         return response.predictions
@@ -155,9 +153,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       setState(() {
                         placePredictions = predictions;
                       });
-                    }).catchError((error) {
-                      // Handle the error if fetching predictions fails
-                    });
+                    }).catchError((error) {});
                   } else {
                     setState(() {
                       placePredictions = [];

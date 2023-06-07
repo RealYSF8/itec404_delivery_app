@@ -111,25 +111,27 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginPage(),
           '/mainPage': (context) => MainPage(),
           '/order': (context) => OrderPage(),
-          '/makeorder': (context) => MakeOrderPage(controller: TextEditingController()),
+          '/makeorder': (context) =>
+              MakeOrderPage(controller: TextEditingController()),
           '/account': (context) => Account(firestore: firestore),
           '/more': (context) => More(),
           '/orderdetail': (context) => OrderDetail(
-            documentId: ModalRoute.of(context)!.settings.arguments as String,
-          ),
+                documentId:
+                    ModalRoute.of(context)!.settings.arguments as String,
+              ),
           '/about': (context) => About(),
           '/contact': (context) => Contact(),
           '/courrier': (context) => Courrier(),
           '/changepass': (context) => Changepass(),
           '/reset': (context) => PasswordResetForm(),
           '/review': (context) => ReviewPage(
-            documentId: ModalRoute.of(context)!.settings.arguments as String,
-          ),
+                documentId:
+                    ModalRoute.of(context)!.settings.arguments as String,
+              ),
           '/admin': (context) {
             if (isAdmin) {
               return AdminPage();
             } else {
-              // Redirect to a different page or show an error message
               return Scaffold(
                 appBar: AppBar(),
                 body: Center(
@@ -142,7 +144,6 @@ class MyApp extends StatelessWidget {
             if (isCourier || isAdmin) {
               return CourierPage();
             } else {
-              // Redirect to a different page or show an error message
               return Scaffold(
                 appBar: AppBar(),
                 body: Center(
