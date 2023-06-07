@@ -74,6 +74,5 @@ void register(String email, String password, String name, String address,
       'role': 'General',
     });
   }).catchError((error) {
-    print('Registration failed: $error');
   });
 }

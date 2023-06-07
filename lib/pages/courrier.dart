@@ -2,22 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
-import 'package:dotted_border/dotted_border.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart' as Path;
-import 'dart:async';
-import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
@@ -30,11 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:universal_html/html.dart' as html;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:google_maps_webservice/places.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:math';
-import 'dart:async';
+
 
 class Courrier extends StatefulWidget {
   @override
@@ -124,7 +104,6 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
           _selectedFileSize = fileSizeInMB.toStringAsFixed(2) + ' MB';
         });
       } catch (e) {
-        print('Error selecting image: $e');
       }
     } else {
       XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
@@ -171,10 +150,8 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
         setState(() {
           _selectedImage = File(pickedFile.path);
         });
-        print("Selected image: $_selectedImage");
       }
     } on PlatformException catch (e) {
-      print('Error picking image: $e');
     }
   }
 

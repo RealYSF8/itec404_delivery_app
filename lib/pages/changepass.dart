@@ -208,8 +208,7 @@ class _ChangepassState extends State<Changepass> {
                     );
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'wrong-password') {
-                      debugPrint(
-                          'User ${user?.uid ?? ''} entered wrong password');
+
 
                       showDialog(
                         context: context,

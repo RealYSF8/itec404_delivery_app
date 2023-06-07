@@ -494,7 +494,6 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                                 .data() as Map<String, dynamic>;
                                             final userName =
                                                 userData['name'] as String?;
-                                            print(userName);
 
                                             return Visibility(
                                               visible: userName != null,
@@ -560,7 +559,6 @@ class _OrderDetailPageState extends State<OrderDetail> {
                                                 .data() as Map<String, dynamic>;
                                             final userName =
                                                 userData['name'] as String?;
-                                            print(userName);
 
                                             return Visibility(
                                               visible: userName != null,

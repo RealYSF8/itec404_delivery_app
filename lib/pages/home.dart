@@ -14,7 +14,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       if (account != null) {
-        print('User signed in: ${account.displayName}');
         Navigator.pushNamed(context, '/order');
       }
     });
@@ -25,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       await _googleSignIn.signIn();
     } catch (error) {
-      print('Google Sign-In Error: $error');
     }
   }
 
@@ -176,7 +174,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        print('Google Sign-In button pressed');
                         _handleGoogleSignIn(context);
                       },
                       child: SizedBox(
