@@ -22,7 +22,6 @@ import 'dart:math';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 
-
 class MakeOrderPage extends StatefulWidget {
   final TextEditingController controller;
   MakeOrderPage({required this.controller});
@@ -41,7 +40,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     });
   }
 
-
   Future<String?> _getAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('address');
@@ -49,15 +47,16 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
 
   final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
+  String? _selectedImage;
+
   final places =
-  GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+      GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
   List<String> placePredictions = [];
   List<String> toPlacePredictions = [];
 
   Future<void> uploadImage() async {
     final ImagePicker picker = ImagePicker();
 
-    final PickedFile? pickedFile;
     if (kIsWeb) {
       html.FileUploadInputElement input = html.FileUploadInputElement();
       input.accept = 'image/*';
@@ -83,8 +82,13 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
         final fileSize = file.size;
         final url = reader.result as String;
 
+        // Save the data url to the state
+        setState(() {
+          _selectedImage = url;
+        });
+
         firebase_storage.Reference ref =
-        firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+            firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
         firebase_storage.UploadTask uploadTask = ref.putString(
           url,
           format: firebase_storage.PutStringFormat.dataUrl,
@@ -93,38 +97,36 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
         final fileSizeInBytes = fileSize;
-        final fileSizeInMB =
-            fileSizeInBytes / (1024 * 1024);
+        final fileSizeInMB = fileSizeInBytes / (1024 * 1024);
 
         setState(() {
           _downloadUrl = downloadUrl;
           _selectedFileName = fileName;
-          _selectedFileSize =
-              fileSizeInMB.toStringAsFixed(2) + ' MB';
+          _selectedFileSize = fileSizeInMB.toStringAsFixed(2) + ' MB';
         });
       } catch (e) {
         print('Error selecting image: $e');
       }
     } else {
-      XFile? pickedFile =
-      await picker.pickImage(source: ImageSource.camera);
+      XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
       if (pickedFile == null) return;
 
       File file = File(pickedFile.path);
-      String compressedPath =
-      await convertImageToWebP(file.path);
+      String compressedPath = await convertImageToWebP(file.path);
       File compressedFile = File(compressedPath);
 
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
           .ref('uploads/${file.path.split('/').last}');
-      firebase_storage.UploadTask uploadTask =
-      ref.putFile(compressedFile);
+      firebase_storage.UploadTask uploadTask = ref.putFile(compressedFile);
       firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
       setState(() {
         _downloadUrl = downloadUrl;
         _selectedFileName = file.path.split('/').last;
         _selectedFileSize = file.lengthSync().toString();
+      });
+      setState(() {
+        _selectedImage = file.path;
       });
     }
   }
@@ -206,7 +208,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final TextEditingController widthController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
   final TextEditingController priceController =
-  TextEditingController(text: '0.00');
+      TextEditingController(text: '0.00');
 
   String? _userId;
   String? _Name;
@@ -231,8 +233,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     loadingController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
-    )
-      ..addListener(() {
+    )..addListener(() {
         setState(() {});
       });
     super.initState();
@@ -349,7 +350,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     heightController.clear();
     priceController.clear();
 
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -360,7 +360,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.pushNamed(context, '/orderdetail', arguments: orderRef.id);
+                Navigator.pushNamed(context, '/orderdetail',
+                    arguments: orderRef.id);
               },
               child: Text('OK'),
             ),
@@ -450,8 +451,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                       setState(() {
                         placePredictions = predictions;
                       });
-                    }).catchError((error) {
-                    });
+                    }).catchError((error) {});
                   } else {
                     setState(() {
                       placePredictions = [];
@@ -494,8 +494,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                       setState(() {
                         toPlacePredictions = predictions;
                       });
-                    }).catchError((error) {
-                    });
+                    }).catchError((error) {});
                   } else {
                     setState(() {
                       toPlacePredictions = [];
@@ -579,14 +578,14 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 ),
                 enabled: false,
               ),
-
               SizedBox(height: 10),
               GestureDetector(
                 onTap: () {
                   uploadImage();
                 },
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     radius: Radius.circular(10),
@@ -625,7 +624,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              if (_downloadUrl != null)
+              if (_selectedImage != null)
                 Container(
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
                   child: Column(
@@ -655,33 +654,41 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                         ),
                         child: Row(
                           children: [
-
                             SizedBox(width: 10),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(10),
-                                          child: Image.network(
-                                            _downloadUrl!,
-                                            height: 75,
-                                            width: 70,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        SizedBox(width: 15),
-                                        Flexible(
-                                          child: Text(
-                                            'File Name: $_selectedFileName\n' +
-                                                'File Size: $_selectedFileSize KB',
-                                            style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                                          ),
-                                        ),
-                                      ]
-                                  ),
+                                  Row(children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: kIsWeb
+                                      // For web, use image.network to display the image
+                                          ? Image.network(
+                                        _selectedImage!,
+                                        height: 75,
+                                        width: 70,
+                                        fit: BoxFit.cover,
+                                      )
+                                      // For mobile, use image.file to display the image
+                                          : Image.file(
+                                        File(_selectedImage!),
+                                        height: 75,
+                                        width: 70,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    SizedBox(width: 15),
+                                    Flexible(
+                                      child: Text(
+                                        'File Name: $_selectedFileName\n' +
+                                            'File Size: $_selectedFileSize KB',
+                                        style: TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.grey.shade700),
+                                      ),
+                                    ),
+                                  ]),
                                   SizedBox(height: 8),
                                   Container(
                                     height: 5,
@@ -768,5 +775,4 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       ),
     );
   }
-
 }
