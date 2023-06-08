@@ -7,20 +7,17 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:universal_html/html.dart' as html;
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
-import 'package:path_provider/path_provider.dart';
-import 'dart:async';
 
 class MakeOrderPage extends StatefulWidget {
   final TextEditingController controller;
@@ -45,12 +42,12 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
     return prefs.getString('address');
   }
 
-  final FirebaseStorage _storage = FirebaseStorage.instance;
   String? _downloadUrl;
   String? _selectedImage;
 
   final places =
-      GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+  GoogleMapsPlaces(apiKey: 'YOUR_GOOGLE_MAPS_API_KEY');
+
   List<String> placePredictions = [];
   List<String> toPlacePredictions = [];
 
@@ -87,7 +84,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
         });
 
         firebase_storage.Reference ref =
-            firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+        firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
         firebase_storage.UploadTask uploadTask = ref.putString(
           url,
           format: firebase_storage.PutStringFormat.dataUrl,
@@ -119,10 +116,14 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       firebase_storage.UploadTask uploadTask = ref.putFile(compressedFile);
       firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+      int fileSizeInBytes = compressedFile.lengthSync();
+      double fileSizeInMB = fileSizeInBytes / (1024 * 1024);
+
       setState(() {
         _downloadUrl = downloadUrl;
         _selectedFileName = file.path.split('/').last;
-        _selectedFileSize = file.lengthSync().toString();
+        _selectedFileSize = fileSizeInMB.toStringAsFixed(2);
       });
       setState(() {
         _selectedImage = file.path;
@@ -207,7 +208,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   final TextEditingController widthController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
   final TextEditingController priceController =
-      TextEditingController(text: '0.00');
+  TextEditingController(text: '0.00');
 
   String? _userId;
   String? _Name;
@@ -233,8 +234,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(seconds: 10),
     )..addListener(() {
-        setState(() {});
-      });
+      setState(() {});
+    });
     super.initState();
     lengthController.addListener(calculatePrice);
     widthController.addListener(calculatePrice);
@@ -587,7 +588,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 },
                 child: Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   child: DottedBorder(
                     borderType: BorderType.RRect,
                     radius: Radius.circular(10),
@@ -682,9 +683,9 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                                     Flexible(
                                       child: Text(
                                         'File Name: $_selectedFileName\n' +
-                                            'File Size: $_selectedFileSize KB',
+                                            'File Size: $_selectedFileSize MB',
                                         style: TextStyle(
-                                            fontSize: 13,
+                                          fontSize: 13,
                                           color: isDarkMode ? Colors.white : Colors.grey[700],
                                         ),
                                       ),
