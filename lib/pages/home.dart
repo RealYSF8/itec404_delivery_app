@@ -1,32 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
-
-  @override
-  void initState() {
-    super.initState();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      if (account != null) {
-        Navigator.pushNamed(context, '/order');
-      }
-    });
-    _googleSignIn.signInSilently();
-  }
-
-  Future<void> _handleGoogleSignIn(BuildContext context) async {
-    try {
-      await _googleSignIn.signIn();
-    } catch (error) {
-    }
-  }
-
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,53 +126,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
-            ),
-          ),
-          SizedBox(height: 20),
-          Text(
-            "Log in with following options:",
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontStyle: FontStyle.normal,
-              fontSize: 18,
-// color: Color(0xffffffff),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ClipOval(
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        _handleGoogleSignIn(context);
-                      },
-                      child: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: Image.asset('assets/google.png'),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 25),
-                ClipOval(
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {},
-                      child: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: Image.asset('assets/facebook.png'),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
         ],

@@ -105,7 +105,7 @@ class _OrderDetailPageState extends State<OrderDetail> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pushNamed(context, '/order');
+        Navigator.pop(context);
         return true;
       },
       child: Scaffold(
