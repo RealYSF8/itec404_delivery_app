@@ -13,7 +13,7 @@ class _AdminPageState extends State<AdminPage> {
   String searchQuery = '';
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
     Icon(
       Icons.people,
@@ -61,7 +61,7 @@ class _AdminPageState extends State<AdminPage> {
     String userEmail = prefs.getString('email') ?? '';
 
     final QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('orders').get();
+    await FirebaseFirestore.instance.collection('orders').get();
 
     setState(() {
       orders = snapshot.docs;
@@ -74,15 +74,15 @@ class _AdminPageState extends State<AdminPage> {
       appBar: AppBar(
         title: isSearching
             ? TextField(
-                onChanged: (value) {
-                  setState(() {
-                    searchQuery = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search by name',
-                ),
-              )
+          onChanged: (value) {
+            setState(() {
+              searchQuery = value;
+            });
+          },
+          decoration: InputDecoration(
+            hintText: 'Search by name',
+          ),
+        )
             : Text('Admin Panel'),
         actions: [
           IconButton(
@@ -94,8 +94,8 @@ class _AdminPageState extends State<AdminPage> {
       body: _selectedIndex == 0
           ? _buildUsersTab()
           : _selectedIndex == 1
-              ? _buildOrdersTab()
-              : _buildApplicationsTab(),
+          ? _buildOrdersTab()
+          : _buildApplicationsTab(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -139,7 +139,7 @@ class _AdminPageState extends State<AdminPage> {
           itemCount: applications.length,
           itemBuilder: (context, index) {
             Map<String, dynamic> applicationData =
-                applications[index].data()! as Map<String, dynamic>;
+            applications[index].data()! as Map<String, dynamic>;
             String email = applicationData['email'];
             String name = applicationData['name'];
             String phoneNumber = applicationData['phone_number'];
@@ -149,16 +149,16 @@ class _AdminPageState extends State<AdminPage> {
             return ListTile(
               leading: imageUrl != null
                   ? InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => Dialog(
-                            child: Image.network(imageUrl),
-                          ),
-                        );
-                      },
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
                       child: Image.network(imageUrl),
-                    )
+                    ),
+                  );
+                },
+                child: Image.network(imageUrl),
+              )
                   : null,
               title: Text('Email: $email'),
               subtitle: Column(
@@ -184,17 +184,19 @@ class _AdminPageState extends State<AdminPage> {
                               await FirebaseFirestore.instance
                                   .collection('applications')
                                   .doc(applications[index].id)
-                                  .update({'status': 'approved'});
+                                  .update({'status': 'Approved'});
 
-                              await FirebaseFirestore.instance
+                              // Get the selected user by email from the users table
+                              QuerySnapshot userSnapshot = await FirebaseFirestore.instance
                                   .collection('users')
-                                  .get()
-                                  .then((QuerySnapshot querySnapshot) {
-                                querySnapshot.docs.forEach((doc) async {
-                                  await doc.reference
-                                      .update({'role': 'Courier'});
-                                });
-                              });
+                                  .where('email', isEqualTo: email)
+                                  .get();
+
+                              if (userSnapshot.size > 0) {
+                                // Update the role of the selected user
+                                DocumentSnapshot userDoc = userSnapshot.docs[0];
+                                await userDoc.reference.update({'role': 'Courier'});
+                              }
 
                               Navigator.of(context).pop();
                             },
@@ -322,13 +324,13 @@ class _AdminPageState extends State<AdminPage> {
                                     String selectedRole = role;
                                     return StatefulBuilder(builder:
                                         (BuildContext context,
-                                            StateSetter setState) {
+                                        StateSetter setState) {
                                       return AlertDialog(
                                         title: Text('Modify User Role'),
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                           children: <Widget>[
                                             RadioListTile<String>(
                                               title: Text('General'),
@@ -376,7 +378,7 @@ class _AdminPageState extends State<AdminPage> {
                                                   .collection('users')
                                                   .doc(user.id)
                                                   .update(
-                                                      {'role': selectedRole});
+                                                  {'role': selectedRole});
                                               Navigator.of(context).pop();
                                             },
                                           ),
@@ -451,13 +453,13 @@ class _AdminPageState extends State<AdminPage> {
                                     String selectedRole = role;
                                     return StatefulBuilder(builder:
                                         (BuildContext context,
-                                            StateSetter setState) {
+                                        StateSetter setState) {
                                       return AlertDialog(
                                         title: Text('Modify User Role'),
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                           children: <Widget>[
                                             RadioListTile<String>(
                                               title: Text('General'),
@@ -505,7 +507,7 @@ class _AdminPageState extends State<AdminPage> {
                                                   .collection('users')
                                                   .doc(user.id)
                                                   .update(
-                                                      {'role': selectedRole});
+                                                  {'role': selectedRole});
                                               Navigator.of(context).pop();
                                             },
                                           ),
