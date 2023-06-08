@@ -101,7 +101,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
         setState(() {
           _downloadUrl = downloadUrl;
           _selectedFileName = fileName;
-          _selectedFileSize = fileSizeInMB.toStringAsFixed(2) + ' MB';
+          _selectedFileSize = fileSizeInMB.toStringAsFixed(2);
         });
       } catch (e) {
         print('Error selecting image: $e');
