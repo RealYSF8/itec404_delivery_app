@@ -269,7 +269,7 @@ class _MoreState extends State<More> {
                                 color: isDarkMode ? Colors.white : Colors.black,
                               ),
                             ),
-                            Icon(IconData(0xe5f9, fontFamily: 'MaterialIcons')),
+                            //Icon(IconData(0xe5f9, fontFamily: 'MaterialIcons')),
                             Text(
                               ' )',
                               style: TextStyle(
