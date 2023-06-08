@@ -12,8 +12,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:universal_html/html.dart' as html;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
+import 'package:file_picker/file_picker.dart' as file_picker;
 
 
 class Courrier extends StatefulWidget {
@@ -59,53 +60,36 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
 
   Future<void> uploadImage() async {
     final ImagePicker picker = ImagePicker();
-
-    final PickedFile? pickedFile;
     if (kIsWeb) {
-      html.FileUploadInputElement input = html.FileUploadInputElement();
-      input.accept = 'image/*';
-      input.click();
+      final result = await file_picker.FilePicker.platform.pickFiles();
 
-      final completer = Completer<html.File>();
-      input.onChange.listen((e) {
-        final files = input.files;
-        if (files != null && files.isNotEmpty) {
-          completer.complete(files[0]);
-        } else {
-          completer.completeError('No file selected');
-        }
-      });
-
-      try {
-        final file = await completer.future;
-        final reader = html.FileReader();
-        reader.readAsDataUrl(file);
-        await reader.onLoad.first;
+      if (result != null) {
+        final file = result.files.first;
 
         final fileName = file.name;
         final fileSize = file.size;
-        final url = reader.result as String;
+        final bytes = file.bytes!;
 
         firebase_storage.Reference ref =
         firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
-        firebase_storage.UploadTask uploadTask = ref.putString(
-          url,
-          format: firebase_storage.PutStringFormat.dataUrl,
-        );
+        firebase_storage.UploadTask uploadTask = ref.putData(bytes);
         firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
         final fileSizeInBytes = fileSize;
-        final fileSizeInMB = fileSizeInBytes / (1024 * 1024);
+        final fileSizeInMB = fileSizeInBytes / 1048576;
 
         setState(() {
           _downloadUrl = downloadUrl;
           _selectedFileName = fileName;
-          _selectedFileSize = fileSizeInMB.toStringAsFixed(2) + ' MB';
+          _selectedFileSize = fileSizeInMB.toStringAsFixed(2) +
+              ' MB';
         });
-      } catch (e) {
+      } else {
+
       }
     } else {
+
       XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
       if (pickedFile == null) return;
 
@@ -118,11 +102,16 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
       firebase_storage.UploadTask uploadTask = ref.putFile(compressedFile);
       firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+      int fileSizeInBytes = compressedFile.lengthSync();
+      double fileSizeInMB = fileSizeInBytes / (1024 * 1024);
+
       setState(() {
         _downloadUrl = downloadUrl;
         _selectedFileName = file.path.split('/').last;
-        _selectedFileSize = file.lengthSync().toString();
+        _selectedFileSize = fileSizeInMB.toStringAsFixed(2);
       });
+
     }
   }
 
@@ -142,6 +131,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
 
   String _selectedFileName = '';
   String _selectedFileSize = '';
+
   Future<void> _pickImage() async {
     try {
       PickedFile? pickedFile =
@@ -150,8 +140,10 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
         setState(() {
           _selectedImage = File(pickedFile.path);
         });
+        print("Selected image: $_selectedImage");
       }
     } on PlatformException catch (e) {
+      print('Error picking image: $e');
     }
   }
 
@@ -200,7 +192,8 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Application Submitted'),
-            content: Text('Your application has been submitted successfully.'),
+            content:
+            Text('Your application has been submitted successfully.'),
             actions: [
               TextButton(
                 child: Text('OK'),
@@ -287,21 +280,16 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 20),
-                child: TextFormField(
+                child: TextField(
                   controller: textEditingController,
                   maxLines: 7,
                   decoration: InputDecoration(
                     hintText: "Enter Text",
                     filled: true,
-                    fillColor: isDarkMode ? Colors.grey[700] : Colors.grey[200],
+                    fillColor:
+                    isDarkMode ? Colors.grey[700] : Colors.grey[200],
                     contentPadding: const EdgeInsets.all(12),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'The textbox is required';
-                    }
-                    return null;
-                  },
                 ),
               ),
               SizedBox(height: 20),
@@ -332,7 +320,8 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
                       width: double.infinity,
                       height: 100,
                       decoration: BoxDecoration(
-                          color: Colors.blue.shade50.withOpacity(.3),
+                          color:
+                          Colors.blue.shade50.withOpacity(.3),
                           borderRadius: BorderRadius.circular(10)),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -346,12 +335,14 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
                           Text(
                             'Select your file',
                             style: TextStyle(
-                                fontSize: 15, color: Colors.grey.shade400),
+                                fontSize: 15,
+                                color: Colors.grey.shade400),
                           ),
                           Text(
                             'File should be jpg, png',
                             style: TextStyle(
-                                fontSize: 10, color: Colors.grey.shade500),
+                                fontSize: 10,
+                                color: Colors.grey.shade500),
                           ),
                         ],
                       ),
@@ -377,7 +368,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: isDarkMode ? Colors.grey[700] : Colors.white,
+                          color:  isDarkMode ? Colors.grey[700] : Colors.white,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.shade200,
@@ -408,10 +399,11 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
                                     Flexible(
                                       child: Text(
                                         'File Name: $_selectedFileName\n' +
-                                            'File Size: $_selectedFileSize KB',
+                                            'File Size: $_selectedFileSize MB',
                                         style: TextStyle(
                                             fontSize: 13,
-                                            color: Colors.grey.shade700),
+                                            color:  isDarkMode ? Colors.white : Colors.grey[700]
+                                        ),
                                       ),
                                     ),
                                   ]),
@@ -438,14 +430,8 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
                   ),
                 ),
               MaterialButton(
-                onPressed: () {
-                  if (_validateFormFields(context)) {
-                    saveApplication;
-                  }
-                },
-                color: isDarkMode
-                    ? const Color(0xfff80707)
-                    : const Color(0xff3a57e8),
+                onPressed: saveApplication,
+                color: isDarkMode ? const Color(0xfff80707) : const Color(0xff3a57e8),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(22.0),
@@ -465,31 +451,6 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  bool _validateFormFields(BuildContext context) {
-    bool isValid = true;
-
-    if (textEditingController.text.isEmpty) {
-      _showErrorSnackBar(context, 'The textbox is requiredd');
-      isValid = false;
-    }
-
-    if (_downloadUrl == null) {
-      _showErrorSnackBar(context, 'Image is required');
-      return false;
-    }
-
-    return isValid;
-  }
-
-  void _showErrorSnackBar(BuildContext context, String errorMessage) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(errorMessage),
-        backgroundColor: Colors.red,
       ),
     );
   }
