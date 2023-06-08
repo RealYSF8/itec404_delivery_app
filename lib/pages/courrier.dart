@@ -44,8 +44,8 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(seconds: 10),
     )..addListener(() {
-        setState(() {});
-      });
+      setState(() {});
+    });
     super.initState();
     super.initState();
     getThemeMode();
@@ -87,7 +87,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
         final url = reader.result as String;
 
         firebase_storage.Reference ref =
-            firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
+        firebase_storage.FirebaseStorage.instance.ref('uploads/$fileName');
         firebase_storage.UploadTask uploadTask = ref.putString(
           url,
           format: firebase_storage.PutStringFormat.dataUrl,
@@ -145,7 +145,7 @@ class _CourrierState extends State<Courrier> with TickerProviderStateMixin {
   Future<void> _pickImage() async {
     try {
       PickedFile? pickedFile =
-          await ImagePicker().getImage(source: ImageSource.gallery);
+      await ImagePicker().getImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() {
           _selectedImage = File(pickedFile.path);

@@ -82,7 +82,6 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
         final fileSize = file.size;
         final url = reader.result as String;
 
-        // Save the data url to the state
         setState(() {
           _selectedImage = url;
         });
@@ -524,6 +523,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 },
               ),
               TextFormField(
+                keyboardType: TextInputType.number,
                 controller: lengthController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
@@ -539,6 +539,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 },
               ),
               TextFormField(
+                keyboardType: TextInputType.number,
                 controller: widthController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
@@ -554,6 +555,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                 },
               ),
               TextFormField(
+                keyboardType: TextInputType.number,
                 controller: heightController,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
@@ -663,14 +665,12 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
                                       child: kIsWeb
-                                      // For web, use image.network to display the image
                                           ? Image.network(
                                         _selectedImage!,
                                         height: 75,
                                         width: 70,
                                         fit: BoxFit.cover,
                                       )
-                                      // For mobile, use image.file to display the image
                                           : Image.file(
                                         File(_selectedImage!),
                                         height: 75,
@@ -685,7 +685,8 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
                                             'File Size: $_selectedFileSize KB',
                                         style: TextStyle(
                                             fontSize: 13,
-                                            color: Colors.grey.shade700),
+                                          color: isDarkMode ? Colors.white : Colors.grey[700],
+                                        ),
                                       ),
                                     ),
                                   ]),
