@@ -128,30 +128,9 @@ class MyApp extends StatelessWidget {
                 documentId:
                     ModalRoute.of(context)!.settings.arguments as String,
               ),
-          '/admin': (context) {
-            if (isAdmin) {
-              return AdminPage();
-            } else {
-              return Scaffold(
-                appBar: AppBar(),
-                body: Center(
-                  child: Text('Access Denied'),
-                ),
-              );
-            }
-          },
-          '/courier': (context) {
-            if (isCourier || isAdmin) {
-              return CourierPage();
-            } else {
-              return Scaffold(
-                appBar: AppBar(),
-                body: Center(
-                  child: Text('Access Denied'),
-                ),
-              );
-            }
-          },
+          '/admin': (context) => AdminPage(),
+          '/courier': (context) => CourierPage(),
+
         },
       ),
     );
