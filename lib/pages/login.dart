@@ -59,12 +59,22 @@ class _LoginPageState extends State<LoginPage> {
       print('address: $address');
       print('role: $role');
 
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('name', name);
       await prefs.setString('phone_number', phone_number);
       await prefs.setString('address', address);
       await prefs.setString('role', role);
+      if (role == 'Admin')
+      {
+        await prefs.setBool('isadmin', true);
 
+      }
+      if (role == 'Courier')
+      {
+        await prefs.setBool('isCourier', true);
+
+      }
       final savedName = prefs.getString('name');
       if (savedName != null) {
         print('Saved name: $savedName');
