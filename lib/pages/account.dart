@@ -20,7 +20,7 @@ class _AccountState extends State<Account> {
   bool _isDarkMode = false;
 
   List<String> placePredictions = [];
-  final places = GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+  final places = GoogleMapsPlaces(apiKey: 'REMOVEDAPIEKYS');
 
   Future<List<String>> fetchPlacePredictions(String input) async {
     if (kIsWeb) {
