@@ -13,7 +13,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   List<String> placePredictions = [];
   final places =
-      GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+      GoogleMapsPlaces(apiKey: 'REMOVED');
 
   Future<List<String>> fetchPlacePredictions(String input) async {
     if (kIsWeb) {
