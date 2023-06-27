@@ -46,7 +46,7 @@ class _Order extends State<MakeOrderPage> with TickerProviderStateMixin {
   String? _selectedImage;
 
   final places =
-  GoogleMapsPlaces(apiKey: 'AIzaSyCoCj0Is0Nq4_AFta4srPt_fxpNmXKTOTY');
+  GoogleMapsPlaces(apiKey: 'REMOVEDAPIEKYS');
 
   List<String> placePredictions = [];
   List<String> toPlacePredictions = [];
